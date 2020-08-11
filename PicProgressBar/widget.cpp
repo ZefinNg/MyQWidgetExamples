@@ -42,8 +42,9 @@ void Widget::paintEvent(QPaintEvent *paintEvent)
     painter.setBrush(QBrush(tempPixmap));
     painter.setRenderHints(QPainter::Antialiasing, true);
     painter.drawPath(progressPath);
-    painter.setPen(QPen(Qt::black));
-    painter.drawText(QPointF(397, 335), QString("%1\%").arg(percent));
+    painter.setPen(QPen(Qt::blue));
+    painter.setFont(QFont("Helvetica", 30));
+    painter.drawText(380, 240, QString("%1\%").arg(percent));
 }
 
 void Widget::onTimeOut()
