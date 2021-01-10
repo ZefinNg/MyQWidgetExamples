@@ -1,6 +1,7 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include <QDebug>
+#include <QPalette>
 
 #define FILE_NAME "ThreeKindoms.db"
 
@@ -9,6 +10,9 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
+    QPalette palette = this->palette();
+    palette.setBrush(QPalette::Background, QBrush(QPixmap(":/Images/ThreeKingdomsKill.jpg")));
+    setPalette(palette);
 
     this->createDBFile();
 
