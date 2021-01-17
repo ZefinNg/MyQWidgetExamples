@@ -2,6 +2,7 @@
 #include "ui_widget.h"
 #include <QDebug>
 #include <QPalette>
+#include <QScrollBar>
 
 #define FILE_NAME "ThreeKindoms.db"
 
@@ -10,14 +11,51 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
+
+    //设置背景
     QPalette palette = this->palette();
     palette.setBrush(QPalette::Background, QBrush(QPixmap(":/Images/ThreeKingdomsKill.jpg")));
     setPalette(palette);
 
+    //创建数据库文件
     this->createDBFile();
 
-    QString shuTable = "ShuKingdom";
-    this->createTable(shuTable);
+    //创建数据表
+    QString tableName = "ShuKingdom";
+    this->createTable(tableName);
+
+    tableName = "WeiKingdom";
+    this->createTable(tableName);
+
+    tableName = "WuKingdom";
+    this->createTable(tableName);
+
+    tableName = "OtherKingdom";
+    this->createTable(tableName);
+
+    //固定界面大小
+    this->setMaximumSize(1000, 600);
+    this->setMinimumSize(1000, 600);
+
+    //设置标题
+    this->setWindowTitle(tr("三国英雄信息一览表"));
+
+
+    //表头数据
+    QStringList headerList;
+    headerList << tr("索引") << tr("势力") << tr("姓名")
+               << tr("字")   << tr("职位") << tr("坐骑")
+               << tr("武器") << tr("生卒时间") << tr("谥号")
+               << tr("相关典故") << tr("备注");
+    ui->mainTableWidget->setColumnCount(headerList.size());
+    //设置表头数据
+    ui->mainTableWidget->setHorizontalHeaderLabels(headerList);
+
+
+    //设置QTableWidget的显示
+    this->setMainTableView();
+
+
 }
 
 Widget::~Widget()
@@ -78,4 +116,45 @@ void Widget::createTable(QString &tableName)
                 qDebug() << "Create" << tableName << "success.";
         }
     }
+}
+
+void Widget::setMainTableView()
+{
+    //设置QTableWidge控件背景透明
+    QPalette tablePalette = ui->mainTableWidget->palette();
+    tablePalette.setBrush(QPalette::Base,QBrush(QColor(255,255,255,0)));
+    ui->mainTableWidget->setPalette(tablePalette);
+
+    //TODO:设置QTableWidget表头透明
+    //这里暂时设置为与背景图颜色相近
+    ui->mainTableWidget->horizontalHeader()->setStyleSheet("QHeaderView::section {"
+                                                           "background-color: #A99B78;" //背景图片相近颜色
+                                                           "color: white;"              //字体颜色
+                                                           "font-size: 24px;"           //字体大小
+                                                           "}");
+
+    ui->mainTableWidget->horizontalScrollBar()->setStyleSheet("QScrollBar:horizontal{"
+                                                              "background:#A99B78;"
+                                                              "padding-top:3px;"
+                                                              "padding-bottom:3px;"
+                                                              "padding-left:20px;"
+                                                              "padding-right:20px;}"
+                                                              "QScrollBar::handle:horizontal{"
+                                                              "background:#5d5437;"
+                                                              "border-radius:6px;"
+                                                              "min-width:80px;}"
+                                                              "QScrollBar::right-arrow:horizontal, QScrollBar::left-arrow:horizontal"
+                                                              "{border: none;"
+                                                              "background: none;"
+                                                              "color: none;}"
+                                                              "QScrollBar::handle:vertical{"
+                                                              "width:8px;"
+                                                              "background:rgba(0,0,0,25%);"
+                                                              "border-radius:4px;"   // 滚动条两端变成椭圆
+                                                              "min-height:20;}"
+                                                              );
+
+    //设置表头自适应
+//    ui->mainTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
 }

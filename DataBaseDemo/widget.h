@@ -25,6 +25,9 @@ private:
     void createTable(QString &tableName);
 
 private:
+    void setMainTableView();
+
+private:
     Ui::Widget *ui;
 
     QSqlDatabase m_database;
