@@ -40,7 +40,6 @@ Widget::Widget(QWidget *parent) :
     //设置标题
     this->setWindowTitle(tr("三国英雄信息一览表"));
 
-
     //表头数据
     QStringList headerList;
     headerList << tr("索引") << tr("势力") << tr("姓名")
@@ -48,9 +47,12 @@ Widget::Widget(QWidget *parent) :
                << tr("武器") << tr("生卒时间") << tr("谥号")
                << tr("相关典故") << tr("备注");
     ui->mainTableWidget->setColumnCount(headerList.size());
+
+    //For test
+    ui->mainTableWidget->setRowCount(30);
+
     //设置表头数据
     ui->mainTableWidget->setHorizontalHeaderLabels(headerList);
-
 
     //设置QTableWidget的显示
     this->setMainTableView();
@@ -133,6 +135,10 @@ void Widget::setMainTableView()
                                                            "font-size: 24px;"           //字体大小
                                                            "}");
 
+    //设置行头不显示
+    ui->mainTableWidget->verticalHeader()->setVisible(false);
+
+    //设置滚动条样式
     ui->mainTableWidget->horizontalScrollBar()->setStyleSheet("QScrollBar:horizontal{"
                                                               "background:#A99B78;"
                                                               "padding-top:3px;"
@@ -147,11 +153,23 @@ void Widget::setMainTableView()
                                                               "{border: none;"
                                                               "background: none;"
                                                               "color: none;}"
+                                                              );
+
+    //设置垂直滚动条样式
+    ui->mainTableWidget->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
+                                                              "background:#A99B78;"
+                                                              "padding-top:3px;"
+                                                              "padding-bottom:3px;"
+                                                              "padding-left:20px;"
+                                                              "padding-right:20px;}"
                                                               "QScrollBar::handle:vertical{"
-                                                              "width:8px;"
-                                                              "background:rgba(0,0,0,25%);"
-                                                              "border-radius:4px;"   // 滚动条两端变成椭圆
-                                                              "min-height:20;}"
+                                                              "background:#5d5437;"
+                                                              "border-radius:6px;"
+                                                              "min-width:80px;}"
+                                                              "QScrollBar::down-arrow:vertical, QScrollBar::up-arrow:vertical"
+                                                              "{border: none;"
+                                                              "background: none;"
+                                                              "color: none;}"
                                                               );
 
     //设置表头自适应
