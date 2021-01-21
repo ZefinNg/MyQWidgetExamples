@@ -13,11 +13,19 @@
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QTableWidget" name="mainTableWidget"/>
-   </item>
-  </layout>
+  <widget class="QTableWidget" name="mainTableWidget">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>9</y>
+     <width>781</width>
+     <height>581</height>
+    </rect>
+   </property>
+   <property name="textElideMode">
+    <enum>Qt::ElideRight</enum>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

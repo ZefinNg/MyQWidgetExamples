@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QPalette>
 #include <QScrollBar>
+#include <QAbstractItemView>
 
 #define FILE_NAME "ThreeKindoms.db"
 
@@ -57,6 +58,10 @@ Widget::Widget(QWidget *parent) :
     //设置QTableWidget的显示
     this->setMainTableView();
 
+    //显示数据
+    this->showTableData("ShuKingdom");
+    this->showTableData("WeiKingdom");
+    this->showTableData("WuKingdom");
 
 }
 
@@ -138,13 +143,14 @@ void Widget::setMainTableView()
     //设置行头不显示
     ui->mainTableWidget->verticalHeader()->setVisible(false);
 
-    //设置滚动条样式
+    //设置水平滚动条样式
     ui->mainTableWidget->horizontalScrollBar()->setStyleSheet("QScrollBar:horizontal{"
+                                                              "height:18px;"
                                                               "background:#A99B78;"
                                                               "padding-top:3px;"
                                                               "padding-bottom:3px;"
-                                                              "padding-left:20px;"
-                                                              "padding-right:20px;}"
+                                                              "padding-left:30px;"
+                                                              "padding-right:30px;}"
                                                               "QScrollBar::handle:horizontal{"
                                                               "background:#5d5437;"
                                                               "border-radius:6px;"
@@ -157,22 +163,90 @@ void Widget::setMainTableView()
 
     //设置垂直滚动条样式
     ui->mainTableWidget->verticalScrollBar()->setStyleSheet("QScrollBar:vertical{"
-                                                              "background:#A99B78;"
-                                                              "padding-top:3px;"
-                                                              "padding-bottom:3px;"
-                                                              "padding-left:20px;"
-                                                              "padding-right:20px;}"
-                                                              "QScrollBar::handle:vertical{"
-                                                              "background:#5d5437;"
-                                                              "border-radius:6px;"
-                                                              "min-width:80px;}"
-                                                              "QScrollBar::down-arrow:vertical, QScrollBar::up-arrow:vertical"
-                                                              "{border: none;"
-                                                              "background: none;"
-                                                              "color: none;}"
-                                                              );
+                                                            "width:18px;"
+                                                            "background:#A99B78;"
+                                                            "padding-top:30px;"
+                                                            "padding-bottom:30px;"
+                                                            "padding-left:3px;"
+                                                            "padding-right:3px;}"
+                                                            "QScrollBar::handle:vertical{"
+                                                            "background:#5d5437;"
+                                                            "border-radius:6px;"
+                                                            "min-height:80px;}"
+                                                            "QScrollBar::down-arrow:vertical, QScrollBar::up-arrow:vertical"
+                                                            "{border: none;"
+                                                            "background: none;"
+                                                            "height:0px;"
+                                                            "color: none;}"
+                                                            );
+
+    ui->mainTableWidget->setStyleSheet("QTableWidget{"
+                                           "color: #2e2f30;"
+                                           "font-size: 20px;"
+                                           "text-align: middle;"
+    //                                       "gridline-color:white;"
+                                           "}");
+
+    ui->mainTableWidget->setStyleSheet("QTableWidget::item::selected{"
+                                       "color:white;"                // 每个单元格被选中时 字体颜色
+                                       "background:#75674d;}"        // 每个单元格被选中时 背景颜色
+                                       );
+
+    //去除选中的虚线框
+    ui->mainTableWidget->setFocusPolicy(Qt::NoFocus);
+
+    //设置文本省略显示的模式
+    ui->mainTableWidget->setTextElideMode(Qt::ElideRight);
 
     //设置表头自适应
 //    ui->mainTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+    //设置选中为选中一行而非一个单元格
+    ui->mainTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+    //设置只能选中一行
+    ui->mainTableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    //设置不显示网格
+    ui->mainTableWidget->setShowGrid(false);
+
+}
+
+void Widget::showTableData(QString tableName)
+{
+    if (!m_database.isOpen()) {
+        qDebug() << "Database has not opened.";
+        if (!m_database.open()) {
+            qDebug() << "Open database failed.";
+            return;
+        }
+    }
+
+    QString queryAllSql = QString("SELECT * FROM %1").arg(tableName);
+
+    QSqlQuery query(m_database);
+    if (!query.prepare(queryAllSql)) {
+        qDebug() << "Query prepare failed.";
+        return;
+    }
+
+    if (!query.exec()) {
+        qDebug() << "Query exec failed.";
+        return;
+    }
+
+    int rowCount = ui->mainTableWidget->rowCount();
+    QString itemData = "";
+
+    while (query.next()) {
+        ui->mainTableWidget->setRowCount(rowCount+1);
+        for (int i = 0; i < ui->mainTableWidget->columnCount(); i++) {
+            itemData = query.value(i).toString();
+            QTableWidgetItem *item = new QTableWidgetItem(itemData);
+            //设置文本对齐方式
+            item->setTextAlignment(Qt::AlignCenter);
+
+            ui->mainTableWidget->setItem(rowCount, i, item);
+        }
+    }
 }
