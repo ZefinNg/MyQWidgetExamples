@@ -24,9 +24,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        widget.cpp
+        widget.cpp \
+    Domains/HeroInfo.cpp
 
-HEADERS  += widget.h
+HEADERS  += widget.h \
+    Domains/HeroInfo.h
 
 FORMS    += widget.ui
 

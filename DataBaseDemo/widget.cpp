@@ -13,6 +13,8 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    m_dialog = NULL;
+
     //设置背景
     QPalette palette = this->palette();
     palette.setBrush(QPalette::Background, QBrush(QPixmap(":/Images/ThreeKingdomsKill.jpg")));
@@ -43,14 +45,14 @@ Widget::Widget(QWidget *parent) :
 
     //表头数据
     QStringList headerList;
-    headerList << tr("索引") << tr("势力") << tr("姓名")
-               << tr("字")   << tr("职位") << tr("坐骑")
+    headerList << tr("索引") << tr("姓名") << tr("字")
+               << tr("势力") << tr("职位") << tr("坐骑")
                << tr("武器") << tr("生卒时间") << tr("谥号")
                << tr("相关典故") << tr("备注");
     ui->mainTableWidget->setColumnCount(headerList.size());
 
     //For test
-    ui->mainTableWidget->setRowCount(30);
+//    ui->mainTableWidget->setRowCount(30);
 
     //设置表头数据
     ui->mainTableWidget->setHorizontalHeaderLabels(headerList);
@@ -63,11 +65,75 @@ Widget::Widget(QWidget *parent) :
     this->showTableData("WeiKingdom");
     this->showTableData("WuKingdom");
 
+    connect(ui->mainTableWidget, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(onCellDoubleClicked(int, int)));
+    connect(ui->btnDeleteData, SIGNAL(clicked()), this, SLOT(onBtnDeleteData()));
+    connect(ui->btnInsertData, SIGNAL(clicked()), this, SLOT(onBtnInsertData()));
 }
 
 Widget::~Widget()
 {
     delete ui;
+}
+
+void Widget::onCellDoubleClicked(int row, int column)
+{
+    qDebug() << row << column;
+}
+
+void Widget::onBtnDeleteData()
+{
+    //判断QTableWidget当前是否选中数据
+    if (ui->mainTableWidget->selectedItems().count() == 0) {
+        qDebug() << "Please select one row data.";
+        //Tips Dialog
+    }
+    else {
+        if (ui->mainTableWidget->selectedItems().at(3)->text() == "蜀国") {
+            this->deleteDataFromDB("ShuKingdom", ui->mainTableWidget->selectedItems().at(0)->text());
+        }
+        else if (ui->mainTableWidget->selectedItems().at(3)->text() == "魏国") {
+            this->deleteDataFromDB("WeiKingdom", ui->mainTableWidget->selectedItems().at(0)->text());
+        }
+    }
+
+    ui->mainTableWidget->clearContents();
+    ui->mainTableWidget->setRowCount(0);
+    this->showTableData("ShuKingdom");
+    this->showTableData("WeiKingdom");
+    this->showTableData("WuKingdom");
+}
+
+void Widget::onBtnInsertData()
+{
+//    if (m_dialog == NULL) {
+//        m_dialog = new QDialog(this);
+//    }
+
+//    m_dialog->exec();
+    HeroInfo liubei;
+    liubei.setId(1);
+    liubei.setName("刘备");
+    liubei.setStyleName("玄德");
+    liubei.setFaction("蜀国");
+    liubei.setPosition("主公");
+    liubei.setMount("的卢马");
+    liubei.setWeapon("雌雄双股剑");
+    liubei.setBirthAndDeathTime("161年-223年6月10日");
+    liubei.setPosthumounsTitle("汉昭烈帝");
+    liubei.setAllusion("煮酒论英雄、三顾茅庐");
+    liubei.setTips("");
+
+    this->insertDataIntoDB("ShuKingdom", liubei);
+
+    ui->mainTableWidget->setRowCount(0);
+    this->showTableData("ShuKingdom");
+    this->showTableData("WeiKingdom");
+    this->showTableData("WuKingdom");
+}
+
+void Widget::onBtnModifyData()
+{
+
 }
 
 void Widget::createDBFile()
@@ -98,7 +164,7 @@ void Widget::createTable(QString &tableName)
                                        "id INTEGER PRIMARY KEY NOT NULL,"
                                        "name TEXT NOT NULL,"
                                        "styleName TEXT,"
-                                       "faciton TEXT,"
+                                       "faction TEXT,"
                                        "position TEXT,"
                                        "mount TEXT,"
                                        "weapon TEXT,"
@@ -210,6 +276,8 @@ void Widget::setMainTableView()
     //设置不显示网格
     ui->mainTableWidget->setShowGrid(false);
 
+    //设置表格不可编辑,这里会屏蔽QTableWidget的点击信号
+//    ui->mainTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
 void Widget::showTableData(QString tableName)
@@ -249,4 +317,69 @@ void Widget::showTableData(QString tableName)
             ui->mainTableWidget->setItem(rowCount, i, item);
         }
     }
+}
+
+void Widget::deleteDataFromDB(QString tableName, QString id)
+{
+    if (!m_database.isOpen()) {
+        qDebug() << "Database has not opened.";
+        if (!m_database.open()) {
+            qDebug() << "Open database failed.";
+            return;
+        }
+    }
+
+    QString deleteSql = QString("DELETE FROM %1 WHERE id = %2").arg(tableName).arg(id);
+
+    QSqlQuery query(m_database);
+    if (!query.prepare(deleteSql)) {
+        qDebug() << "Query prepare failed.";
+        return;
+    }
+
+    if (!query.exec()) {
+        qDebug() << "Query exec failed.";
+        return;
+    }
+}
+
+void Widget::insertDataIntoDB(QString tableName, HeroInfo info)
+{
+    if (!m_database.isOpen()) {
+        qDebug() << "Database has not opened.";
+        if (!m_database.open()) {
+            qDebug() << "Open database failed.";
+            return;
+        }
+    }
+
+    QString insertSql = QString("INSERT INTO %1 (id, name, styleName, faction, position, mount, weapon, birthAndDeathTime, posthumounsTitle, allusion, tips)"
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").arg(tableName);
+
+    QSqlQuery query(m_database);
+    if (!query.prepare(insertSql)) {
+        qDebug() << "Insert data failed:" << query.lastError();
+        return;
+    }
+
+    query.addBindValue(info.id());
+    query.addBindValue(info.name());
+    query.addBindValue(info.styleName());
+    query.addBindValue(info.faction());
+    query.addBindValue(info.position());
+    query.addBindValue(info.mount());
+    query.addBindValue(info.weapon());
+    query.addBindValue(info.birthAndDeathTime());
+    query.addBindValue(info.posthumounsTitle());
+    query.addBindValue(info.allusion());
+    query.addBindValue(info.tips());
+
+    m_database.transaction();
+    if (!query.exec()) {
+        qDebug() << "Insert data exec failed." << query.lastError();
+        m_database.rollback();
+        return;
+    }
+
+    m_database.commit();
 }
