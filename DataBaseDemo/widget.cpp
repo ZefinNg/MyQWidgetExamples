@@ -4,6 +4,7 @@
 #include <QPalette>
 #include <QScrollBar>
 #include <QAbstractItemView>
+#include <QMessageBox>
 
 #define FILE_NAME "ThreeKindoms.db"
 
@@ -13,12 +14,14 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_dialog = NULL;
+    m_infoDialog = NULL;
+    m_infoDialog = new InputInfoDialog(this);
+    connect(m_infoDialog, SIGNAL(dataReady(HeroInfo)), this, SLOT(onAddData(HeroInfo)));
 
     //设置背景
     QPalette palette = this->palette();
     palette.setBrush(QPalette::Background, QBrush(QPixmap(":/Images/ThreeKingdomsKill.jpg")));
-    setPalette(palette);
+    this->setPalette(palette);
 
     //创建数据库文件
     this->createDBFile();
@@ -72,6 +75,8 @@ Widget::Widget(QWidget *parent) :
 
 Widget::~Widget()
 {
+    if (m_database.isOpen())
+        m_database.close();
     delete ui;
 }
 
@@ -105,35 +110,47 @@ void Widget::onBtnDeleteData()
 
 void Widget::onBtnInsertData()
 {
-//    if (m_dialog == NULL) {
-//        m_dialog = new QDialog(this);
+    if (m_infoDialog == NULL) {
+        m_infoDialog = new InputInfoDialog(this);
+    }
+
+    m_infoDialog->exec();
+//    HeroInfo liubei;
+//    liubei.setId(1);
+//    liubei.setName("刘备");
+//    liubei.setStyleName("玄德");
+//    liubei.setFaction("蜀国");
+//    liubei.setPosition("主公");
+//    liubei.setMount("的卢马");
+//    liubei.setWeapon("雌雄双股剑");
+//    liubei.setBirthAndDeathTime("161年-223年6月10日");
+//    liubei.setPosthumounsTitle("汉昭烈帝");
+//    liubei.setAllusion("煮酒论英雄、三顾茅庐");
+//    liubei.setTips("");
+
+//    if (!this->insertDataIntoDB("ShuKingdom", liubei)) {
+//        QMessageBox::critical(this, tr("错误"), tr("添加数据失败"));
 //    }
-
-//    m_dialog->exec();
-    HeroInfo liubei;
-    liubei.setId(1);
-    liubei.setName("刘备");
-    liubei.setStyleName("玄德");
-    liubei.setFaction("蜀国");
-    liubei.setPosition("主公");
-    liubei.setMount("的卢马");
-    liubei.setWeapon("雌雄双股剑");
-    liubei.setBirthAndDeathTime("161年-223年6月10日");
-    liubei.setPosthumounsTitle("汉昭烈帝");
-    liubei.setAllusion("煮酒论英雄、三顾茅庐");
-    liubei.setTips("");
-
-    this->insertDataIntoDB("ShuKingdom", liubei);
-
-    ui->mainTableWidget->setRowCount(0);
-    this->showTableData("ShuKingdom");
-    this->showTableData("WeiKingdom");
-    this->showTableData("WuKingdom");
 }
 
 void Widget::onBtnModifyData()
 {
 
+}
+
+void Widget::onAddData(HeroInfo heroInfo)
+{
+    QString tableName = "ShuKingdom";
+    if (this->insertDataIntoDB(tableName, heroInfo)) {
+        QMessageBox::information(this, tr("提示"), tr("添加数据成功"));
+
+        ui->mainTableWidget->setRowCount(0);
+        this->showTableData("ShuKingdom");
+        this->showTableData("WeiKingdom");
+        this->showTableData("WuKingdom");
+    }
+    else
+        QMessageBox::critical(this, tr("警告"), tr("添加数据失败"));
 }
 
 void Widget::createDBFile()
@@ -247,15 +264,15 @@ void Widget::setMainTableView()
                                                             );
 
     ui->mainTableWidget->setStyleSheet("QTableWidget{"
-                                           "color: #2e2f30;"
-                                           "font-size: 20px;"
-                                           "text-align: middle;"
-    //                                       "gridline-color:white;"
-                                           "}");
-
-    ui->mainTableWidget->setStyleSheet("QTableWidget::item::selected{"
-                                       "color:white;"                // 每个单元格被选中时 字体颜色
-                                       "background:#75674d;}"        // 每个单元格被选中时 背景颜色
+                                       "color: #2e2f30;"
+                                       "font-size: 20px;"
+                                       "text-align: middle;"
+                                       "gridline-color:white;"
+                                       "}"
+                                       "QTableWidget::item::selected{"
+                                       "color: #000000;"      //每个单元格被选中时 字体颜色
+                                       "background: #75674d"  //每个单元格被选中时 背景颜色
+                                       "}"
                                        );
 
     //去除选中的虚线框
@@ -265,7 +282,7 @@ void Widget::setMainTableView()
     ui->mainTableWidget->setTextElideMode(Qt::ElideRight);
 
     //设置表头自适应
-//    ui->mainTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->mainTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     //设置选中为选中一行而非一个单元格
     ui->mainTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -276,8 +293,8 @@ void Widget::setMainTableView()
     //设置不显示网格
     ui->mainTableWidget->setShowGrid(false);
 
-    //设置表格不可编辑,这里会屏蔽QTableWidget的点击信号
-//    ui->mainTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    //设置表格不可编辑
+    ui->mainTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
 void Widget::showTableData(QString tableName)
@@ -303,10 +320,11 @@ void Widget::showTableData(QString tableName)
         return;
     }
 
-    int rowCount = ui->mainTableWidget->rowCount();
     QString itemData = "";
+    int rowCount = 0;
 
     while (query.next()) {
+        rowCount = ui->mainTableWidget->rowCount();
         ui->mainTableWidget->setRowCount(rowCount+1);
         for (int i = 0; i < ui->mainTableWidget->columnCount(); i++) {
             itemData = query.value(i).toString();
@@ -343,13 +361,13 @@ void Widget::deleteDataFromDB(QString tableName, QString id)
     }
 }
 
-void Widget::insertDataIntoDB(QString tableName, HeroInfo info)
+bool Widget::insertDataIntoDB(QString tableName, HeroInfo info)
 {
     if (!m_database.isOpen()) {
         qDebug() << "Database has not opened.";
         if (!m_database.open()) {
             qDebug() << "Open database failed.";
-            return;
+            return false;
         }
     }
 
@@ -359,7 +377,7 @@ void Widget::insertDataIntoDB(QString tableName, HeroInfo info)
     QSqlQuery query(m_database);
     if (!query.prepare(insertSql)) {
         qDebug() << "Insert data failed:" << query.lastError();
-        return;
+        return false;
     }
 
     query.addBindValue(info.id());
@@ -378,8 +396,9 @@ void Widget::insertDataIntoDB(QString tableName, HeroInfo info)
     if (!query.exec()) {
         qDebug() << "Insert data exec failed." << query.lastError();
         m_database.rollback();
-        return;
+        return false;
     }
 
     m_database.commit();
+    return true;
 }

@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>Images/ThreeKingdomsKill.jpg</file>
+        <file>Images/HerosInfo.jpg</file>
     </qresource>
 </RCC>

@@ -10,6 +10,7 @@
 #include <QDialog>
 
 #include "Domains/HeroInfo.h"
+#include "View/InputInfoDialog.h"
 
 namespace Ui {
 class Widget;
@@ -29,20 +30,21 @@ private slots:
     void onBtnInsertData();
     void onBtnModifyData();
 
+    void onAddData(HeroInfo heroInfo);
+
 private:
     void createDBFile();
     void createTable(QString &tableName);
 
-private:
     void setMainTableView();
     void showTableData(QString tableName);
 
     void deleteDataFromDB(QString tableName, QString id);
-    void insertDataIntoDB(QString tableName, HeroInfo info);
+    bool insertDataIntoDB(QString tableName, HeroInfo info);
 
 private:
     Ui::Widget *ui;
-    QDialog *m_dialog;
+    InputInfoDialog *m_infoDialog;
 
     QSqlDatabase m_database;
     QSqlQuery    m_query;

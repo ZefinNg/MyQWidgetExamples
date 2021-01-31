@@ -25,12 +25,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         widget.cpp \
-    Domains/HeroInfo.cpp
+    Domains/HeroInfo.cpp \
+    View/InputInfoDialog.cpp
 
 HEADERS  += widget.h \
-    Domains/HeroInfo.h
+    Domains/HeroInfo.h \
+    View/InputInfoDialog.h
 
-FORMS    += widget.ui
+FORMS    += widget.ui \
+    View/InputInfoDialog.ui
 
 RESOURCES += \
     images.qrc
