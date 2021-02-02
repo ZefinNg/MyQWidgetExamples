@@ -14,6 +14,21 @@ InputInfoDialog::InputInfoDialog(QWidget *parent) :
 
     connect(ui->btnConfirm, SIGNAL(clicked()), this, SLOT(onBtnConfirmClicked()));
     connect(ui->btnCancel,  SIGNAL(clicked()), this, SLOT(onBtnCancelClicked()));
+
+    QStringList kingdoms;
+    kingdoms << tr("魏国") << tr("蜀国") << tr("吴国") << tr("群雄");
+    ui->comboBoxKingdoms->addItems(kingdoms);
+
+    ui->frame->setStyleSheet("QLabel {"
+                                 "font-size: 18px;"
+                                 "color: white;"
+                             "}"
+                             "QLabel#labelTitle {"
+                                 "font-size: 26px;"
+                                 "color: white;"
+                             "}");
+
+    this->setFixedSize(850 ,370);
 }
 
 InputInfoDialog::~InputInfoDialog()
@@ -28,7 +43,16 @@ void InputInfoDialog::onBtnConfirmClicked()
     heroInfo.setId(ui->lineEditID->text().toInt());
     heroInfo.setName(ui->lineEditName->text());
     heroInfo.setStyleName(ui->lineEditStyleName->text());
-    heroInfo.setFaction(ui->lineEditFaction->text());
+
+    switch (ui->comboBoxKingdoms->currentIndex()) {
+    case 0: heroInfo.setFaction("魏国"); break;
+    case 1: heroInfo.setFaction("蜀国"); break;
+    case 2: heroInfo.setFaction("吴国"); break;
+    case 3: heroInfo.setFaction("群雄"); break;
+    default:
+        break;
+    }
+
     heroInfo.setPosition(ui->lineEditPosition->text());
     heroInfo.setMount(ui->lineEditMount->text());
     heroInfo.setWeapon(ui->lineEditWeapon->text());
