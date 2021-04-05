@@ -6,7 +6,11 @@
 #include <QAbstractItemView>
 #include <QMessageBox>
 
-#define FILE_NAME "ThreeKindoms.db"
+#define FILE_NAME   "ThreeKindoms.db"
+#define TABLE_WEI   "WeiKingdom"
+#define TABLE_SHU   "ShuKingdom"
+#define TABLE_WU    "WuKingdom"
+#define TABLE_OTHER "OtherKingdom"
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
@@ -27,21 +31,20 @@ Widget::Widget(QWidget *parent) :
     this->createDBFile();
 
     //创建数据表
-    QString tableName = "ShuKingdom";
+    QString tableName = TABLE_SHU;
     this->createTable(tableName);
 
-    tableName = "WeiKingdom";
+    tableName = TABLE_WEI;
     this->createTable(tableName);
 
-    tableName = "WuKingdom";
+    tableName = TABLE_WU;
     this->createTable(tableName);
 
-    tableName = "OtherKingdom";
+    tableName = TABLE_OTHER;
     this->createTable(tableName);
 
     //固定界面大小
-    this->setMaximumSize(1000, 600);
-    this->setMinimumSize(1000, 600);
+    this->setFixedSize(1000, 600);
 
     //设置标题
     this->setWindowTitle(tr("三国英雄信息一览表"));
@@ -64,9 +67,10 @@ Widget::Widget(QWidget *parent) :
     this->setMainTableView();
 
     //显示数据
-    this->showTableData("ShuKingdom");
-    this->showTableData("WeiKingdom");
-    this->showTableData("WuKingdom");
+    this->showTableData(TABLE_SHU);
+    this->showTableData(TABLE_WEI);
+    this->showTableData(TABLE_WU);
+    this->showTableData(TABLE_OTHER);
 
     connect(ui->mainTableWidget, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(onCellDoubleClicked(int, int)));
     connect(ui->btnDeleteData, SIGNAL(clicked()), this, SLOT(onBtnDeleteData()));
@@ -89,23 +93,32 @@ void Widget::onBtnDeleteData()
 {
     //判断QTableWidget当前是否选中数据
     if (ui->mainTableWidget->selectedItems().count() == 0) {
-        qDebug() << "Please select one row data.";
-        //Tips Dialog
+        QMessageBox::information(this, tr("提示"), tr("请选择一项数据"));
+        return;
     }
     else {
-        if (ui->mainTableWidget->selectedItems().at(3)->text() == "蜀国") {
-            this->deleteDataFromDB("ShuKingdom", ui->mainTableWidget->selectedItems().at(0)->text());
-        }
-        else if (ui->mainTableWidget->selectedItems().at(3)->text() == "魏国") {
-            this->deleteDataFromDB("WeiKingdom", ui->mainTableWidget->selectedItems().at(0)->text());
-        }
+        QString kingdom = ui->mainTableWidget->selectedItems().at(3)->text();
+        QString id      = ui->mainTableWidget->selectedItems().at(0)->text();
+        QString tableName = "";
+
+        if (kingdom == "蜀国")
+            tableName = TABLE_SHU;
+        else if (kingdom == "魏国")
+            tableName = TABLE_WEI;
+        else if (kingdom == "吴国")
+            tableName = TABLE_WU;
+        else
+            tableName = TABLE_OTHER;
+
+        this->deleteDataFromDB(tableName, id);
     }
 
     ui->mainTableWidget->clearContents();
     ui->mainTableWidget->setRowCount(0);
-    this->showTableData("ShuKingdom");
-    this->showTableData("WeiKingdom");
-    this->showTableData("WuKingdom");
+    this->showTableData(TABLE_SHU);
+    this->showTableData(TABLE_WEI);
+    this->showTableData(TABLE_WU);
+    this->showTableData(TABLE_OTHER);
 }
 
 void Widget::onBtnInsertData()
@@ -128,9 +141,11 @@ void Widget::onBtnInsertData()
 //    liubei.setAllusion("煮酒论英雄、三顾茅庐");
 //    liubei.setTips("");
 
-//    if (!this->insertDataIntoDB("ShuKingdom", liubei)) {
+//    if (!this->insertDataIntoDB(TABLE_SHU, liubei)) {
 //        QMessageBox::critical(this, tr("错误"), tr("添加数据失败"));
 //    }
+    m_infoDialog->deleteLater();
+    m_infoDialog = NULL;
 }
 
 void Widget::onBtnModifyData()
@@ -140,14 +155,24 @@ void Widget::onBtnModifyData()
 
 void Widget::onAddData(HeroInfo heroInfo)
 {
-    QString tableName = "ShuKingdom";
+    QString tableName = "";
+
+    if (heroInfo.faction() == "蜀国")
+        tableName = TABLE_SHU;
+    else if (heroInfo.faction() == "魏国")
+        tableName = TABLE_WEI;
+    else if (heroInfo.faction() == "吴国")
+        tableName = TABLE_WU;
+    else
+        tableName = TABLE_OTHER;
+
     if (this->insertDataIntoDB(tableName, heroInfo)) {
         QMessageBox::information(this, tr("提示"), tr("添加数据成功"));
 
         ui->mainTableWidget->setRowCount(0);
-        this->showTableData("ShuKingdom");
-        this->showTableData("WeiKingdom");
-        this->showTableData("WuKingdom");
+        this->showTableData(TABLE_SHU);
+        this->showTableData(TABLE_WEI);
+        this->showTableData(TABLE_WU);
     }
     else
         QMessageBox::critical(this, tr("警告"), tr("添加数据失败"));
@@ -238,10 +263,10 @@ void Widget::setMainTableView()
                                                               "background:#5d5437;"
                                                               "border-radius:6px;"
                                                               "min-width:80px;}"
-                                                              "QScrollBar::right-arrow:horizontal, QScrollBar::left-arrow:horizontal"
-                                                              "{border: none;"
+                                                              "QScrollBar::right-arrow:horizontal, QScrollBar::left-arrow:horizontal{"
+                                                              "border: 10px;"
                                                               "background: none;"
-                                                              "color: none;}"
+                                                              "color: red;}"
                                                               );
 
     //设置垂直滚动条样式
@@ -266,8 +291,6 @@ void Widget::setMainTableView()
     ui->mainTableWidget->setStyleSheet("QTableWidget{"
                                        "color: #2e2f30;"
                                        "font-size: 20px;"
-                                       "text-align: middle;"
-                                       "gridline-color:white;"
                                        "}"
                                        "QTableWidget::item::selected{"
                                        "color: #000000;"      //每个单元格被选中时 字体颜色
@@ -282,7 +305,7 @@ void Widget::setMainTableView()
     ui->mainTableWidget->setTextElideMode(Qt::ElideRight);
 
     //设置表头自适应
-    ui->mainTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+//    ui->mainTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     //设置选中为选中一行而非一个单元格
     ui->mainTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
