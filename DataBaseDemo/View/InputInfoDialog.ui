@@ -73,7 +73,7 @@
        <string>英雄信息：</string>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -83,58 +83,8 @@
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="2" column="0">
-        <widget class="QLabel" name="labelPosthumousTitle">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>谥号：</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEditPosthumousTitle"/>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEditID"/>
-       </item>
        <item row="0" column="3">
         <widget class="QLineEdit" name="lineEditName"/>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEditPosition"/>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="lineEditMount"/>
-       </item>
-       <item row="2" column="2">
-        <widget class="QLabel" name="labelAllusion">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>相关典故：</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
        </item>
        <item row="0" column="2">
         <widget class="QLabel" name="labelName">
@@ -155,109 +105,8 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="labelMount">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>坐骑：</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="6">
-        <widget class="QLabel" name="labelFaction">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>势力：</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="5">
         <widget class="QLineEdit" name="lineEditStyleName"/>
-       </item>
-       <item row="1" column="4">
-        <widget class="QLabel" name="labelWeapon">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>武器：</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QLineEdit" name="lineEditAllusion"/>
-       </item>
-       <item row="1" column="5">
-        <widget class="QLineEdit" name="lineEditWeapon"/>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="labelID">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>ID：</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="labelPosition">
-         <property name="minimumSize">
-          <size>
-           <width>90</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>职位：</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
        </item>
        <item row="0" column="4">
         <widget class="QLabel" name="labelStyleName">
@@ -278,14 +127,8 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="7">
-        <widget class="QComboBox" name="comboBoxKingdoms"/>
-       </item>
-       <item row="2" column="5">
-        <widget class="QLineEdit" name="lineEditTips"/>
-       </item>
-       <item row="2" column="4">
-        <widget class="QLabel" name="labelTips">
+       <item row="0" column="0">
+        <widget class="QLabel" name="labelFaction">
          <property name="minimumSize">
           <size>
            <width>90</width>
@@ -296,14 +139,83 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>备注：</string>
+          <string>势力：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
-       <item row="1" column="6">
+       <item row="0" column="1">
+        <widget class="QComboBox" name="comboBoxKingdoms"/>
+       </item>
+       <item row="0" column="6">
+        <widget class="QLabel" name="labelPosition">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>职位：</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7">
+        <widget class="QLineEdit" name="lineEditPosition"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="labelMount">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>坐骑：</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="lineEditMount"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="labelWeapon">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>武器：</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="lineEditWeapon"/>
+       </item>
+       <item row="1" column="4">
         <widget class="QLabel" name="labelBirthAndDeadthTime">
          <property name="minimumSize">
           <size>
@@ -322,8 +234,74 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="7">
+       <item row="1" column="5">
         <widget class="QLineEdit" name="lineEditBirthAndDeathTime"/>
+       </item>
+       <item row="1" column="6">
+        <widget class="QLabel" name="labelPosthumousTitle">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>谥号：</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="7">
+        <widget class="QLineEdit" name="lineEditPosthumousTitle"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="labelAllusion">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>相关典故：</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="lineEditAllusion"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLabel" name="labelTips">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>备注：</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLineEdit" name="lineEditTips"/>
        </item>
       </layout>
      </widget>

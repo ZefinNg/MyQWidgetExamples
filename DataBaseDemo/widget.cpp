@@ -19,8 +19,6 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
 
     m_infoDialog = NULL;
-    m_infoDialog = new InputInfoDialog(this);
-    connect(m_infoDialog, SIGNAL(dataReady(HeroInfo)), this, SLOT(onAddData(HeroInfo)));
 
     //设置背景
     QPalette palette = this->palette();
@@ -91,16 +89,16 @@ void Widget::onCellDoubleClicked(int row, int column)
 
 void Widget::onBtnDeleteData()
 {
+    QString kingdom   = ui->mainTableWidget->selectedItems().at(3)->text();
+    QString id        = ui->mainTableWidget->selectedItems().at(0)->text();
+    QString tableName = "";
+
     //判断QTableWidget当前是否选中数据
     if (ui->mainTableWidget->selectedItems().count() == 0) {
         QMessageBox::information(this, tr("提示"), tr("请选择一项数据"));
         return;
     }
     else {
-        QString kingdom = ui->mainTableWidget->selectedItems().at(3)->text();
-        QString id      = ui->mainTableWidget->selectedItems().at(0)->text();
-        QString tableName = "";
-
         if (kingdom == "蜀国")
             tableName = TABLE_SHU;
         else if (kingdom == "魏国")
@@ -109,41 +107,34 @@ void Widget::onBtnDeleteData()
             tableName = TABLE_WU;
         else
             tableName = TABLE_OTHER;
-
-        this->deleteDataFromDB(tableName, id);
     }
 
-    ui->mainTableWidget->clearContents();
-    ui->mainTableWidget->setRowCount(0);
-    this->showTableData(TABLE_SHU);
-    this->showTableData(TABLE_WEI);
-    this->showTableData(TABLE_WU);
-    this->showTableData(TABLE_OTHER);
+    if (this->deleteDataFromDB(tableName, id)) {
+        //刷新界面
+        ui->mainTableWidget->clearContents();
+        ui->mainTableWidget->setRowCount(0);
+        this->showTableData(TABLE_SHU);
+        this->showTableData(TABLE_WEI);
+        this->showTableData(TABLE_WU);
+        this->showTableData(TABLE_OTHER);
+
+        QMessageBox::information(this, tr("Tips"), tr("Delete data success."));
+    }
+    else
+        QMessageBox::critical(this, tr("错误"), tr("删除数据失败!"));
+
 }
 
 void Widget::onBtnInsertData()
 {
     if (m_infoDialog == NULL) {
-        m_infoDialog = new InputInfoDialog(this);
+        m_infoDialog = new InputInfoDialog();
+        connect(m_infoDialog, SIGNAL(dataReady(HeroInfo)), this, SLOT(onAddData(HeroInfo)));
+
     }
 
     m_infoDialog->exec();
-//    HeroInfo liubei;
-//    liubei.setId(1);
-//    liubei.setName("刘备");
-//    liubei.setStyleName("玄德");
-//    liubei.setFaction("蜀国");
-//    liubei.setPosition("主公");
-//    liubei.setMount("的卢马");
-//    liubei.setWeapon("雌雄双股剑");
-//    liubei.setBirthAndDeathTime("161年-223年6月10日");
-//    liubei.setPosthumounsTitle("汉昭烈帝");
-//    liubei.setAllusion("煮酒论英雄、三顾茅庐");
-//    liubei.setTips("");
 
-//    if (!this->insertDataIntoDB(TABLE_SHU, liubei)) {
-//        QMessageBox::critical(this, tr("错误"), tr("添加数据失败"));
-//    }
     m_infoDialog->deleteLater();
     m_infoDialog = NULL;
 }
@@ -167,12 +158,10 @@ void Widget::onAddData(HeroInfo heroInfo)
         tableName = TABLE_OTHER;
 
     if (this->insertDataIntoDB(tableName, heroInfo)) {
-        QMessageBox::information(this, tr("提示"), tr("添加数据成功"));
-
         ui->mainTableWidget->setRowCount(0);
-        this->showTableData(TABLE_SHU);
-        this->showTableData(TABLE_WEI);
-        this->showTableData(TABLE_WU);
+        this->showAllTable();
+
+        QMessageBox::information(this, tr("提示"), tr("添加数据成功"));
     }
     else
         QMessageBox::critical(this, tr("警告"), tr("添加数据失败"));
@@ -203,7 +192,7 @@ void Widget::createTable(QString &tableName)
     QString isExistCommand(QString("select count(*) from sqlite_master where type='table' and name='%1'").arg(tableName));
     QString createTableCommand(QString("CREATE TABLE %1 "
                                        "("
-                                       "id INTEGER PRIMARY KEY NOT NULL,"
+                                       "id INTEGER PRIMARY KEY AUTOINCREMENT,"//ID自增
                                        "name TEXT NOT NULL,"
                                        "styleName TEXT,"
                                        "faction TEXT,"
@@ -360,13 +349,13 @@ void Widget::showTableData(QString tableName)
     }
 }
 
-void Widget::deleteDataFromDB(QString tableName, QString id)
+bool Widget::deleteDataFromDB(QString tableName, QString id)
 {
     if (!m_database.isOpen()) {
         qDebug() << "Database has not opened.";
         if (!m_database.open()) {
             qDebug() << "Open database failed.";
-            return;
+            return false;
         }
     }
 
@@ -375,13 +364,14 @@ void Widget::deleteDataFromDB(QString tableName, QString id)
     QSqlQuery query(m_database);
     if (!query.prepare(deleteSql)) {
         qDebug() << "Query prepare failed.";
-        return;
+        return false;
     }
 
     if (!query.exec()) {
         qDebug() << "Query exec failed.";
-        return;
+        return false;
     }
+    return true;
 }
 
 bool Widget::insertDataIntoDB(QString tableName, HeroInfo info)
@@ -394,8 +384,8 @@ bool Widget::insertDataIntoDB(QString tableName, HeroInfo info)
         }
     }
 
-    QString insertSql = QString("INSERT INTO %1 (id, name, styleName, faction, position, mount, weapon, birthAndDeathTime, posthumounsTitle, allusion, tips)"
-                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").arg(tableName);
+    QString insertSql = QString("INSERT INTO %1 (name, styleName, faction, position, mount, weapon, birthAndDeathTime, posthumounsTitle, allusion, tips)"
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").arg(tableName);
 
     QSqlQuery query(m_database);
     if (!query.prepare(insertSql)) {
@@ -403,7 +393,6 @@ bool Widget::insertDataIntoDB(QString tableName, HeroInfo info)
         return false;
     }
 
-    query.addBindValue(info.id());
     query.addBindValue(info.name());
     query.addBindValue(info.styleName());
     query.addBindValue(info.faction());
@@ -424,4 +413,12 @@ bool Widget::insertDataIntoDB(QString tableName, HeroInfo info)
 
     m_database.commit();
     return true;
+}
+
+void Widget::showAllTable()
+{
+    this->showTableData(TABLE_SHU);
+    this->showTableData(TABLE_WEI);
+    this->showTableData(TABLE_WU);
+    this->showTableData(TABLE_OTHER);
 }

@@ -39,8 +39,10 @@ private:
     void setMainTableView();
     void showTableData(QString tableName);
 
-    void deleteDataFromDB(QString tableName, QString id);
+    bool deleteDataFromDB(QString tableName, QString id);
     bool insertDataIntoDB(QString tableName, HeroInfo info);
+
+    void showAllTable();
 
 private:
     Ui::Widget *ui;

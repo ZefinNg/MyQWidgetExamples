@@ -34,7 +34,6 @@ InputInfoDialog::InputInfoDialog(QWidget *parent) :
     this->setFixedSize(850 ,370);
 
     //输入框设置默认提示
-    ui->lineEditID->setPlaceholderText(tr("必填"));
     ui->lineEditName->setPlaceholderText(tr("必填"));
 
 }
@@ -47,8 +46,7 @@ InputInfoDialog::~InputInfoDialog()
 void InputInfoDialog::onBtnConfirmClicked()
 {
     //检查必填项是否已填写
-    if (ui->lineEditID->text().isEmpty() ||
-            ui->lineEditName->text().isEmpty()) {
+    if (ui->lineEditName->text().isEmpty()) {
         QMessageBox::critical(this, tr("错误"), tr("必填项未填写"));
 
         return;
@@ -56,7 +54,6 @@ void InputInfoDialog::onBtnConfirmClicked()
 
     HeroInfo heroInfo;
 
-    heroInfo.setId(ui->lineEditID->text().toInt());
     heroInfo.setName(ui->lineEditName->text());
     heroInfo.setStyleName(ui->lineEditStyleName->text());
 
