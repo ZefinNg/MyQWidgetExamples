@@ -13,7 +13,15 @@ class InputInfoDialog : public QDialog
     Q_OBJECT
 
 public:
+    enum KINGDOMS_INDEX {
+        WEI = 0,
+        SHU,
+        WU,
+        OTHER
+    };
+
     explicit InputInfoDialog(QWidget *parent = 0);
+    InputInfoDialog(HeroInfo heroInfo, QWidget *parent = 0);
     ~InputInfoDialog();
 
 signals:
@@ -22,6 +30,9 @@ signals:
 private slots:
     void onBtnConfirmClicked();
     void onBtnCancelClicked();
+
+private:
+    void initView();
 
 private:
     Ui::InputInfoDialog *ui;

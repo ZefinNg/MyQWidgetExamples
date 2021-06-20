@@ -22,7 +22,7 @@ Widget::Widget(QWidget *parent) :
 
     //设置背景
     QPalette palette = this->palette();
-    palette.setBrush(QPalette::Background, QBrush(QPixmap(":/Images/ThreeKingdomsKill.jpg")));
+    palette.setBrush(QPalette::Background, QBrush(QPixmap(":/Resources/Images/ThreeKingdomsKill.jpg")));
     this->setPalette(palette);
 
     //创建数据库文件
@@ -45,14 +45,14 @@ Widget::Widget(QWidget *parent) :
     this->setFixedSize(1000, 600);
 
     //设置标题
-    this->setWindowTitle(tr("三国英雄信息一览表"));
+    this->setWindowTitle(tr("List of Heroes of the Three Kingdoms"));
 
     //表头数据
     QStringList headerList;
-    headerList << tr("索引") << tr("姓名") << tr("字")
-               << tr("势力") << tr("职位") << tr("坐骑")
-               << tr("武器") << tr("生卒时间") << tr("谥号")
-               << tr("相关典故") << tr("备注");
+    headerList << tr("Index") << tr("Name") << tr("StyleName")
+               << tr("Faction") << tr("Position") << tr("Mount")
+               << tr("Weapon") << tr("BirthAndDeathTime") << tr("PosthumounsTitle")
+               << tr("Allusion") << tr("Remarks");
     ui->mainTableWidget->setColumnCount(headerList.size());
 
     //For test
@@ -95,15 +95,15 @@ void Widget::onBtnDeleteData()
 
     //判断QTableWidget当前是否选中数据
     if (ui->mainTableWidget->selectedItems().count() == 0) {
-        QMessageBox::information(this, tr("提示"), tr("请选择一项数据"));
+        QMessageBox::information(this, tr("Tips"), tr("Please select a data"));
         return;
     }
     else {
-        if (kingdom == "蜀国")
+        if (kingdom == "The Shu Kingdom")
             tableName = TABLE_SHU;
-        else if (kingdom == "魏国")
+        else if (kingdom == "The Wei Kingdom")
             tableName = TABLE_WEI;
-        else if (kingdom == "吴国")
+        else if (kingdom == "The Wu Kingdom")
             tableName = TABLE_WU;
         else
             tableName = TABLE_OTHER;
@@ -121,7 +121,7 @@ void Widget::onBtnDeleteData()
         QMessageBox::information(this, tr("Tips"), tr("Delete data success."));
     }
     else
-        QMessageBox::critical(this, tr("错误"), tr("删除数据失败!"));
+        QMessageBox::critical(this, tr("Error"), tr("Failed to delete data!"));
 
 }
 
@@ -130,7 +130,8 @@ void Widget::onBtnInsertData()
     if (m_infoDialog == NULL) {
         m_infoDialog = new InputInfoDialog();
         connect(m_infoDialog, SIGNAL(dataReady(HeroInfo)), this, SLOT(onAddData(HeroInfo)));
-
+        m_infoDialog->move((this->width() - m_infoDialog->width())/2 + this->x(),
+                           (this->height() - m_infoDialog->height())/2 + this->y());
     }
 
     m_infoDialog->exec();
@@ -141,18 +142,39 @@ void Widget::onBtnInsertData()
 
 void Widget::onBtnModifyData()
 {
+    QString kingdom   = ui->mainTableWidget->selectedItems().at(3)->text();
+    QString id        = ui->mainTableWidget->selectedItems().at(0)->text();
+    QString tableName = "";
 
+    if (ui->mainTableWidget->selectedItems().count() == 0) {
+        QMessageBox::information(this, tr("Tips"), tr("Please select a data"));
+        return;
+    }
+    else {
+        if (kingdom == "The Shu Kingdom")
+            tableName = TABLE_SHU;
+        else if (kingdom == "The Wei Kingdom")
+            tableName = TABLE_WEI;
+        else if (kingdom == "The Wu Kingdom")
+            tableName = TABLE_WU;
+        else
+            tableName = TABLE_OTHER;
+    }
+
+    if (m_infoDialog == NULL) {
+
+    }
 }
 
 void Widget::onAddData(HeroInfo heroInfo)
 {
     QString tableName = "";
 
-    if (heroInfo.faction() == "蜀国")
+    if (heroInfo.faction() == "The Shu Kingdom")
         tableName = TABLE_SHU;
-    else if (heroInfo.faction() == "魏国")
+    else if (heroInfo.faction() == "The Wei Kingdom")
         tableName = TABLE_WEI;
-    else if (heroInfo.faction() == "吴国")
+    else if (heroInfo.faction() == "The Wu Kingdom")
         tableName = TABLE_WU;
     else
         tableName = TABLE_OTHER;
@@ -161,10 +183,10 @@ void Widget::onAddData(HeroInfo heroInfo)
         ui->mainTableWidget->setRowCount(0);
         this->showAllTable();
 
-        QMessageBox::information(this, tr("提示"), tr("添加数据成功"));
+        QMessageBox::information(this, tr("Tips"), tr("Data added successfully."));
     }
     else
-        QMessageBox::critical(this, tr("警告"), tr("添加数据失败"));
+        QMessageBox::critical(this, tr("Warning"), tr("Failed to add data."));
 }
 
 void Widget::createDBFile()
@@ -202,7 +224,7 @@ void Widget::createTable(QString &tableName)
                                        "birthAndDeathTime TEXT,"
                                        "posthumounsTitle TEXT,"
                                        "allusion TEXT,"
-                                       "tips TEXT"
+                                       "remarks TEXT"
                                        ");").arg(tableName));
 
     QSqlQuery query(m_database);

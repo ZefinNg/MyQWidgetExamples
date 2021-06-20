@@ -70,7 +70,7 @@
        </size>
       </property>
       <property name="text">
-       <string>英雄信息：</string>
+       <string>Hero information：</string>
       </property>
      </widget>
      <widget class="QWidget" name="layoutWidget">
@@ -98,7 +98,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>姓名：</string>
+          <string>Name：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -120,7 +120,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>字：</string>
+          <string>StyleName：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -139,7 +139,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>势力：</string>
+          <string>Faction：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -161,7 +161,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>职位：</string>
+          <string>Position：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -183,7 +183,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>坐骑：</string>
+          <string>Mount：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -205,7 +205,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>武器：</string>
+          <string>Weapon：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -227,7 +227,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>生卒时间：</string>
+          <string>BirthAndDeathTime：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -249,7 +249,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>谥号：</string>
+          <string>PosthumounsTitle：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -271,7 +271,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>相关典故：</string>
+          <string>Allusion：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -293,7 +293,7 @@
           <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
-          <string>备注：</string>
+          <string>Remarks：</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

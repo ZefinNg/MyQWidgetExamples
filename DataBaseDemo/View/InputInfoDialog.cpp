@@ -5,37 +5,53 @@
 
 #include <QDebug>
 
+#define WEI_KINGDOM   "The Wei Kingdom"
+#define SHU_KINGDOM   "The Shu Kingdom"
+#define WU_KINGDOM    "The Wu Kingdom"
+#define OTHER_KINGDOM "The Other Kingdom"
+
 InputInfoDialog::InputInfoDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::InputInfoDialog)
 {
     ui->setupUi(this);
 
-    QPalette palette = this->palette();
-    palette.setBrush(QPalette::Background, QBrush(QPixmap(":/Images/HerosInfo.jpg")));
-    this->setPalette(palette);
+    this->initView();
 
-    connect(ui->btnConfirm, SIGNAL(clicked()), this, SLOT(onBtnConfirmClicked()));
-    connect(ui->btnCancel,  SIGNAL(clicked()), this, SLOT(onBtnCancelClicked()));
+    QList<QLabel *> labelList = this->findChildren<QLabel *>();
+    foreach (QLabel *each, labelList) {
+        each->setWordWrap(true);
+    }
+}
 
-    QStringList kingdoms;
-    kingdoms << tr("魏国") << tr("蜀国") << tr("吴国") << tr("群雄");
-    ui->comboBoxKingdoms->addItems(kingdoms);
+InputInfoDialog::InputInfoDialog(HeroInfo heroInfo, QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::InputInfoDialog)
+{
+    ui->setupUi(this);
 
-    ui->frame->setStyleSheet("QLabel {"
-                                 "font-size: 18px;"
-                                 "color: white;"
-                             "}"
-                             "QLabel#labelTitle {"
-                                 "font-size: 26px;"
-                                 "color: white;"
-                             "}");
+    this->initView();
 
-    this->setFixedSize(850 ,370);
+    if (heroInfo.faction() == WEI_KINGDOM)
+        ui->comboBoxKingdoms->setCurrentIndex(WEI);
+    else if (heroInfo.faction() == SHU_KINGDOM)
+        ui->comboBoxKingdoms->setCurrentIndex(SHU);
+    else if (heroInfo.faction() == WU_KINGDOM)
+        ui->comboBoxKingdoms->setCurrentIndex(WU);
+    else
+        ui->comboBoxKingdoms->setCurrentIndex(OTHER);
 
-    //输入框设置默认提示
-    ui->lineEditName->setPlaceholderText(tr("必填"));
+    ui->lineEditName->setText(heroInfo.name());
+    ui->lineEditStyleName->setText(heroInfo.styleName());
+    ui->lineEditPosition->setText(heroInfo.position());
 
+    ui->lineEditMount->setText(heroInfo.mount());
+    ui->lineEditWeapon->setText(heroInfo.weapon());
+    ui->lineEditBirthAndDeathTime->setText(heroInfo.birthAndDeathTime());
+    ui->lineEditPosthumousTitle->setText(heroInfo.posthumounsTitle());
+
+    ui->lineEditAllusion->setText(heroInfo.allusion());
+    ui->lineEditTips->setText(heroInfo.tips());
 }
 
 InputInfoDialog::~InputInfoDialog()
@@ -45,9 +61,9 @@ InputInfoDialog::~InputInfoDialog()
 
 void InputInfoDialog::onBtnConfirmClicked()
 {
-    //检查必填项是否已填写
+    //检查Required项是否已填写
     if (ui->lineEditName->text().isEmpty()) {
-        QMessageBox::critical(this, tr("错误"), tr("必填项未填写"));
+        QMessageBox::critical(this, tr("Error"), tr("Required fields are not filled."));
 
         return;
     }
@@ -58,12 +74,11 @@ void InputInfoDialog::onBtnConfirmClicked()
     heroInfo.setStyleName(ui->lineEditStyleName->text());
 
     switch (ui->comboBoxKingdoms->currentIndex()) {
-    case 0: heroInfo.setFaction("魏国"); break;
-    case 1: heroInfo.setFaction("蜀国"); break;
-    case 2: heroInfo.setFaction("吴国"); break;
-    case 3: heroInfo.setFaction("群雄"); break;
-    default:
-        break;
+    case 0:  heroInfo.setFaction(WEI_KINGDOM);    break;
+    case 1:  heroInfo.setFaction(SHU_KINGDOM);    break;
+    case 2:  heroInfo.setFaction(WU_KINGDOM);     break;
+    case 3:
+    default: heroInfo.setFaction(OTHER_KINGDOM);  break;
     }
 
     heroInfo.setPosition(ui->lineEditPosition->text());
@@ -82,4 +97,32 @@ void InputInfoDialog::onBtnConfirmClicked()
 void InputInfoDialog::onBtnCancelClicked()
 {
     this->close();
+}
+
+void InputInfoDialog::initView()
+{
+    QPalette palette = this->palette();
+    palette.setBrush(QPalette::Background, QBrush(QPixmap(":/Resources/Images/HerosInfo.jpg")));
+    this->setPalette(palette);
+
+    connect(ui->btnConfirm, SIGNAL(clicked()), this, SLOT(onBtnConfirmClicked()));
+    connect(ui->btnCancel,  SIGNAL(clicked()), this, SLOT(onBtnCancelClicked()));
+
+    QStringList kingdoms;
+    kingdoms << tr("The Wei Kingdom") << tr("The Shu Kingdom") << tr("The Wu Kingdom") << tr("The other Kingdoms");
+    ui->comboBoxKingdoms->addItems(kingdoms);
+
+    ui->frame->setStyleSheet("QLabel {"
+                                 "font-size: 18px;"
+                                 "color: white;"
+                             "}"
+                             "QLabel#labelTitle {"
+                                 "font-size: 26px;"
+                                 "color: white;"
+                             "}");
+
+    this->setFixedSize(850 ,370);
+
+    //输入框设置默认Tips
+    ui->lineEditName->setPlaceholderText(tr("Required"));
 }

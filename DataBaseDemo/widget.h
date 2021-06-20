@@ -21,6 +21,13 @@ class Widget : public QWidget
     Q_OBJECT
 
 public:
+    enum INFO_INDEX {
+        ID = 0,   NAME,                 STYLE_NAME,
+        FACTION,  POSITION,             MOUNT,
+        WEAPON,   BIRTH_AND_DEATH_TIME, POSTHUMOUNS_TITLE,
+        ALLUSION, REMARKS
+    };
+
     explicit Widget(QWidget *parent = 0);
     ~Widget();
 
