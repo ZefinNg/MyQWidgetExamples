@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/background.png</file>
+        <file>images/switch_off.png</file>
+        <file>images/switch_on.png</file>
+        <file>images/textBrowserBackground.png</file>
+    </qresource>
+</RCC>
