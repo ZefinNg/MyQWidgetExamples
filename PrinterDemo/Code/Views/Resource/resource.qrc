@@ -4,5 +4,8 @@
         <file>images/switch_off.png</file>
         <file>images/switch_on.png</file>
         <file>images/textBrowserBackground.png</file>
+        <file>images/button_release.png</file>
+        <file>images/button_press.png</file>
+        <file>images/drop_down.png</file>
     </qresource>
 </RCC>

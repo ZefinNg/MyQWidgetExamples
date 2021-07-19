@@ -16,11 +16,6 @@ MainWidget::MainWidget(QWidget *parent) :
 
 //    ui->horizontalMagnificationComboBox->setView(new QListView());
 
-    ui->switchButton->setStyleSheet("QPushButton{border-image: url(:/images/switch_off.png);}");
-
-    //设置贴图后控件不会出现虚线框
-    this->setStyleSheet("QWidget:focus{outline: none;}");
-
     //设置背景图
     QPalette mainWidgetPalette;
     QPixmap backgroundPixmap(":/images/background.png");
@@ -29,12 +24,35 @@ MainWidget::MainWidget(QWidget *parent) :
 
     //设置QTextBrowser为半透明
     ui->textBrowser->setStyleSheet("QTextBrowser{background-color:rgb(240, 240, 240, 125)};");
+    //设置贴图后控件不会出现虚线框
+    QString qssFocus = "QWidget:focus{outline: none;}";
 
+    //设置打印按钮贴图
+    QString qssButton = "QPushButton{border-image:url(:/images/button_release.png);}"\
+                        "QPushButton:Pressed{border-image:url(:/images/button_press.png)}";
+
+    //设置下拉框的箭头贴图
+    QString qssDropDown = "QComboBox::drop-down {"\
+                          "image:url(:/images/drop_down.png);"\
+                          "width: 40px;}";
+
+    this->setStyleSheet(qssFocus + qssButton + qssDropDown);
+
+    //设置开关按钮贴图
+    ui->switchButton->setStyleSheet("QPushButton{border-image: url(:/images/switch_off.png);}");
+
+    qDebug() << this->styleSheet();
+
+    //设置下拉框的贴图
+
+
+    //设置按钮可正常出发clicked(bool)信号
     ui->switchButton->setCheckable(true);
-    connect(ui->switchButton, SIGNAL(clicked(bool)), this, SLOT(onSwtichButtonClicked(bool)));
-    connect(ui->printOathButton, SIGNAL(clicked()), this, SLOT(onPrintOathButtonClicked()));
-    connect(ui->printData2Button, SIGNAL(clicked()), this, SLOT(onPrintData2ButtonClicked()));
-    connect(ui->printCopywritingButton, SIGNAL(clicked()), this, SLOT(onPrintCopyWritingButtonClicked()));
+
+    connect(ui->switchButton,           SIGNAL(clicked(bool)), this, SLOT(onSwtichButtonClicked(bool)));
+    connect(ui->printOathButton,        SIGNAL(clicked()),     this, SLOT(onPrintOathButtonClicked()));
+    connect(ui->printData2Button,       SIGNAL(clicked()),     this, SLOT(onPrintData2ButtonClicked()));
+    connect(ui->printCopywritingButton, SIGNAL(clicked()),     this, SLOT(onPrintCopyWritingButtonClicked()));
 
     connect(&m_printTimer, SIGNAL(timeout()), this, SLOT(onPrintTimerTimeout()));
 }
