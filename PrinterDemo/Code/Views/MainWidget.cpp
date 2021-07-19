@@ -14,8 +14,6 @@ MainWidget::MainWidget(QWidget *parent) :
     m_mainWidgetController = new MainWidgetController(this);
     m_printTimer.setInterval(800);
 
-//    ui->horizontalMagnificationComboBox->setView(new QListView());
-
     //设置背景图
     QPalette mainWidgetPalette;
     QPixmap backgroundPixmap(":/images/background.png");
@@ -34,7 +32,9 @@ MainWidget::MainWidget(QWidget *parent) :
     //设置下拉框的箭头贴图
     QString qssDropDown = "QComboBox::drop-down {"\
                           "image:url(:/images/drop_down.png);"\
-                          "width: 40px;}";
+                          "width: 40px;}"\
+                          "QComboBox QAbstractItemView::item{height:40px;}"\
+                          "QComboBox{font-size:20pt;}";
 
     this->setStyleSheet(qssFocus + qssButton + qssDropDown);
 
@@ -43,8 +43,10 @@ MainWidget::MainWidget(QWidget *parent) :
 
     qDebug() << this->styleSheet();
 
-    //设置下拉框的贴图
-
+    //设置下拉框的选项高度
+    ui->horizontalMagnificationComboBox->setView(new QListView());
+    ui->verticalMagnificationComboBox->setView(new QListView());
+    ui->rotationAngleCombox->setView(new QListView());
 
     //设置按钮可正常出发clicked(bool)信号
     ui->switchButton->setCheckable(true);
