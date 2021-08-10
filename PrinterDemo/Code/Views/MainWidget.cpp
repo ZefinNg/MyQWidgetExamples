@@ -74,11 +74,6 @@ void MainWidget::onSwtichButtonClicked(bool isChecked)
 #endif
             ui->textBrowser->append("[Info]Opening printer serial port successfully.");
             ui->switchButton->setStyleSheet("QPushButton{border-image: url(:/images/switch_on.png);}");
-
-            if (m_mainWidgetController->initSerialPort())
-                ui->textBrowser->append("[Info]Init serial port successfully.");
-            else
-                ui->textBrowser->append("[Error]Init serial port failed.");
         }
         else
             ui->textBrowser->append("[Error]Opening printer serial port failed.");

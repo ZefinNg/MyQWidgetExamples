@@ -4,67 +4,90 @@
 MainWidgetModel::MainWidgetModel(QObject *parent) :
     QObject(parent)
 {
-    m_portName = "/dev/ttymxc3";
-    m_serialPort = NULL;
     m_alignMode  = ALIGN_LEFT;
-    m_gb2312 = QTextCodec::codecForName("GB2312");
-    m_serialPort = new QextSerialPort();
+    m_printerCommunicaiton = new PrinterCommunication();
+    m_printThread = new QThread();
+    m_printerCommunicaiton->moveToThread(m_printThread);
 
-    m_serialPort->setPortName(m_portName);
-    m_serialPort->setBaudRate(BAUD9600);
-    m_serialPort->setDataBits(DATA_8);
-    m_serialPort->setParity(PAR_NONE); //设置校验
-    m_serialPort->setStopBits(STOP_1);
-    m_serialPort->setFlowControl(FLOW_OFF); //设置流量控制
-    m_serialPort->setTimeout(200);
-
-    connect(m_serialPort, SIGNAL(readyRead()), this, SLOT(onReceivedData()));
+    connect(m_printThread, SIGNAL(started()), m_printerCommunicaiton, SLOT(doWork()));
 }
 
 MainWidgetModel::~MainWidgetModel()
 {
-    if (m_serialPort != NULL) {
-        m_serialPort->deleteLater();
-        m_serialPort = NULL;
+    if (m_printerCommunicaiton != NULL) {
+        m_printerCommunicaiton->deleteLater();
+        m_printerCommunicaiton = NULL;
+    }
+
+    if (m_printThread != NULL) {
+        m_printThread->quit();
+        m_printThread->wait(500);
+        m_printThread->deleteLater();
+        m_printThread = NULL;
     }
 }
 
 void MainWidgetModel::setDevicePath(QString devicePath)
 {
-    m_portName = devicePath;
-    m_serialPort->setPortName(m_portName);
+    m_printerCommunicaiton->setDevicePath(devicePath);
 }
 
 bool MainWidgetModel::openSerialPort(QIODevice::OpenModeFlag mode)
 {
-    return m_serialPort->open(mode);
+    if (m_printerCommunicaiton->openSerialPort(mode)) {
+        this->initSerialPort();
+        return true;
+    }
+
+    return false;
 }
 
 void MainWidgetModel::closeSerialPort()
 {
-    m_serialPort->close();
+    m_printerCommunicaiton->closeSerialPort();
 }
 
 bool MainWidgetModel::isSerialPortOpen()
 {
-    return m_serialPort->isOpen();
+    return m_printerCommunicaiton->isSerialPortOpen();
 }
 
-bool MainWidgetModel::initSerialPort()
+void MainWidgetModel::initSerialPort()
 {
-    QString cmd = INIT_PRINTER;
-    int writeResult = m_serialPort->write(cmd.toLatin1().data(), STRLEN(INIT_PRINTER));
+    TransUnit transUnit;
+    transUnit.setUnitType(TransUnit::CONFIG_TYPE);
+    transUnit.setByteArray(INIT_PRINTER);
 
-    if (writeResult != cmd.size())
-        return false;
+    m_printerCommunicaiton->enqueueTransUnit(transUnit);
 
-    return true;
+    if (!m_printThread->isRunning())
+        m_printThread->start();
 }
 
+void MainWidgetModel::queryPrinterStatus()
+{
+    TransUnit transUnit;
+    transUnit.setUnitType(TransUnit::QUERY_STATUS);
+    transUnit.setByteArray(QUERY_TRANSPORT_DEVICE_STATUS);
+    m_printerCommunicaiton->enqueueTransUnit(transUnit);
+
+    transUnit.setUnitType(TransUnit::QUERY_OFFLINE);
+    transUnit.setByteArray(QUERY_OFFLINE_STATUS);
+    m_printerCommunicaiton->enqueueTransUnit(transUnit);
+
+    transUnit.setUnitType(TransUnit::QUERY_ERROR);
+    transUnit.setByteArray(QUERY_ERROR_STATUS);
+    m_printerCommunicaiton->enqueueTransUnit(transUnit);
+
+    transUnit.setUnitType(TransUnit::QUERY_PAPER);
+    transUnit.setByteArray(QUERY_PAPER_STATUS);
+    m_printerCommunicaiton->enqueueTransUnit(transUnit);
+}
+
+#if 0
 bool MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
 {
     int length = this->calculateStringLength(lineData);
-
     int startPosition = 0;
 
     switch (alignMode) {
@@ -286,6 +309,7 @@ void MainWidgetModel::printBlankLine(int lines)
     for (int i = 0; i < lines; i++)
         m_serialPort->write(CMD_WRAP, STRLEN(CMD_WRAP));
 }
+#endif
 
 int MainWidgetModel::calculateStringLength(QString text)
 {

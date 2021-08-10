@@ -4,8 +4,10 @@
 #include <QObject>
 #include <QTextCodec>
 #include <QStringList>
+#include <QThread>
+
 #include "PrinterCmd.h"
-#include "SerialPort/qextserialport.h"
+#include "Utils/PrinterCommunication.h"
 
 class MainWidgetModel : public QObject
 {
@@ -34,8 +36,9 @@ public:
 
     bool isSerialPortOpen();
 
-    bool initSerialPort();
+    void initSerialPort();
     bool printData(QString lineData, ALIGN_MODE alignMode);
+#if 0
     int writeData2SerialPort(QByteArray data);
 
     bool setHorizontalMagnification(int times);
@@ -52,22 +55,24 @@ public:
     bool setAntiWhite(bool onOff);
 
     void printBlankLine(int lines);
+#endif
 
 signals:
     void receviedData(QString receviedData);
 
 private slots:
-    void onReceivedData();
+//    void onReceivedData();
 
 private:
+    void queryPrinterStatus();
+
     int calculateStringLength(QString text);
     bool isChineseChar(QChar character);
 
 private:
-    QString        m_portName;
-    QextSerialPort *m_serialPort;
+    QThread *m_printThread;
+    PrinterCommunication *m_printerCommunicaiton;
     enum ALIGN_MODE m_alignMode;
-    QTextCodec     *m_gb2312;
 };
 
 #endif // MAINWIDGETMODEL_H

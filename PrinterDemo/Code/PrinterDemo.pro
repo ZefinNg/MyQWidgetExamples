@@ -15,22 +15,26 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     Views/MainWidget.cpp \
-    Models/SerialPort/qextserialport.cpp \
-    Models/SerialPort/posix_qextserialport.cpp \
-    Models/SerialPort/qextserialbase.cpp \
-    Models/SerialPort/qextserialport_unix.cpp \
+    Models/Utils/SerialPort/qextserialport.cpp \
+    Models/Utils/SerialPort/posix_qextserialport.cpp \
+    Models/Utils/SerialPort/qextserialbase.cpp \
+    Models/Utils/SerialPort/qextserialport_unix.cpp \
+    Models/MainWidgetModel.cpp \
     Controllers/MainWidgetController.cpp \
-    Models/MainWidgetModel.cpp
+    Models/Utils/PrinterCommunication.cpp \
+    Models/Domains/TransUnit.cpp
 
 HEADERS  += Views/MainWidget.h \
-    Models/SerialPort/qextserialport.h \
-    Models/SerialPort/posix_qextserialport.h \
-    Models/SerialPort/qextserialbase.h \
-    Models/SerialPort/qextserialport_global.h \
-    Models/SerialPort/qextserialport_p.h \
-    Controllers/MainWidgetController.h \
+    Models/Utils/SerialPort/qextserialport.h \
+    Models/Utils/SerialPort/posix_qextserialport.h \
+    Models/Utils/SerialPort/qextserialbase.h \
+    Models/Utils/SerialPort/qextserialport_global.h \
+    Models/Utils/SerialPort/qextserialport_p.h \
     Models/MainWidgetModel.h \
-    Models/PrinterCmd.h
+    Models/PrinterCmd.h \
+    Controllers/MainWidgetController.h \
+    Models/Utils/PrinterCommunication.h \
+    Models/Domains/TransUnit.h
 
 FORMS    += Views/MainWidget.ui
 

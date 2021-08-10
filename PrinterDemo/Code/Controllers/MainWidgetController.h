@@ -14,7 +14,7 @@ public:
     bool openSerialPort(QIODevice::OpenModeFlag mode, QString devicePath = "/dev/ttymxc3");
     void closeSerialPort();
 
-    bool initSerialPort();
+    void initSerialPort();
 
     int writeData2SerialPort(QString printerData);
 
