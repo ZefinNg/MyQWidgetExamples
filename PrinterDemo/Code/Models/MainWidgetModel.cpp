@@ -58,7 +58,7 @@ void MainWidgetModel::initSerialPort()
     transUnit.setUnitType(TransUnit::CONFIG_TYPE);
     transUnit.setByteArray(INIT_PRINTER);
 
-    m_printerCommunicaiton->enqueueTransUnit(transUnit);
+    m_printerCommunicaiton->appendTransUnit(transUnit);
 
     if (!m_printThread->isRunning())
         m_printThread->start();
@@ -69,24 +69,24 @@ void MainWidgetModel::queryPrinterStatus()
     TransUnit transUnit;
     transUnit.setUnitType(TransUnit::QUERY_STATUS);
     transUnit.setByteArray(QUERY_TRANSPORT_DEVICE_STATUS);
-    m_printerCommunicaiton->enqueueTransUnit(transUnit);
+    m_printerCommunicaiton->appendTransUnit(transUnit);
 
     transUnit.setUnitType(TransUnit::QUERY_OFFLINE);
     transUnit.setByteArray(QUERY_OFFLINE_STATUS);
-    m_printerCommunicaiton->enqueueTransUnit(transUnit);
+    m_printerCommunicaiton->appendTransUnit(transUnit);
 
     transUnit.setUnitType(TransUnit::QUERY_ERROR);
     transUnit.setByteArray(QUERY_ERROR_STATUS);
-    m_printerCommunicaiton->enqueueTransUnit(transUnit);
+    m_printerCommunicaiton->appendTransUnit(transUnit);
 
     transUnit.setUnitType(TransUnit::QUERY_PAPER);
     transUnit.setByteArray(QUERY_PAPER_STATUS);
-    m_printerCommunicaiton->enqueueTransUnit(transUnit);
+    m_printerCommunicaiton->appendTransUnit(transUnit);
 }
 
-#if 0
-bool MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
+void MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
 {
+#if 0
     int length = this->calculateStringLength(lineData);
     int startPosition = 0;
 
@@ -108,9 +108,19 @@ bool MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
     m_serialPort->write(m_gb2312->fromUnicode(lineData).data());
     m_serialPort->write(CMD_ENTER, STRLEN(CMD_ENTER));
     m_serialPort->write(CMD_WRAP, STRLEN(CMD_WRAP));
-    return true;
-}
+#else
+    TransUnit transUnit;
+    transUnit.setUnitType(TransUnit::SNED_DATA);
+    transUnit.setByteArray(lineData.toLatin1());
 
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+
+    if (!m_printThread->isRunning())
+        m_printThread->start();
+
+#endif
+}
+#if 0
 int MainWidgetModel::writeData2SerialPort(QByteArray data)
 {
     m_serialPort->write(QUERY_PAPER_STATUS, STRLEN(QUERY_PAPER_STATUS));

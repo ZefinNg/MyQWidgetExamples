@@ -37,7 +37,7 @@ public:
     bool isSerialPortOpen();
 
     void initSerialPort();
-    bool printData(QString lineData, ALIGN_MODE alignMode);
+    void printData(QString lineData, ALIGN_MODE alignMode);
 #if 0
     int writeData2SerialPort(QByteArray data);
 

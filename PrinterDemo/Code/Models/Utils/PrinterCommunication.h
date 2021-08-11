@@ -26,7 +26,7 @@ public:
 
     bool isSerialPortOpen();
 
-    void enqueueTransUnit(TransUnit tarnsUnit);
+    void appendTransUnit(TransUnit transUnit);
 
     qint64 write(const QByteArray &data);
     qint64 write(const char *data, qint64 len);
@@ -40,6 +40,7 @@ private slots:
     void dataReceived();
 
 private:
+    void prependTransUnit(TransUnit transUnit);
     void handleReceivedData(QByteArray receivedData);
 
 private:
@@ -51,7 +52,7 @@ private:
     bool m_isRunning;
     bool m_canSend;
 
-    QQueue<TransUnit> m_dataQueue;
+    QList<TransUnit>  m_dataList;
     QByteArray        m_receivedData;
     TransUnit         m_currentTransUnit;
 

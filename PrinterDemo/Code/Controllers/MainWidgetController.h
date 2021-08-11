@@ -26,7 +26,7 @@ public:
 
     bool setAntiWhite(bool onOff);
 
-    bool printData(QString lineData, MainWidgetModel::ALIGN_MODE alignMode = MainWidgetModel::ALIGN_CENTER);
+    void printData(QString lineData, MainWidgetModel::ALIGN_MODE alignMode = MainWidgetModel::ALIGN_CENTER);
 
     void printBlankLine(int lines);
 

@@ -63,10 +63,9 @@ bool MainWidgetController::setAntiWhite(bool onOff)
     return true;
 }
 
-bool MainWidgetController::printData(QString lineData, MainWidgetModel::ALIGN_MODE alignMode)
+void MainWidgetController::printData(QString lineData, MainWidgetModel::ALIGN_MODE alignMode)
 {
-//    return m_mainWidgetModel->printData(lineData, alignMode);
-    return true;
+    m_mainWidgetModel->printData(lineData, alignMode);
 }
 
 void MainWidgetController::printBlankLine(int lines)

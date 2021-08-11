@@ -10,7 +10,7 @@ PrinterCommunication::PrinterCommunication(QObject *parent) : QObject(parent)
     m_isRunning  = false;
     m_canSend    = true;
 
-    m_dataQueue.clear();
+    m_dataList.clear();
     m_receivedData.clear();
 
     m_serialPort->setBaudRate(BAUD9600);
@@ -53,10 +53,10 @@ bool PrinterCommunication::isSerialPortOpen()
     return m_serialPort->isOpen();
 }
 
-void PrinterCommunication::enqueueTransUnit(TransUnit transUnit)
+void PrinterCommunication::appendTransUnit(TransUnit transUnit)
 {
     m_mutex.lock();
-    m_dataQueue.enqueue(transUnit);
+    m_dataList.append(transUnit);
     m_mutex.unlock();
 }
 
@@ -73,13 +73,15 @@ qint64 PrinterCommunication::write(const char *data, qint64 len)
 void PrinterCommunication::doWork()
 {
     m_isRunning = true;
+    int writeResult = -1;
+    int dataLength  = 0;
 
     qDebug() << "[Info]Printer communication thread starts.";
     while (m_isRunning) {
-        if (!m_dataQueue.isEmpty()) {
+        if (!m_dataList.isEmpty()) {
             if (m_canSend) {
                 m_mutex.lock();
-                m_currentTransUnit = m_dataQueue.dequeue();
+                m_currentTransUnit = m_dataList.takeFirst();
                 m_mutex.unlock();
             }
 
@@ -87,11 +89,21 @@ void PrinterCommunication::doWork()
                 m_canSend = false;
             }
 
-            qDebug() << __FUNCTION__ << __LINE__ << "size:" << m_currentTransUnit.byteArray().size();
-            m_serialPort->write(m_currentTransUnit.byteArray().data(), m_currentTransUnit.byteArray().size());
+            dataLength = m_currentTransUnit.byteArray().size();
+            qDebug() << __FUNCTION__ << __LINE__ << "size:" << dataLength;
+            if (m_currentTransUnit.unitType() == TransUnit::SNED_DATA)
+                writeResult = m_serialPort->write(m_gb2312->fromUnicode(QString(m_currentTransUnit.byteArray())).data());
+            else
+                writeResult = m_serialPort->write(m_currentTransUnit.byteArray().data(), m_currentTransUnit.byteArray().size());
+
+            if (writeResult != dataLength) {
+                this->prependTransUnit(m_currentTransUnit);
+                m_canSend = true;
+                qDebug() << "[Trace]Write error, prepend transUnit to resend.";
+            }
         }
-        else
-            break;
+//        else
+//            break;
 
         usleep(10 * 1000);
     }
@@ -102,10 +114,18 @@ void PrinterCommunication::doWork()
 void PrinterCommunication::dataReceived()
 {
     if (m_serialPort->isReadable() && m_serialPort->bytesAvailable() > 0) {
-        m_receivedData = m_serialPort->readAll();
+        m_receivedData = m_serialPort->readAll().toHex();
 
+        qDebug() << "[Info]Received data:" << m_receivedData;
         this->handleReceivedData(m_receivedData);
     }
+}
+
+void PrinterCommunication::prependTransUnit(TransUnit transUnit)
+{
+    m_mutex.lock();
+    m_dataList.prepend(transUnit);
+    m_mutex.unlock();
 }
 
 void PrinterCommunication::handleReceivedData(QByteArray receivedData)

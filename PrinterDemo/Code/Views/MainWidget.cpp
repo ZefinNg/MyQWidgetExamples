@@ -88,6 +88,7 @@ void MainWidget::onSwtichButtonClicked(bool isChecked)
 
 void MainWidget::onPrintOathButtonClicked()
 {
+#if 0
     if (m_printTimer.isActive()) {
         ui->textBrowser->append("当前正在打印，请稍等……");
         return;
@@ -98,19 +99,9 @@ void MainWidget::onPrintOathButtonClicked()
 //    m_mainWidgetController->writeData2SerialPort("HelloWorld");
     ui->textBrowser->append("守夜人誓言打印中……");
     m_printTimer.start();
-
-//    m_mainWidgetController->printData("长夜将至，我从今开始守望，至死方休。");
-//    m_mainWidgetController->printData("我将不娶妻，不封地，不生子。");
-//    m_mainWidgetController->printData("我将不戴王冠，不争荣宠。");
-//    m_mainWidgetController->printData("我将尽忠职守，生死于斯。");
-//    m_mainWidgetController->printData("我是黑暗中的利剑，");
-//    m_mainWidgetController->printData("长城上的守卫，");
-//    m_mainWidgetController->printData("抵御寒冷的烈焰，");
-//    m_mainWidgetController->printData("破晓时分的光线，");
-//    m_mainWidgetController->printData("唤醒眠者的号角，");
-//    m_mainWidgetController->printData("守护王国的坚盾。");
-//    m_mainWidgetController->printData("我将生命与荣耀献给守夜人，");
-//    m_mainWidgetController->printData("今夜如此，夜夜皆然。");
+#else
+    m_mainWidgetController->printData("ABCDEFGHIJKLMN");
+#endif
 }
 
 void MainWidget::onPrintData2ButtonClicked()
