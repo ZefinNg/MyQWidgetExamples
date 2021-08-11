@@ -35,6 +35,7 @@ signals:
 
 public slots:
     void doWork();
+    void quitWork();
 
 private slots:
     void dataReceived();

@@ -9,7 +9,8 @@ MainWidgetModel::MainWidgetModel(QObject *parent) :
     m_printThread = new QThread();
     m_printerCommunicaiton->moveToThread(m_printThread);
 
-    connect(m_printThread, SIGNAL(started()), m_printerCommunicaiton, SLOT(doWork()));
+    connect(m_printThread, SIGNAL(started()),  m_printerCommunicaiton, SLOT(doWork()));
+    connect(m_printThread, SIGNAL(finished()), m_printerCommunicaiton, SLOT(quitWork()));
 }
 
 MainWidgetModel::~MainWidgetModel()
@@ -112,11 +113,23 @@ void MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
     TransUnit transUnit;
     transUnit.setUnitType(TransUnit::SNED_DATA);
     transUnit.setByteArray(lineData.toLatin1());
-
     m_printerCommunicaiton->appendTransUnit(transUnit);
 
-    if (!m_printThread->isRunning())
+    transUnit.setUnitType(TransUnit::PAPER_FEED);
+    transUnit.setByteArray(CMD_ENTER);
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+
+    transUnit.setUnitType(TransUnit::PAPER_FEED);
+    transUnit.setByteArray(CMD_WRAP);
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+
+    printf("%s %d Thread is running:%d\n", __FUNCTION__, __LINE__, m_printThread->isRunning());
+
+    if (!m_printThread->isRunning() || m_printThread->isFinished()) {
+        printf("Thread ready to start.\n");
         m_printThread->start();
+    }
+    printf("%s %d Thread is running:%d\n", __FUNCTION__, __LINE__, m_printThread->isRunning());
 
 #endif
 }

@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = PrinterDemo
 TEMPLATE = app
 
-DEFINES += ENABLE_ARM
+#DEFINES += ENABLE_ARM
 
 SOURCES += main.cpp\
     Views/MainWidget.cpp \

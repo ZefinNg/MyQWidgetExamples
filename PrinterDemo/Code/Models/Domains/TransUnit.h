@@ -13,6 +13,7 @@ public:
         QUERY_ERROR,
         QUERY_PAPER,
         CONFIG_TYPE,
+        PAPER_FEED,
         SNED_DATA
     };
 

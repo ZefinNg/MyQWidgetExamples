@@ -76,8 +76,10 @@ void PrinterCommunication::doWork()
     int writeResult = -1;
     int dataLength  = 0;
 
-    qDebug() << "[Info]Printer communication thread starts.";
+//    qDebug() << "[Info]Printer communication thread starts.";
+    printf("[Info]Printer communication thread starts.\n");
     while (m_isRunning) {
+        printf("Thread is running.\n");
         if (!m_dataList.isEmpty()) {
             if (m_canSend) {
                 m_mutex.lock();
@@ -102,13 +104,21 @@ void PrinterCommunication::doWork()
                 qDebug() << "[Trace]Write error, prepend transUnit to resend.";
             }
         }
-//        else
-//            break;
+        else
+            break;
 
         usleep(10 * 1000);
     }
 
-    qDebug() << "[Info]Printer communication thread quit.";
+//    qDebug() << "[Info]Printer communication thread quit.";
+    printf("[Info]Printer communication thread quit.\n");
+    return;
+}
+
+void PrinterCommunication::quitWork()
+{
+    m_isRunning = false;
+    printf("%s %d\n", __FUNCTION__, __LINE__);
 }
 
 void PrinterCommunication::dataReceived()
