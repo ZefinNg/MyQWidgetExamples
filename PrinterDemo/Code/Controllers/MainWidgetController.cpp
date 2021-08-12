@@ -35,32 +35,27 @@ int MainWidgetController::writeData2SerialPort(QString printerData)
 
 bool MainWidgetController::setHorizontalMagnification(int times)
 {
-//    return m_mainWidgetModel->setHorizontalMagnification(times);
-    return true;
+    return m_mainWidgetModel->setHorizontalMagnification(times);
 }
 
 bool MainWidgetController::setVerticalMagnification(int times)
 {
-//    return m_mainWidgetModel->setVerticalMagnification(times);
-    return true;
+    return m_mainWidgetModel->setVerticalMagnification(times);
 }
 
 bool MainWidgetController::setHorizontalVerticalMagnification(int times)
 {
-//    return m_mainWidgetModel->setHorizontalVerticalMagnification(times);
-    return true;
+    return m_mainWidgetModel->setHorizontalVerticalMagnification(times);
 }
 
-bool MainWidgetController::setRotationAngle(MainWidgetModel::ROTATION_ANGLE angle)
+void MainWidgetController::setRotationAngle(MainWidgetModel::ROTATION_ANGLE angle)
 {
-//    return m_mainWidgetModel->setRotationAngle(angle);
-    return true;
+    m_mainWidgetModel->setRotationAngle(angle);
 }
 
-bool MainWidgetController::setAntiWhite(bool onOff)
+void MainWidgetController::setAntiWhite(bool onOff)
 {
-//    return m_mainWidgetModel->setAntiWhite(onOff);
-    return true;
+    m_mainWidgetModel->setAntiWhite(onOff);
 }
 
 void MainWidgetController::printData(QString lineData, MainWidgetModel::ALIGN_MODE alignMode)
@@ -70,5 +65,5 @@ void MainWidgetController::printData(QString lineData, MainWidgetModel::ALIGN_MO
 
 void MainWidgetController::printBlankLine(int lines)
 {
-//    return m_mainWidgetModel->printBlankLine(lines);
+    m_mainWidgetModel->printBlankLine(lines);
 }

@@ -88,7 +88,6 @@ void MainWidget::onSwtichButtonClicked(bool isChecked)
 
 void MainWidget::onPrintOathButtonClicked()
 {
-#if 0
     if (m_printTimer.isActive()) {
         ui->textBrowser->append("当前正在打印，请稍等……");
         return;
@@ -99,9 +98,6 @@ void MainWidget::onPrintOathButtonClicked()
 //    m_mainWidgetController->writeData2SerialPort("HelloWorld");
     ui->textBrowser->append("守夜人誓言打印中……");
     m_printTimer.start();
-#else
-    m_mainWidgetController->printData("ABCDEFGHIJKLMN");
-#endif
 }
 
 void MainWidget::onPrintData2ButtonClicked()
@@ -180,12 +176,12 @@ bool MainWidget::configVerticalMagnification()
     return m_mainWidgetController->setVerticalMagnification(ui->verticalMagnificationComboBox->currentIndex()+1);
 }
 
-bool MainWidget::configRotationAngle()
+void MainWidget::configRotationAngle()
 {
-    return m_mainWidgetController->setRotationAngle((MainWidgetModel::ROTATION_ANGLE)ui->rotationAngleCombox->currentIndex());
+    m_mainWidgetController->setRotationAngle((MainWidgetModel::ROTATION_ANGLE)ui->rotationAngleCombox->currentIndex());
 }
 
-bool MainWidget::configAntiWhite()
+void MainWidget::configAntiWhite()
 {
-    return m_mainWidgetController->setAntiWhite(ui->antiWhiteRadioButton->isChecked());
+    m_mainWidgetController->setAntiWhite(ui->antiWhiteRadioButton->isChecked());
 }

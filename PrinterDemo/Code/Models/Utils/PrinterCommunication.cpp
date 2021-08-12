@@ -1,5 +1,5 @@
 #include "PrinterCommunication.h"
-
+#include <QThread>
 #include <QDebug>
 
 PrinterCommunication::PrinterCommunication(QObject *parent) : QObject(parent)
@@ -93,8 +93,10 @@ void PrinterCommunication::doWork()
 
             dataLength = m_currentTransUnit.byteArray().size();
             qDebug() << __FUNCTION__ << __LINE__ << "size:" << dataLength;
-            if (m_currentTransUnit.unitType() == TransUnit::SNED_DATA)
+            if (m_currentTransUnit.unitType() == TransUnit::SNED_DATA) {
+                qDebug() << "[Info]Send data:" << m_currentTransUnit.byteArray();
                 writeResult = m_serialPort->write(m_gb2312->fromUnicode(QString(m_currentTransUnit.byteArray())).data());
+            }
             else
                 writeResult = m_serialPort->write(m_currentTransUnit.byteArray().data(), m_currentTransUnit.byteArray().size());
 
@@ -104,8 +106,11 @@ void PrinterCommunication::doWork()
                 qDebug() << "[Trace]Write error, prepend transUnit to resend.";
             }
         }
-        else
+        else {
+            m_isRunning = false;
+            emit finishWork();
             break;
+        }
 
         usleep(10 * 1000);
     }

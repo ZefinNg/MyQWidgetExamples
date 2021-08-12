@@ -28,6 +28,9 @@
 #define CMD_ANTI_WHITE_ON                "\x1B\x69\x01"
 #define CMD_ANTI_WHITE_OFF               "\x1B\x69\x10"
 
+#define SCALE_MIN_TIMES (1)
+#define SCALE_MAX_TIMES (8)
+
 #define STRLEN(S)                   sizeof(S)-1
 
 #endif // PRINTERCMD_H

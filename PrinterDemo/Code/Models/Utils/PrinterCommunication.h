@@ -32,6 +32,7 @@ public:
     qint64 write(const char *data, qint64 len);
 
 signals:
+    void finishWork();
 
 public slots:
     void doWork();

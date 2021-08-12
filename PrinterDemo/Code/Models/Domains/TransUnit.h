@@ -12,7 +12,7 @@ public:
         QUERY_OFFLINE,
         QUERY_ERROR,
         QUERY_PAPER,
-        CONFIG_TYPE,
+        CONFIG_FORMAT,
         PAPER_FEED,
         SNED_DATA
     };

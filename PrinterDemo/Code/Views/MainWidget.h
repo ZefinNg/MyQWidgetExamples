@@ -34,8 +34,8 @@ private:
     void checkPrintCondition();
     bool configHorizontalMagnification();
     bool configVerticalMagnification();
-    bool configRotationAngle();
-    bool configAntiWhite();
+    void configRotationAngle();
+    void configAntiWhite();
 
 private:
     Ui::MainWidget *ui;

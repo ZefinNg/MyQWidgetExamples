@@ -10,7 +10,7 @@ MainWidgetModel::MainWidgetModel(QObject *parent) :
     m_printerCommunicaiton->moveToThread(m_printThread);
 
     connect(m_printThread, SIGNAL(started()),  m_printerCommunicaiton, SLOT(doWork()));
-    connect(m_printThread, SIGNAL(finished()), m_printerCommunicaiton, SLOT(quitWork()));
+    connect(m_printerCommunicaiton, SIGNAL(finishWork()), this, SLOT(quitThread()));
 }
 
 MainWidgetModel::~MainWidgetModel()
@@ -56,7 +56,7 @@ bool MainWidgetModel::isSerialPortOpen()
 void MainWidgetModel::initSerialPort()
 {
     TransUnit transUnit;
-    transUnit.setUnitType(TransUnit::CONFIG_TYPE);
+    transUnit.setUnitType(TransUnit::CONFIG_FORMAT);
     transUnit.setByteArray(INIT_PRINTER);
 
     m_printerCommunicaiton->appendTransUnit(transUnit);
@@ -83,6 +83,9 @@ void MainWidgetModel::queryPrinterStatus()
     transUnit.setUnitType(TransUnit::QUERY_PAPER);
     transUnit.setByteArray(QUERY_PAPER_STATUS);
     m_printerCommunicaiton->appendTransUnit(transUnit);
+
+    if (!m_printThread->isRunning())
+        m_printThread->start();
 }
 
 void MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
@@ -133,6 +136,13 @@ void MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
 
 #endif
 }
+
+void MainWidgetModel::quitThread()
+{
+    m_printThread->quit();
+    m_printThread->wait(500);
+}
+
 #if 0
 int MainWidgetModel::writeData2SerialPort(QByteArray data)
 {
@@ -186,10 +196,11 @@ int MainWidgetModel::writeData2SerialPort(QByteArray data)
     this->printBlankLine(2);
     return writeResult;
 }
+#endif
 
 bool MainWidgetModel::setHorizontalMagnification(int times)
 {
-    if (times < 1 || times > 8) {
+    if (times < SCALE_MIN_TIMES || times > SCALE_MAX_TIMES) {
         qDebug() << "[Error]The horizontal magnification must be greater than or equal to 1 and less than or equal to 8.";
         return false;
     }
@@ -198,19 +209,21 @@ bool MainWidgetModel::setHorizontalMagnification(int times)
     QString vaildCmdString = tempCmd + QString::number(times);
     QByteArray vaildCmd = QByteArray::fromHex(vaildCmdString.toLatin1());
 
-    qDebug() << "VaildCmd size:" << vaildCmd.size();
-    int writeLength = m_serialPort->write(vaildCmd.data(), vaildCmd.size());
-    qDebug() << "WriteLength: " << writeLength;
+    TransUnit transUnit;
+    transUnit.setUnitType(TransUnit::CONFIG_FORMAT);
+    transUnit.setByteArray(vaildCmd);
 
-    if (writeLength != vaildCmd.size())
-        return false;
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+
+    if (!m_printThread->isRunning())
+        m_printThread->start();
 
     return true;
 }
 
 bool MainWidgetModel::setVerticalMagnification(int times)
 {
-    if (times < 1 || times > 8) {
+    if (times < SCALE_MIN_TIMES || times > SCALE_MAX_TIMES) {
         qDebug() << "[Error]The vertical magnification must be greater than or equal to 1 and less than or equal to 8.";
         return false;
     }
@@ -219,18 +232,21 @@ bool MainWidgetModel::setVerticalMagnification(int times)
     QString vaildCmdString = tempCmd + QString::number(times);
     QByteArray vaildCmd = QByteArray::fromHex(vaildCmdString.toLatin1());
 
-    qDebug() << "VaildCmd size:" << vaildCmd.size();
-    int writeLength = m_serialPort->write(vaildCmd.data(), vaildCmd.size());
+    TransUnit transUnit;
+    transUnit.setUnitType(TransUnit::CONFIG_FORMAT);
+    transUnit.setByteArray(vaildCmd);
 
-    if (writeLength != vaildCmd.size())
-        return false;
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+
+    if (!m_printThread->isRunning())
+        m_printThread->start();
 
     return true;
 }
 
 bool MainWidgetModel::setHorizontalVerticalMagnification(int times)
 {
-    if (times < 1 || times > 8) {
+    if (times < SCALE_MIN_TIMES || times > SCALE_MAX_TIMES) {
         qDebug() << "[Error]The horizontal & vertical magnification must be greater than or equal to 1 and less than or equal to 8.";
         return false;
     }
@@ -239,16 +255,19 @@ bool MainWidgetModel::setHorizontalVerticalMagnification(int times)
     QString vaildCmdString = tempCmd + QString::number(times);
     QByteArray vaildCmd = QByteArray::fromHex(vaildCmdString.toLatin1());
 
-    qDebug() << "VaildCmd size:" << vaildCmd.size();
-    int writeLength = m_serialPort->write(vaildCmd.data(), vaildCmd.size());
+    TransUnit transUnit;
+    transUnit.setUnitType(TransUnit::CONFIG_FORMAT);
+    transUnit.setByteArray(vaildCmd);
 
-    if (writeLength != vaildCmd.size())
-        return false;
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+
+    if (!m_printThread->isRunning())
+        m_printThread->start();
 
     return true;
 }
 
-bool MainWidgetModel::setRotationAngle(ROTATION_ANGLE angle)
+void MainWidgetModel::setRotationAngle(ROTATION_ANGLE angle)
 {
     QString cmd = "1c490";
 
@@ -261,12 +280,15 @@ bool MainWidgetModel::setRotationAngle(ROTATION_ANGLE angle)
     }
 
     QByteArray vaildCmd = QByteArray::fromHex(cmd.toLatin1());
-    int writeLength = m_serialPort->write(vaildCmd, vaildCmd.size());
 
-    if (writeLength != vaildCmd.size())
-        return false;
+    TransUnit transUnit;
+    transUnit.setUnitType(TransUnit::CONFIG_FORMAT);
+    transUnit.setByteArray(vaildCmd);
 
-    return true;
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+
+    if (!m_printThread->isRunning())
+        m_printThread->start();
 }
 
 MainWidgetModel::ALIGN_MODE MainWidgetModel::getAlignMode()
@@ -293,46 +315,48 @@ bool MainWidgetModel::setHorizontalTab(QList<int> tabList)
     horiziontalTabTempCmd += "00";
 
     QByteArray hexCmd = QByteArray::fromHex(horiziontalTabTempCmd.toLatin1());
-    int writeLength = m_serialPort->write(hexCmd, hexCmd.size());
+    TransUnit transUnit;
 
-    if (writeLength != hexCmd.size())
-        return false;
+    transUnit.setUnitType(TransUnit::CONFIG_FORMAT);
+    transUnit.setByteArray(hexCmd);
+
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+
+    if (!m_printThread->isRunning())
+        m_printThread->start();
 
     return true;
 }
 
-bool MainWidgetModel::setAntiWhite(bool onOff)
+void MainWidgetModel::setAntiWhite(bool onOff)
 {
-    int writeLength = 0;
+    TransUnit transUnit;
+    transUnit.setUnitType(TransUnit::CONFIG_FORMAT);
+
     if (onOff)
-        writeLength = m_serialPort->write(CMD_ANTI_WHITE_ON, STRLEN(CMD_ANTI_WHITE_ON));
+        transUnit.setByteArray(CMD_ANTI_WHITE_ON);
     else
-        writeLength = m_serialPort->write(CMD_ANTI_WHITE_OFF, STRLEN(CMD_ANTI_WHITE_OFF));
+        transUnit.setByteArray(CMD_ANTI_WHITE_OFF);
 
-    if (writeLength == STRLEN(CMD_ANTI_WHITE_ON))
-        return true;
+    m_printerCommunicaiton->appendTransUnit(transUnit);
 
-    return false;
-}
-
-void MainWidgetModel::onReceivedData()
-{
-    QByteArray readBuffer;
-    if (m_serialPort->bytesAvailable() > 0) {
-        readBuffer = m_serialPort->readAll();
-//        emit receviedData(QString(readBuffer));
-        qDebug() << "[Info]Serial port recevice:" << readBuffer.toHex();
-    }
-
-    return;
+    if (!m_printThread->isRunning())
+        m_printThread->start();
 }
 
 void MainWidgetModel::printBlankLine(int lines)
 {
-    for (int i = 0; i < lines; i++)
-        m_serialPort->write(CMD_WRAP, STRLEN(CMD_WRAP));
+    TransUnit transUnit;
+    transUnit.setUnitType(TransUnit::PAPER_FEED);
+
+    for (int i = 0; i < lines; i++) {
+        transUnit.setByteArray(CMD_WRAP);
+        m_printerCommunicaiton->appendTransUnit(transUnit);
+    }
+
+    if (!m_printThread->isRunning())
+        m_printThread->start();
 }
-#endif
 
 int MainWidgetModel::calculateStringLength(QString text)
 {

@@ -37,31 +37,34 @@ public:
     bool isSerialPortOpen();
 
     void initSerialPort();
+
     void printData(QString lineData, ALIGN_MODE alignMode);
+
 #if 0
     int writeData2SerialPort(QByteArray data);
+#endif
 
     bool setHorizontalMagnification(int times);
     bool setVerticalMagnification(int times);
     bool setHorizontalVerticalMagnification(int times);
 
-    bool setRotationAngle(enum ROTATION_ANGLE angle);
+    void setRotationAngle(enum ROTATION_ANGLE angle);
 
     MainWidgetModel::ALIGN_MODE getAlignMode();
     void setAlignMode(enum ALIGN_MODE alignMode);
 
     bool setHorizontalTab(QList<int> tabList);
 
-    bool setAntiWhite(bool onOff);
+    void setAntiWhite(bool onOff);
 
     void printBlankLine(int lines);
-#endif
 
 signals:
     void receviedData(QString receviedData);
 
 private slots:
 //    void onReceivedData();
+    void quitThread();
 
 private:
     void queryPrinterStatus();

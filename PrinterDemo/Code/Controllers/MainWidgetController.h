@@ -22,9 +22,9 @@ public:
     bool setVerticalMagnification(int times);
     bool setHorizontalVerticalMagnification(int times);
 
-    bool setRotationAngle(MainWidgetModel::ROTATION_ANGLE angle);
+    void setRotationAngle(MainWidgetModel::ROTATION_ANGLE angle);
 
-    bool setAntiWhite(bool onOff);
+    void setAntiWhite(bool onOff);
 
     void printData(QString lineData, MainWidgetModel::ALIGN_MODE alignMode = MainWidgetModel::ALIGN_CENTER);
 
