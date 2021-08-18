@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     w.showFullScreen();
 
     //设置程序的编码格式，否则打印时转码为gb2312会混乱
-    QTextCodec *codec = QTextCodec::codecForName("UTF-8");             //GB2312 for window; UTF-8 for linux
+    QTextCodec *codec = QTextCodec::codecForName("UTF-8"); //GB2312 for window; UTF-8 for linux
     QTextCodec::setCodecForTr(codec);
     QTextCodec::setCodecForLocale(codec);
     QTextCodec::setCodecForCStrings(codec);

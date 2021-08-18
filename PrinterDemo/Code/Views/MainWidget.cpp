@@ -41,7 +41,7 @@ MainWidget::MainWidget(QWidget *parent) :
     //设置开关按钮贴图
     ui->switchButton->setStyleSheet("QPushButton{border-image: url(:/images/switch_off.png);}");
 
-    qDebug() << this->styleSheet();
+//    qDebug() << this->styleSheet();
 
     //设置下拉框的选项高度
     ui->horizontalMagnificationComboBox->setView(new QListView());
@@ -121,6 +121,7 @@ void MainWidget::onPrintTimerTimeout()
     if (!m_readyPrintDataList.isEmpty()) {
         QString readyPrintData = m_readyPrintDataList.takeFirst();
         ui->textBrowser->append(readyPrintData);
+//        qDebug() << __FUNCTION__ << __LINE__ << readyPrintData;
         m_mainWidgetController->printData(readyPrintData);
         m_mainWidgetController->printBlankLine(1);
     }

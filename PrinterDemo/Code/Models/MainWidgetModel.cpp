@@ -9,8 +9,8 @@ MainWidgetModel::MainWidgetModel(QObject *parent) :
     m_printThread = new QThread();
     m_printerCommunicaiton->moveToThread(m_printThread);
 
-    connect(m_printThread, SIGNAL(started()),  m_printerCommunicaiton, SLOT(doWork()));
-    connect(m_printerCommunicaiton, SIGNAL(finishWork()), this, SLOT(quitThread()));
+    connect(m_printThread,          SIGNAL(started()),    m_printerCommunicaiton, SLOT(doWork()));
+    connect(m_printerCommunicaiton, SIGNAL(finishWork()), this,                   SLOT(quitThread()));
 }
 
 MainWidgetModel::~MainWidgetModel()
@@ -83,9 +83,6 @@ void MainWidgetModel::queryPrinterStatus()
     transUnit.setUnitType(TransUnit::QUERY_PAPER);
     transUnit.setByteArray(QUERY_PAPER_STATUS);
     m_printerCommunicaiton->appendTransUnit(transUnit);
-
-    if (!m_printThread->isRunning())
-        m_printThread->start();
 }
 
 void MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
@@ -113,9 +110,12 @@ void MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
     m_serialPort->write(CMD_ENTER, STRLEN(CMD_ENTER));
     m_serialPort->write(CMD_WRAP, STRLEN(CMD_WRAP));
 #else
+    this->queryPrinterStatus();
+
+//    qDebug() << "lineData:" << lineData;
     TransUnit transUnit;
     transUnit.setUnitType(TransUnit::SNED_DATA);
-    transUnit.setByteArray(lineData.toLatin1());
+    transUnit.setByteArray(lineData.toLocal8Bit());
     m_printerCommunicaiton->appendTransUnit(transUnit);
 
     transUnit.setUnitType(TransUnit::PAPER_FEED);
@@ -126,13 +126,13 @@ void MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
     transUnit.setByteArray(CMD_WRAP);
     m_printerCommunicaiton->appendTransUnit(transUnit);
 
-    printf("%s %d Thread is running:%d\n", __FUNCTION__, __LINE__, m_printThread->isRunning());
+//    printf("%s %d Thread is running:%d\n", __FUNCTION__, __LINE__, m_printThread->isRunning());
 
-    if (!m_printThread->isRunning() || m_printThread->isFinished()) {
-        printf("Thread ready to start.\n");
-        m_printThread->start();
-    }
-    printf("%s %d Thread is running:%d\n", __FUNCTION__, __LINE__, m_printThread->isRunning());
+//    if (!m_printThread->isRunning() || m_printThread->isFinished()) {
+//        printf("Thread ready to start.\n");
+//        m_printThread->start();
+//    }
+//    printf("%s %d Thread is running:%d\n", __FUNCTION__, __LINE__, m_printThread->isRunning());
 
 #endif
 }
