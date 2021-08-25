@@ -1,4 +1,4 @@
-#ifndef EXCELREADWRITE_H
+﻿#ifndef EXCELREADWRITE_H
 #define EXCELREADWRITE_H
 
 #include <QObject>
@@ -41,8 +41,9 @@ private:
     QAxObject *m_excelApp;
     QAxObject *m_workbooks;
     QAxObject *m_fileWorkbook;
-    QAxObject *m_workSheets;
+    QAxObject *m_worksheets;
     QAxObject *m_currentWorksheet;
+    QAxObject *m_usedRange;
 };
 
 #endif // EXCELREADWRITE_H

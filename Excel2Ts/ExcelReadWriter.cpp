@@ -1,4 +1,4 @@
-#include "ExcelReadWriter.h"
+﻿#include "ExcelReadWriter.h"
 #include <QDebug>
 
 ExcelReadWrite::ExcelReadWrite(QObject *parent) : QObject(parent)
@@ -10,6 +10,7 @@ ExcelReadWrite::ExcelReadWrite(QObject *parent) : QObject(parent)
     m_fileWorkbook     = NULL;
     m_worksheets       = NULL;
     m_currentWorksheet = NULL;
+    m_usedRange        = NULL;
 
     //设置m_excelApp为Excel文件的操作对象
     m_excelApp = new QAxObject("Excel.Application");
@@ -42,7 +43,6 @@ bool ExcelReadWrite::openFile(QString filePath)
     if (!file.exists())
         return false;
 
-
     //打开指定路径的excel文件
     m_fileWorkbook = m_workbooks->querySubObject("Open(QString&)", filePath);
 
@@ -57,6 +57,9 @@ bool ExcelReadWrite::openFile(QString filePath)
 
     //默认设置为操作第一张工作表
     m_currentWorksheet = m_worksheets->querySubObject("Item(int)", 1);
+
+    //
+    m_usedRange        = m_currentWorksheet->querySubObject("UsedRange");
 
     return true;
 }
@@ -90,6 +93,7 @@ bool ExcelReadWrite::setCurrentWorkSheet(int index)
 {
     if (m_isOpen && index > 0 && index <= this->getWorkSheetCount()) {
         m_currentWorksheet = m_fileWorkbook->querySubObject("Sheets(int", index);
+        m_usedRange        = m_currentWorksheet->querySubObject("UsedRange");
         return true;
     }
 
@@ -99,7 +103,7 @@ bool ExcelReadWrite::setCurrentWorkSheet(int index)
 int ExcelReadWrite::getRows()
 {
     if (m_isOpen)
-        return 3;
+        return m_usedRange->querySubObject("Rows")->;
 
     return -1;
 }
