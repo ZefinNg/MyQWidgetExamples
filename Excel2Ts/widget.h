@@ -17,6 +17,7 @@ public:
     ~Widget();
 
 private slots:
+    void onBtnOpenClicked();
     void onBtnCloseClicked();
 
 private:

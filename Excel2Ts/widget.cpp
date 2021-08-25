@@ -1,6 +1,7 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include <QDebug>
+#include <QMessageBox>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -8,18 +9,25 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
 
+    connect(ui->btnOpen,  SIGNAL(clicked()), this, SLOT(onBtnOpenClicked()));
     connect(ui->btnClose, SIGNAL(clicked()), this, SLOT(onBtnCloseClicked()));
 
-    m_excelRW = new ExcelReadWrite("C:\\Users\\zefeng.wu\\Desktop\\万孚 POCT 数据管理系统传输日志.xlsx", this);
-
-    qDebug() << m_excelRW->title();
-    qDebug() << m_excelRW->getWorkSheetCount();
+    m_excelRW = new ExcelReadWrite(this);
 }
 
 Widget::~Widget()
 {
-    m_excelRW->closeFile();
     delete ui;
+}
+
+void Widget::onBtnOpenClicked()
+{
+    if (!m_excelRW->openFile("C:\\Users\\zefeng.wu\\Desktop\\万孚 POCT 数据管理系统传输日志.xlsx"))
+        QMessageBox::critical(this, "Error", "Open file failed.");
+    else {
+        qDebug() << m_excelRW->title();
+        qDebug() << m_excelRW->getWorkSheetCount();
+    }
 }
 
 void Widget::onBtnCloseClicked()
