@@ -3,12 +3,13 @@
 
 ExcelReadWrite::ExcelReadWrite(QObject *parent) : QObject(parent)
 {
-    m_isOpen       = false;
-    m_filePath     = "";
-    m_excelApp     = NULL;
-    m_workbooks    = NULL;
-    m_fileWorkbook = NULL;
-    m_workSheets   = NULL;
+    m_isOpen           = false;
+    m_filePath         = "";
+    m_excelApp         = NULL;
+    m_workbooks        = NULL;
+    m_fileWorkbook     = NULL;
+    m_worksheets       = NULL;
+    m_currentWorksheet = NULL;
 
     //设置m_excelApp为Excel文件的操作对象
     m_excelApp = new QAxObject("Excel.Application");
@@ -16,6 +17,7 @@ ExcelReadWrite::ExcelReadWrite(QObject *parent) : QObject(parent)
     //如果为true，则会出现MS Excel的界面，反之则不出现
     m_excelApp->dynamicCall("SetVisible(bool)", false);
 
+    //也可以使用参数"ActiveWorkBook"
     m_workbooks = m_excelApp->querySubObject("WorkBooks");
 }
 
@@ -40,7 +42,6 @@ bool ExcelReadWrite::openFile(QString filePath)
     if (!file.exists())
         return false;
 
-    m_filePath = filePath;
 
     //打开指定路径的excel文件
     m_fileWorkbook = m_workbooks->querySubObject("Open(QString&)", filePath);
@@ -48,10 +49,14 @@ bool ExcelReadWrite::openFile(QString filePath)
     if (m_fileWorkbook == NULL)
         return false;
 
-    m_isOpen = true;
+    m_filePath = filePath;
+    m_isOpen   = true;
 
     //获取打开的excel文件的所有工作表，也可以使用"Sheets"
-    m_workSheets = m_fileWorkbook->querySubObject("WorkSheets");
+    m_worksheets = m_fileWorkbook->querySubObject("WorkSheets");
+
+    //默认设置为操作第一张工作表
+    m_currentWorksheet = m_worksheets->querySubObject("Item(int)", 1);
 
     return true;
 }
@@ -67,7 +72,7 @@ QString ExcelReadWrite::title()
 QString ExcelReadWrite::getWorkSheetName()
 {
     if (m_isOpen)
-        return m_workSheets->property("Name").toString();
+        return m_currentWorksheet->property("Name").toString();
 
     return "";
 
@@ -76,15 +81,15 @@ QString ExcelReadWrite::getWorkSheetName()
 int ExcelReadWrite::getWorkSheetCount()
 {
     if (m_isOpen)
-        return m_workSheets->property("Count").toInt();
+        return m_worksheets->property("Count").toInt();
 
     return -1;
 }
 
 bool ExcelReadWrite::setCurrentWorkSheet(int index)
 {
-    if (m_isOpen && index <= this->getWorkSheetCount()) {
-        m_workSheets = m_fileWorkbook->querySubObject("Sheets(int", index);
+    if (m_isOpen && index > 0 && index <= this->getWorkSheetCount()) {
+        m_currentWorksheet = m_fileWorkbook->querySubObject("Sheets(int", index);
         return true;
     }
 

@@ -42,6 +42,7 @@ private:
     QAxObject *m_workbooks;
     QAxObject *m_fileWorkbook;
     QAxObject *m_workSheets;
+    QAxObject *m_currentWorksheet;
 };
 
 #endif // EXCELREADWRITE_H
