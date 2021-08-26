@@ -15,7 +15,7 @@ ExcelReadWrite::ExcelReadWrite(QObject *parent) : QObject(parent)
     //设置m_excelApp为Excel文件的操作对象
     m_excelApp = new QAxObject("Excel.Application");
 
-    //如果为true，则会出现MS Excel的界面，反之则不出现
+    //如果为true，则会出现Ms Excel的界面，反之则不出现
     m_excelApp->dynamicCall("SetVisible(bool)", false);
 
     //也可以使用参数"ActiveWorkBook"
@@ -61,6 +61,9 @@ bool ExcelReadWrite::openFile(QString filePath)
     //
     m_usedRange        = m_currentWorksheet->querySubObject("UsedRange");
 
+    m_rows             = m_usedRange->querySubObject("Rows");
+    m_columns          = m_usedRange->querySubObject("Columns");
+
     return true;
 }
 
@@ -72,7 +75,7 @@ QString ExcelReadWrite::title()
     return "";
 }
 
-QString ExcelReadWrite::getWorkSheetName()
+QString ExcelReadWrite::getWorksheetName()
 {
     if (m_isOpen)
         return m_currentWorksheet->property("Name").toString();
@@ -81,7 +84,7 @@ QString ExcelReadWrite::getWorkSheetName()
 
 }
 
-int ExcelReadWrite::getWorkSheetCount()
+int ExcelReadWrite::getWorksheetCount()
 {
     if (m_isOpen)
         return m_worksheets->property("Count").toInt();
@@ -91,9 +94,12 @@ int ExcelReadWrite::getWorkSheetCount()
 
 bool ExcelReadWrite::setCurrentWorkSheet(int index)
 {
-    if (m_isOpen && index > 0 && index <= this->getWorkSheetCount()) {
+    if (m_isOpen && index > 0 && index <= this->getWorksheetCount()) {
         m_currentWorksheet = m_fileWorkbook->querySubObject("Sheets(int", index);
         m_usedRange        = m_currentWorksheet->querySubObject("UsedRange");
+        m_rows             = m_usedRange->querySubObject("Rows");
+        m_columns          = m_usedRange->querySubObject("Columns");
+
         return true;
     }
 
@@ -102,15 +108,47 @@ bool ExcelReadWrite::setCurrentWorkSheet(int index)
 
 int ExcelReadWrite::getRows()
 {
-    if (m_isOpen)
-        return m_usedRange->querySubObject("Rows")->;
+    if (m_isOpen) {
+        QAxObject *rowsObject = m_usedRange->querySubObject("Rows");
+        return rowsObject->property("Count").toInt();
+    }
 
     return -1;
 }
 
 int ExcelReadWrite::getColumns()
 {
+    if (m_isOpen) {
+        QAxObject *columnsObject = m_usedRange->querySubObject("Columns");
+        return columnsObject->property("Count").toInt();
+    }
 
+    return -1;
+}
+
+int ExcelReadWrite::getStartRows()
+{
+    if (m_isOpen)
+        return m_usedRange->property("Row").toInt();
+
+    return -1;
+}
+
+int ExcelReadWrite::getStartColumns()
+{
+    if (m_isOpen)
+        return m_usedRange->property("Column").toInt();
+
+    return -1;
+}
+
+QString ExcelReadWrite::getCellText(int row, int col)
+{
+    if (!m_isOpen)
+        return "";
+
+    QAxObject *cell = m_currentWorksheet->querySubObject("Cells(int, int)", row, col);
+    return cell->property("Value").toString();
 }
 
 void ExcelReadWrite::closeFile()
@@ -123,9 +161,4 @@ void ExcelReadWrite::closeFile()
 
         m_isOpen = false;
     }
-}
-
-QString ExcelReadWrite::getCellText(int row, int col)
-{
-
 }

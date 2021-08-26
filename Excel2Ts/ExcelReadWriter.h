@@ -17,18 +17,21 @@ public:
     bool openFile(QString filePath);
 
     QString title();
-    QString getWorkSheetName();
+    QString getWorksheetName();
 
-    int getWorkSheetCount();
+    int getWorksheetCount();
 
     bool setCurrentWorkSheet(int index);
 
     int getRows();
     int getColumns();
 
-    void closeFile();
+    int getStartRows();
+    int getStartColumns();
 
     QString getCellText(int row, int col);
+
+    void closeFile();
 
 signals:
 
@@ -44,6 +47,8 @@ private:
     QAxObject *m_worksheets;
     QAxObject *m_currentWorksheet;
     QAxObject *m_usedRange;
+    QAxObject *m_rows;
+    QAxObject *m_columns;
 };
 
 #endif // EXCELREADWRITE_H

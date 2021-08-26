@@ -25,12 +25,28 @@ void Widget::onBtnOpenClicked()
     if (!m_excelRW->openFile("C:\\Users\\zefeng.wu\\Desktop\\万孚 POCT 数据管理系统传输日志.xlsx"))
         QMessageBox::critical(this, "Error", "Open file failed.");
     else {
-        qDebug() << m_excelRW->title();
-        qDebug() << m_excelRW->getWorkSheetCount();
+        this->getExcelFileInfo();
     }
 }
 
 void Widget::onBtnCloseClicked()
 {
     m_excelRW->closeFile();
+}
+
+void Widget::getExcelFileInfo()
+{
+    qDebug() << "Title:" << m_excelRW->title();
+    int worksheetCount = m_excelRW->getWorksheetCount();
+    qDebug() << "worksheet Count:" << worksheetCount;
+
+    for (int i = 1; i <= worksheetCount; i++) {
+        if (m_excelRW->setCurrentWorkSheet(i)) {
+            qDebug() << "Worksheet Name:" << m_excelRW->getWorksheetName();
+            qDebug() << "Rows:" << m_excelRW->getRows();
+            qDebug() << "Columns:" << m_excelRW->getColumns();
+            qDebug() << "Start rows:" << m_excelRW->getStartRows();
+            qDebug() << "Start columns:" << m_excelRW->getStartColumns();
+        }
+    }
 }

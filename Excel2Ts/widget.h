@@ -21,6 +21,9 @@ private slots:
     void onBtnCloseClicked();
 
 private:
+    void getExcelFileInfo();
+
+private:
     Ui::Widget *ui;
     ExcelReadWrite *m_excelRW;
 };
