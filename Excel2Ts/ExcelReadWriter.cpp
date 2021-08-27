@@ -15,6 +15,9 @@ ExcelReadWrite::ExcelReadWrite(QObject *parent) : QObject(parent)
     //设置m_excelApp为Excel文件的操作对象
     m_excelApp = new QAxObject("Excel.Application");
 
+    //不显示任何警告信息。如果为true, 那么关闭时会出现类似"文件已修改，是否保存"的提示
+    m_excelApp->setProperty("DisplayAlerts", true);
+
     //如果为true，则会出现Ms Excel的界面，反之则不出现
     m_excelApp->dynamicCall("SetVisible(bool)", false);
 
@@ -67,12 +70,20 @@ bool ExcelReadWrite::openFile(QString filePath)
     return true;
 }
 
-QString ExcelReadWrite::title()
+QString ExcelReadWrite::getTitle()
 {
     if (m_isOpen)
         return m_excelApp->property("Caption").toString();
 
     return "";
+}
+
+bool ExcelReadWrite::setTitle(QString title)
+{
+    if (m_isOpen)
+         return m_excelApp->setProperty("Caption", title);
+
+    return false;
 }
 
 QString ExcelReadWrite::getWorksheetName()
@@ -81,7 +92,14 @@ QString ExcelReadWrite::getWorksheetName()
         return m_currentWorksheet->property("Name").toString();
 
     return "";
+}
 
+bool ExcelReadWrite::setWorksheetName(QString worksheetName)
+{
+    if (m_isOpen)
+        return m_currentWorksheet->setProperty("Name", worksheetName);
+
+    return false;
 }
 
 int ExcelReadWrite::getWorksheetCount()
@@ -104,6 +122,25 @@ bool ExcelReadWrite::setCurrentWorkSheet(int index)
     }
 
     return false;
+}
+
+void ExcelReadWrite::appendWorksheet()
+{
+    if (m_isOpen) {
+        int worksheetCount = this->getWorksheetCount();
+        QAxObject *lastWorksheet = m_worksheets->querySubObject("Item(int)", worksheetCount);
+        QAxObject *newWorksheet  = m_worksheets->querySubObject("Add(QVariant)", lastWorksheet->asVariant());
+        lastWorksheet->dynamicCall("Move(QVariant)", newWorksheet->asVariant());
+    }
+}
+
+void ExcelReadWrite::deleteCurrentWorksheet()
+{
+    if (m_isOpen) {
+        m_currentWorksheet->dynamicCall("delete");
+
+        m_currentWorksheet = m_worksheets->querySubObject("Item(int)", 1);
+    }
 }
 
 int ExcelReadWrite::getRows()
@@ -151,9 +188,25 @@ QString ExcelReadWrite::getCellText(int row, int col)
     return cell->property("Value").toString();
 }
 
+bool ExcelReadWrite::setCellText(QString text, int row, int col, ALIGNMENT_H alignmentH, ALIGNMENT_V alignmentV, bool wrap)
+{
+    if (m_isOpen) {
+        QAxObject *cell = m_currentWorksheet->querySubObject("Cells(int, int)", row, col);
+        cell->setProperty("Value", text);
+        cell->setProperty("HorizontalAlignment", alignmentH);
+        cell->setProperty("VerticalAlignment",   alignmentV);
+        cell->setProperty("WrapText", wrap);
+
+        return true;
+    }
+
+    return false;
+}
+
 void ExcelReadWrite::closeFile()
 {
     if (m_fileWorkbook != NULL) {
+        m_fileWorkbook->dynamicCall("Save()");
         m_fileWorkbook->dynamicCall("Close()");
         m_excelApp->dynamicCall("Quit()");
 

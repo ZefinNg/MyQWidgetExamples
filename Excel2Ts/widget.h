@@ -19,6 +19,11 @@ public:
 private slots:
     void onBtnOpenClicked();
     void onBtnCloseClicked();
+    void onBtnSetTitleClicked();
+    void onBtnSetSheetNameClicked();
+    void onBtnAddSheetClicked();
+    void onBtnDeleteSheetClicked();
+    void onBtnAddCell();
 
 private:
     void getExcelFileInfo();
