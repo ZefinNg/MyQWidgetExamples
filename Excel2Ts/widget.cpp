@@ -17,7 +17,7 @@ Widget::Widget(QWidget *parent)
     connect(ui->btnDeleteSheet,  SIGNAL(clicked()), this, SLOT(onBtnDeleteSheetClicked()));
     connect(ui->btnAddCell,      SIGNAL(clicked()), this, SLOT(onBtnAddCell()));
 
-    m_excelRW = new ExcelReadWrite(this);
+//    m_excelRW = new ExcelReadWrite(this);
 }
 
 Widget::~Widget()
@@ -25,6 +25,7 @@ Widget::~Widget()
     delete ui;
 }
 
+#if 0
 void Widget::onBtnOpenClicked()
 {
     if (!m_excelRW->openFile("D:\\万孚 POCT 数据管理系统传输日志.xlsx"))
@@ -105,3 +106,4 @@ void Widget::getExcelFileInfo()
 
 //    qDebug() << sheetList.indexOf("故障表");
 }
+#endif
