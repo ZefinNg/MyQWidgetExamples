@@ -1,26 +1,39 @@
 #ifndef EXCELHANDLER_H
 #define EXCELHANDLER_H
 
-#include <QObject>
-#include <QtConcurrent/QtConcurrent>
+#include <QThread>
+#include <QMap>
 #include "ExcelReadWriter.h"
 
-class ExcelHandler : public QObject
+class ExcelHandler : public QThread
 {
     Q_OBJECT
 public:
-    enum EXCEL_HANDLE_ERROR {
+    enum HANDLE_ERROR {
         OPEN_FILE_FAILED = 0,
+        FORMAT_ERROR,
+        REPEAT_KEY
     };
 
     explicit ExcelHandler(QObject *parent = nullptr);
 
-    EXCEL_HANDLE_ERROR handleFile(QString filePath);
+    void setFilePath(QString filePath);
+
+    /* 注意判断Mapper是否为空
+     * key为源文，value为译文
+     */
+    QMap<QString, QString>getTranslationMapper();
 
 signals:
+    void errorOccur(ExcelHandler::HANDLE_ERROR);
+
+protected:
+    void run();
 
 private:
+    QString m_filePath;
     ExcelReadWrite *m_excelRW;
+    QMap<QString, QString> m_translationMapper;
 };
 
 #endif // EXCELHANDLER_H

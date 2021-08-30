@@ -2,6 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include "ExcelHandler.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -16,8 +17,10 @@ public:
     ~Widget();
 
 private slots:
-#if 0
     void onBtnOpenClicked();
+
+    void onExcelHandlerError(ExcelHandler::HANDLE_ERROR errorNum);
+#if 0
     void onBtnCloseClicked();
     void onBtnSetTitleClicked();
     void onBtnSetSheetNameClicked();
@@ -33,5 +36,6 @@ private:
 
 private:
     Ui::Widget *ui;
+    ExcelHandler *m_excelHandler;
 };
 #endif // WIDGET_H

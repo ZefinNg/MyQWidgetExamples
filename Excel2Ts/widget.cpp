@@ -8,33 +8,54 @@ Widget::Widget(QWidget *parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
+    m_excelHandler = new ExcelHandler();
+
+    connect(m_excelHandler, SIGNAL(errorOccur(ExcelHandler::HANDLE_ERROR)),
+            this, SLOT(onExcelHandlerError(ExcelHandler::HANDLE_ERROR)));
 
     connect(ui->btnOpen,         SIGNAL(clicked()), this, SLOT(onBtnOpenClicked()));
-    connect(ui->btnClose,        SIGNAL(clicked()), this, SLOT(onBtnCloseClicked()));
-    connect(ui->btnSetTitle,     SIGNAL(clicked()), this, SLOT(onBtnSetTitleClicked()));
-    connect(ui->btnSetSheetName, SIGNAL(clicked()), this, SLOT(onBtnSetSheetNameClicked()));
-    connect(ui->btnAddSheet,     SIGNAL(clicked()), this, SLOT(onBtnAddSheetClicked()));
-    connect(ui->btnDeleteSheet,  SIGNAL(clicked()), this, SLOT(onBtnDeleteSheetClicked()));
-    connect(ui->btnAddCell,      SIGNAL(clicked()), this, SLOT(onBtnAddCell()));
-
-//    m_excelRW = new ExcelReadWrite(this);
+//    connect(ui->btnClose,        SIGNAL(clicked()), this, SLOT(onBtnCloseClicked()));
+//    connect(ui->btnSetTitle,     SIGNAL(clicked()), this, SLOT(onBtnSetTitleClicked()));
+//    connect(ui->btnSetSheetName, SIGNAL(clicked()), this, SLOT(onBtnSetSheetNameClicked()));
+//    connect(ui->btnAddSheet,     SIGNAL(clicked()), this, SLOT(onBtnAddSheetClicked()));
+//    connect(ui->btnDeleteSheet,  SIGNAL(clicked()), this, SLOT(onBtnDeleteSheetClicked()));
+//    connect(ui->btnAddCell,      SIGNAL(clicked()), this, SLOT(onBtnAddCell()));
 }
 
 Widget::~Widget()
 {
+    if (m_excelHandler->isRunning()) {
+        m_excelHandler->quit();
+        m_excelHandler->wait(200);
+        m_excelHandler->deleteLater();
+        m_excelHandler = NULL;
+    }
+
     delete ui;
 }
 
-#if 0
 void Widget::onBtnOpenClicked()
 {
-    if (!m_excelRW->openFile("D:\\万孚 POCT 数据管理系统传输日志.xlsx"))
-        QMessageBox::critical(this, "Error", "Open file failed.");
-    else {
-        this->getExcelFileInfo();
-    }
+    m_excelHandler->setFilePath("D:\\Greman_Revised.xlsx");
 }
 
+void Widget::onExcelHandlerError(ExcelHandler::HANDLE_ERROR errorNum)
+{
+    switch (errorNum) {
+    case ExcelHandler::OPEN_FILE_FAILED:
+        QMessageBox::critical(this, "Error", "Open file failed.");
+        break;
+    case ExcelHandler::FORMAT_ERROR:
+        QMessageBox::critical(this, "Error", "Excel file's text format is error.");
+        break;
+    case ExcelHandler::REPEAT_KEY:
+        QMessageBox::critical(this, "Error", "There are duplicate key values.");
+        break;
+    default:
+        break;
+    }
+}
+#if 0
 void Widget::onBtnCloseClicked()
 {
     m_excelRW->closeFile();

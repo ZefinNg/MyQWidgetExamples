@@ -3,6 +3,13 @@
 
 ExcelReadWrite::ExcelReadWrite(QObject *parent) : QObject(parent)
 {
+    /* ？存疑：
+     * 因为QAxObject默认是在单线程下使用的，
+     * 因此如果不用以下代码申明多线程,
+     * 会导致获取的excel的QAxObject都是NULL
+     */
+    CoInitializeEx(NULL, COINIT_MULTITHREADED);
+
     m_isOpen           = false;
     m_filePath         = "";
     m_excelApp         = NULL;
@@ -113,7 +120,7 @@ int ExcelReadWrite::getWorksheetCount()
 bool ExcelReadWrite::setCurrentWorkSheet(int index)
 {
     if (m_isOpen && index > 0 && index <= this->getWorksheetCount()) {
-        m_currentWorksheet = m_fileWorkbook->querySubObject("Sheets(int", index);
+        m_currentWorksheet = m_worksheets->querySubObject("Item(int)", index);
         m_usedRange        = m_currentWorksheet->querySubObject("UsedRange");
         m_rows             = m_usedRange->querySubObject("Rows");
         m_columns          = m_usedRange->querySubObject("Columns");
