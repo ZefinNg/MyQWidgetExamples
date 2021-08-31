@@ -16,15 +16,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    ExcelHandler.cpp \
-    ExcelReadWriter.cpp \
+    Service/ExcelHandler/ExcelHandler.cpp \
+    Service/ExcelHandler/ExcelReadWriter.cpp \
+    Service/TsParser/TsParser.cpp \
+    Service/TsParser/TranslationBlock.cpp \
     main.cpp \
-    widget.cpp
+    Views/widget.cpp
 
 HEADERS += \
-    ExcelHandler.h \
-    ExcelReadWriter.h \
-    widget.h
+    Service/ExcelHandler/ExcelHandler.h \
+    Service/ExcelHandler/ExcelReadWriter.h \
+    Service/TsParser/TsParser.h \
+    Service/TsParser/TranslationBlock.h \
+    Views/widget.h
 
 FORMS += \
     widget.ui
