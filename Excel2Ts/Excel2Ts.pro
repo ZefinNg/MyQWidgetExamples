@@ -1,4 +1,4 @@
-QT       += core gui axcontainer
+QT       += core gui axcontainer xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,23 +15,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+INCLUDEPATH += Service/
+
 SOURCES += \
     Service/ExcelHandler/ExcelHandler.cpp \
-    Service/ExcelHandler/ExcelReadWriter.cpp \
+    Service/ExcelHandler/TranslationBlock.cpp \
+    Service/Utils/ExcelReadWriter/ExcelReadWriter.cpp \
     Service/TsParser/TsParser.cpp \
-    Service/TsParser/TranslationBlock.cpp \
     main.cpp \
     Views/widget.cpp
 
 HEADERS += \
     Service/ExcelHandler/ExcelHandler.h \
-    Service/ExcelHandler/ExcelReadWriter.h \
+    Service/ExcelHandler/TranslationBlock.h \
+    Service/Utils/ExcelReadWriter/ExcelReadWriter.h \
     Service/TsParser/TsParser.h \
-    Service/TsParser/TranslationBlock.h \
     Views/widget.h
 
 FORMS += \
-    widget.ui
+    Views/widget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

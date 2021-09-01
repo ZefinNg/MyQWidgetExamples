@@ -1,34 +1,47 @@
 #include "TsParser.h"
 
-TsParser::TsParser(QObject *parent) : QObject(parent)
+TsParser::TsParser(QObject *parent)
+    : QObject(parent),
+      m_fileName(),
+      m_outputFile(),
+      m_tsFile(new QFile(this)),
+      m_excelHandler(new ExcelHandler(this)),
+      m_translationMapper()
 {
-    m_fileName = "";
-    m_tsFile   = new QFile(this);
-    m_csv2Ts   = new CSV2Ts(this);
-
-    if (!m_csv2Ts->readFile("/home/feng/Desktop/french.csv"))
-        qDebug() << "The csv file read failed.";
-    else
-        m_translationList = m_csv2Ts->classTranslationList();
-
-    this->createNewTsFile("/home/feng/Desktop/french_new.ts");
+//    if (!m_excelHandler->readFile("/home/feng/Desktop/french.csv"))
+//        qDebug() << "The csv file read failed.";
+//    else
+//        m_translationList = m_excelHandler->classTranslationList();
 }
 
-void TsParser::setFilePath(QString filePath)
+ExcelHandler::HANDLE_ERROR TsParser::setExcelFile(const QString filePath)
+{
+    m_excelHandler->setFilePath(filePath);
+
+    return m_excelHandler->handleFile();
+}
+
+bool TsParser::setTsFile(const QString filePath)
 {
     m_fileName = filePath;
     m_tsFile->setFileName(filePath);
 
-    if (!m_tsFile->open(QIODevice::ReadWrite)) {
-        qDebug() << "Open " << m_fileName << "failed.";
-        return;
-    }
+    return m_tsFile->open(QIODevice::ReadWrite);
+}
 
+void TsParser::setOutputTsFile(const QString outputFile)
+{
+    m_outputFile = outputFile;
+    this->createNewTsFile(m_outputFile);
+}
+
+bool TsParser::fixUpTsFile()
+{
     QDomDocument tsDoc;
     if (!tsDoc.setContent(m_tsFile)) {
         qDebug() << "Document set file failed.";
         m_tsFile->close();
-        return;
+        return false;
     }
 
     QDomElement root = tsDoc.documentElement();
@@ -63,8 +76,8 @@ void TsParser::setFilePath(QString filePath)
 
                     if (element.nodeName() == "source") {
                         source = element.text();
-                        translation = m_csv2Ts->findTranslation(className, source);
-//                        qDebug() << className << "--" << source << "--" << translation;
+                        translation = m_excelHandler->findTranslation(className, source);
+                        qDebug() << className << "--" << source << "--" << translation;
                     }
                     else if (element.nodeName() == "translation") {
                         if (!translation.isEmpty()) {
@@ -94,17 +107,17 @@ void TsParser::setFilePath(QString filePath)
         }
     }
 
-    QTextStream outSteam(m_newTsFile);
+    QTextStream outSteam(m_outputTsFile);
     tsDoc.save(outSteam, 4);
-    m_newTsFile->close();
+    m_outputTsFile->close();
 
     m_tsFile->close();
 }
 
 void TsParser::createNewTsFile(QString filePath)
 {
-    m_newTsFile = new QFile(this);
-    m_newTsFile->setFileName(filePath);
-    if (!m_newTsFile->open(QIODevice::WriteOnly | QIODevice::Truncate))
-        qDebug() << "Create " << m_newTsFile->fileName() << "failed.";
+    m_outputTsFile = new QFile(this);
+    m_outputTsFile->setFileName(filePath);
+    if (!m_outputTsFile->open(QIODevice::WriteOnly | QIODevice::Truncate))
+        qDebug() << "Create " << m_outputTsFile->fileName() << "failed.";
 }

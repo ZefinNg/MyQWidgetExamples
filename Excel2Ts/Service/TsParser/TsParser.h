@@ -6,7 +6,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QtXml>
-#include "CSV2Ts.h"
+#include "../ExcelHandler/ExcelHandler.h"
 
 #include <QDebug>
 
@@ -16,7 +16,12 @@ class TsParser : public QObject
 public:
     explicit TsParser(QObject *parent = 0);
 
-    void setFilePath(QString filePath);
+    ExcelHandler::HANDLE_ERROR setExcelFile(const QString filePath);
+
+    bool setTsFile(const QString filePath);
+    void setOutputTsFile(const QString outputFile);
+
+    bool fixUpTsFile();
 
 signals:
 
@@ -27,10 +32,12 @@ private:
 
 private:
     QString m_fileName;
+    QString m_outputFile;
+
     QFile *m_tsFile;
-    CSV2Ts *m_csv2Ts;
-    QList<TranslationBlock> m_translationList;
-    QFile *m_newTsFile;
+    QFile *m_outputTsFile;
+
+    ExcelHandler *m_excelHandler;
 };
 
 #endif // TSPARSER_H

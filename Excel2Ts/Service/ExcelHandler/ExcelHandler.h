@@ -1,22 +1,24 @@
 #ifndef EXCELHANDLER_H
 #define EXCELHANDLER_H
 
-#include <QThread>
+#include <QObject>
 #include <QMap>
-#include "ExcelReadWriter.h"
+#include "../Utils/ExcelReadWriter/ExcelReadWriter.h"
+#include "TranslationBlock.h"
 
-class ExcelHandler : public QThread
+class ExcelHandler : public QObject
 {
     Q_OBJECT
 public:
     enum HANDLE_ERROR {
-        OPEN_FILE_FAILED = 0,
+        NORMAL = 0,
+        OPEN_FILE_FAILED,
         FORMAT_ERROR,
         REPEAT_KEY
     };
 
     enum FILE_FORMAT {
-        TWO_COLUMNS = 1, //src, translation
+        TWO_COLUMNS = 2, //src, translation
         THREE_COLUMNS    //class, src, translation
     };
 
@@ -24,22 +26,24 @@ public:
 
     void setFilePath(QString filePath);
 
-    /*
-     * 注意判断Mapper是否为空
-     * key为源文，value为译文
-     */
-    QMap<QString, QString>getTranslationMapper();
+    ExcelHandler::HANDLE_ERROR handleFile();
 
-signals:
-    void errorOccur(ExcelHandler::HANDLE_ERROR);
+    QString getTranslation(QString className, QString srcText);
+    QString getTranslation(QString srcText);
 
-protected:
-    void run();
+    ExcelHandler::FILE_FORMAT getFileFormat() const;
+    void setFileFormat(const ExcelHandler::FILE_FORMAT &fileFormat);
+
+private:
+    int blockListIndexOf(const QString className);
 
 private:
     QString m_filePath;
     ExcelReadWrite *m_excelRW;
-    QMap<QString, QString> m_translationMapper;
+    FILE_FORMAT m_fileFormat;
+
+    QList<TranslationBlock> m_translationBlockList;
+    TranslationBlock m_translationBlock;
 };
 
 #endif // EXCELHANDLER_H

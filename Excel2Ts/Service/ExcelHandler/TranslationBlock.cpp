@@ -1,9 +1,10 @@
 #include "TranslationBlock.h"
 
 TranslationBlock::TranslationBlock()
+    : m_className(),
+      m_translationMap()
 {
-    m_className = "";
-    m_translationMap.clear();
+
 }
 
 QString TranslationBlock::className() const
