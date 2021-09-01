@@ -1,12 +1,11 @@
-#include "TsParser.h"
+﻿#include "TsParser.h"
 
 TsParser::TsParser(QObject *parent)
     : QObject(parent),
       m_fileName(),
       m_outputFile(),
       m_tsFile(new QFile(this)),
-      m_excelHandler(new ExcelHandler(this)),
-      m_translationMapper()
+      m_excelHandler(new ExcelHandler(this))
 {
 //    if (!m_excelHandler->readFile("/home/feng/Desktop/french.csv"))
 //        qDebug() << "The csv file read failed.";
@@ -76,7 +75,7 @@ bool TsParser::fixUpTsFile()
 
                     if (element.nodeName() == "source") {
                         source = element.text();
-                        translation = m_excelHandler->findTranslation(className, source);
+                        translation = m_excelHandler->getTranslation(className, source);
                         qDebug() << className << "--" << source << "--" << translation;
                     }
                     else if (element.nodeName() == "translation") {

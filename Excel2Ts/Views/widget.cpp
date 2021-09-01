@@ -1,4 +1,4 @@
-#include "widget.h"
+﻿#include "widget.h"
 #include "ui_widget.h"
 #include <QDebug>
 #include <QMessageBox>
@@ -24,13 +24,6 @@ Widget::Widget(QWidget *parent)
 
 Widget::~Widget()
 {
-    if (m_excelHandler->isRunning()) {
-        m_excelHandler->quit();
-        m_excelHandler->wait(200);
-        m_excelHandler->deleteLater();
-        m_excelHandler = NULL;
-    }
-
     delete ui;
 }
 

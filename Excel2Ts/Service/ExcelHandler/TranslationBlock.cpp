@@ -1,4 +1,4 @@
-#include "TranslationBlock.h"
+﻿#include "TranslationBlock.h"
 
 TranslationBlock::TranslationBlock()
     : m_className(),
@@ -27,9 +27,13 @@ void TranslationBlock::setTranslationMap(const QMap<QString, QString> &translati
     m_translationMap = translationMap;
 }
 
-void TranslationBlock::addMap(QString source, QString translation)
+bool TranslationBlock::addMap(QString source, QString translation)
 {
+    if (m_translationMap.contains(source))
+        return false;
+
     m_translationMap.insert(source, translation);
+    return true;
 }
 
 void TranslationBlock::clear()

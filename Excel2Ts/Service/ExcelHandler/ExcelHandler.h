@@ -1,4 +1,4 @@
-#ifndef EXCELHANDLER_H
+﻿#ifndef EXCELHANDLER_H
 #define EXCELHANDLER_H
 
 #include <QObject>
@@ -28,8 +28,8 @@ public:
 
     ExcelHandler::HANDLE_ERROR handleFile();
 
-    QString getTranslation(QString className, QString srcText);
-    QString getTranslation(QString srcText);
+    QString getTranslation(const QString className, const QString srcText);
+    QString getTranslation(const QString srcText);
 
     ExcelHandler::FILE_FORMAT getFileFormat() const;
     void setFileFormat(const ExcelHandler::FILE_FORMAT &fileFormat);

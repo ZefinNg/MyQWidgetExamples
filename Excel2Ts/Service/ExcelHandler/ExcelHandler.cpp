@@ -1,4 +1,4 @@
-#include "ExcelHandler.h"
+﻿#include "ExcelHandler.h"
 
 ExcelHandler::ExcelHandler(QObject *parent)
     : QObject(parent),
@@ -72,11 +72,19 @@ ExcelHandler::HANDLE_ERROR ExcelHandler::handleFile()
             srcText     = m_excelRW->getCellText(i, 2);
             translation = m_excelRW->getCellText(i, 3);
 
-            if (className.isEmpty())
-                m_translationBlock.addMap(srcText, translation);
+            if (className.isEmpty()) {
+                if (!m_translationBlock.addMap(srcText, translation)) {
+                    handleResult = REPEAT_KEY;
+                    goto errorFinished;
+                }
+            }
             else {
-                if (m_translationBlock.className().isEmpty())
-                    m_translationBlock.addMap(srcText, translation);
+                if (m_translationBlock.className().isEmpty()) {
+                    if (m_translationBlock.addMap(srcText, translation)) {
+                        handleResult = REPEAT_KEY;
+                        goto errorFinished;
+                    }
+                }
                 else {
                     //查找是否已经存在这个类的记录
                     int index = this->blockListIndexOf(className);
@@ -92,7 +100,10 @@ ExcelHandler::HANDLE_ERROR ExcelHandler::handleFile()
                         m_translationBlock.setClassName(className);
                     }
 
-                    m_translationBlock.addMap(srcText, translation);
+                    if (!m_translationBlock.addMap(srcText, translation)) {
+                        handleResult = REPEAT_KEY;
+                        goto errorFinished;
+                    }
                 }
             }
 
@@ -102,16 +113,12 @@ ExcelHandler::HANDLE_ERROR ExcelHandler::handleFile()
         default:
             srcText     = m_excelRW->getCellText(i, 1);
             translation = m_excelRW->getCellText(i, 2);
-            m_translationBlock.addMap(srcText, translation);
+            if (m_translationBlock.addMap(srcText, translation)) {
+                handleResult = REPEAT_KEY;
+                goto errorFinished;
+            }
             break;
         }
-
-//        if (m_translationMapper.contains(srcText)) {
-//            handleResult = REPEAT_KEY;
-//            goto errorFinished;
-//        }
-//        else
-//            m_translationMapper.insert(srcText, translation);
     }
 
     if (m_fileFormat == TWO_COLUMNS)
@@ -125,17 +132,21 @@ errorFinished:
         delete m_excelRW;
         m_excelRW = NULL;
     }
+
     return handleResult;
 }
 
-QString ExcelHandler::getTranslation(QString className, QString srcText)
+QString ExcelHandler::getTranslation(const QString className, const QString srcText)
 {
-    return "";
+    foreach (TranslationBlock each, m_translationBlockList) {
+        if (className == each.className())
+            return m_translationBlock.translationMap().value(srcText);
+    }
 }
 
-QString ExcelHandler::getTranslation(QString srcText)
+QString ExcelHandler::getTranslation(const QString srcText)
 {
-//    foreach()
+    return m_translationBlock.translationMap().value(srcText);
 }
 
 ExcelHandler::FILE_FORMAT ExcelHandler::getFileFormat() const

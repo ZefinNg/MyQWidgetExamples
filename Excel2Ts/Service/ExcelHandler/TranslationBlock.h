@@ -1,4 +1,4 @@
-#ifndef TRANSLATIONBLOCK_H
+﻿#ifndef TRANSLATIONBLOCK_H
 #define TRANSLATIONBLOCK_H
 
 #include <QString>
@@ -16,7 +16,7 @@ public:
     QMap<QString, QString> translationMap() const;
     void setTranslationMap(const QMap<QString, QString> &translationMap);
 
-    void addMap(QString source, QString value);
+    bool addMap(QString source, QString value);
     void clear();
 
 private:
