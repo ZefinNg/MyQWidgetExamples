@@ -2,7 +2,10 @@
 #define WIDGET_H
 
 #include <QWidget>
-#include "ExcelHandler/ExcelHandler.h"
+#include <QFileDialog>
+#include <QDesktopServices>
+#include <QDateTime>
+#include "../Service/TsParser/TsFixUp.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -17,7 +20,11 @@ public:
     ~Widget();
 
 private slots:
-    void onBtnOpenClicked();
+    void onBtnSelectExcelClicked();
+    void onBtnSelectTsFileClicked();
+
+    void onBtnStartConvertClicked();
+    void onBtnOpenOutputClicked();
 
     void onExcelHandlerError(ExcelHandler::HANDLE_ERROR errorNum);
 #if 0
@@ -36,6 +43,8 @@ private:
 
 private:
     Ui::Widget *ui;
-    ExcelHandler *m_excelHandler;
+    TsFixUp *m_tsFixUp;
+    QString m_tsFilePath;
+    QString m_outputPath;
 };
 #endif // WIDGET_H

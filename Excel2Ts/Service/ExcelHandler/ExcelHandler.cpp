@@ -3,7 +3,7 @@
 ExcelHandler::ExcelHandler(QObject *parent)
     : QObject(parent),
       m_filePath(),
-      m_excelRW(NULL),
+      m_excelRW(new ExcelReadWrite(this)),
       m_fileFormat(TWO_COLUMNS),
       m_translationBlockList(),
       m_translationBlock()
@@ -14,6 +14,7 @@ ExcelHandler::ExcelHandler(QObject *parent)
 void ExcelHandler::setFilePath(QString filePath)
 {
     m_filePath = filePath;
+    m_excelRW->openFile(m_filePath);
 }
 
 ExcelHandler::HANDLE_ERROR ExcelHandler::handleFile()
@@ -113,7 +114,7 @@ ExcelHandler::HANDLE_ERROR ExcelHandler::handleFile()
         default:
             srcText     = m_excelRW->getCellText(i, 1);
             translation = m_excelRW->getCellText(i, 2);
-            if (m_translationBlock.addMap(srcText, translation)) {
+            if (!m_translationBlock.addMap(srcText, translation)) {
                 handleResult = REPEAT_KEY;
                 goto errorFinished;
             }
@@ -146,6 +147,7 @@ QString ExcelHandler::getTranslation(const QString className, const QString srcT
 
 QString ExcelHandler::getTranslation(const QString srcText)
 {
+    QMap<QString, QString> mapper = m_translationBlock.translationMap();
     return m_translationBlock.translationMap().value(srcText);
 }
 

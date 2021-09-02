@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="btnClose">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>40</y>
+     <x>150</x>
+     <y>290</y>
      <width>80</width>
      <height>20</height>
     </rect>
@@ -26,24 +26,24 @@
     <string>Close</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btnOpen">
+  <widget class="QPushButton" name="btnSelectExcel">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>40</y>
+     <x>580</x>
+     <y>12</y>
      <width>80</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>Open</string>
+    <string>选择Excel</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btnSetTitle">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>80</y>
+     <x>150</x>
+     <y>330</y>
      <width>80</width>
      <height>20</height>
     </rect>
@@ -55,8 +55,8 @@
   <widget class="QPushButton" name="btnSetSheetName">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>120</y>
+     <x>150</x>
+     <y>370</y>
      <width>80</width>
      <height>20</height>
     </rect>
@@ -68,8 +68,8 @@
   <widget class="QLineEdit" name="lineEditTitle">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>80</y>
+     <x>30</x>
+     <y>330</y>
      <width>113</width>
      <height>20</height>
     </rect>
@@ -78,8 +78,8 @@
   <widget class="QLineEdit" name="lineEditSheetName">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>120</y>
+     <x>30</x>
+     <y>370</y>
      <width>113</width>
      <height>20</height>
     </rect>
@@ -88,8 +88,8 @@
   <widget class="QPushButton" name="btnAddSheet">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>160</y>
+     <x>150</x>
+     <y>410</y>
      <width>80</width>
      <height>20</height>
     </rect>
@@ -101,8 +101,8 @@
   <widget class="QPushButton" name="btnDeleteSheet">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>200</y>
+     <x>150</x>
+     <y>450</y>
      <width>80</width>
      <height>20</height>
     </rect>
@@ -114,14 +114,106 @@
   <widget class="QPushButton" name="btnAddCell">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>240</y>
+     <x>150</x>
+     <y>490</y>
      <width>80</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
     <string>AddCell</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditExcelFile">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>13</y>
+     <width>541</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnSelectTs">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>49</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>选择Ts文件</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditTsFile">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>50</y>
+     <width>541</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBoxFormat">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>90</y>
+     <width>72</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>两列</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>三列</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="labelFormat">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>80</y>
+     <width>81</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Excel文件格式选择：</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnStartConvert">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>80</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>开始转换</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnOpenOutputDir">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>80</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>输出目录</string>
    </property>
   </widget>
  </widget>

@@ -20,16 +20,16 @@ INCLUDEPATH += Service/
 SOURCES += \
     Service/ExcelHandler/ExcelHandler.cpp \
     Service/ExcelHandler/TranslationBlock.cpp \
+    Service/TsParser/TsFixUp.cpp \
     Service/Utils/ExcelReadWriter/ExcelReadWriter.cpp \
-    Service/TsParser/TsParser.cpp \
     main.cpp \
     Views/widget.cpp
 
 HEADERS += \
     Service/ExcelHandler/ExcelHandler.h \
     Service/ExcelHandler/TranslationBlock.h \
+    Service/TsParser/TsFixUp.h \
     Service/Utils/ExcelReadWriter/ExcelReadWriter.h \
-    Service/TsParser/TsParser.h \
     Views/widget.h
 
 FORMS += \

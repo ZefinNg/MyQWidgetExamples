@@ -1,5 +1,5 @@
-#ifndef TSPARSER_H
-#define TSPARSER_H
+#ifndef TSFIXUP_H
+#define TSFIXUP_H
 
 #include <QObject>
 #include <QFile>
@@ -10,11 +10,11 @@
 
 #include <QDebug>
 
-class TsParser : public QObject
+class TsFixUp : public QObject
 {
     Q_OBJECT
 public:
-    explicit TsParser(QObject *parent = 0);
+    explicit TsFixUp(QObject *parent = 0);
 
     ExcelHandler::HANDLE_ERROR setExcelFile(const QString filePath);
 
@@ -40,4 +40,4 @@ private:
     ExcelHandler *m_excelHandler;
 };
 
-#endif // TSPARSER_H
+#endif // TSFIXUP_H

@@ -4,22 +4,31 @@
 #include <QMessageBox>
 
 Widget::Widget(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::Widget)
+    : QWidget(parent),
+      ui(new Ui::Widget),
+      m_tsFixUp(),
+      m_tsFilePath()
 {
     ui->setupUi(this);
-    m_excelHandler = new ExcelHandler();
 
-    connect(m_excelHandler, SIGNAL(errorOccur(ExcelHandler::HANDLE_ERROR)),
-            this, SLOT(onExcelHandlerError(ExcelHandler::HANDLE_ERROR)));
+    m_tsFixUp = new TsFixUp(this);
 
-    connect(ui->btnOpen,         SIGNAL(clicked()), this, SLOT(onBtnOpenClicked()));
+    connect(ui->btnSelectExcel,    SIGNAL(clicked()), this, SLOT(onBtnSelectExcelClicked()));
+    connect(ui->btnSelectTs,       SIGNAL(clicked()), this, SLOT(onBtnSelectTsFileClicked()));
+    connect(ui->btnStartConvert,   SIGNAL(clicked()), this, SLOT(onBtnStartConvertClicked()));
+    connect(ui->btnOpenOutputDir,  SIGNAL(clicked()), this, SLOT(onBtnOpenOutputClicked()));
 //    connect(ui->btnClose,        SIGNAL(clicked()), this, SLOT(onBtnCloseClicked()));
 //    connect(ui->btnSetTitle,     SIGNAL(clicked()), this, SLOT(onBtnSetTitleClicked()));
 //    connect(ui->btnSetSheetName, SIGNAL(clicked()), this, SLOT(onBtnSetSheetNameClicked()));
 //    connect(ui->btnAddSheet,     SIGNAL(clicked()), this, SLOT(onBtnAddSheetClicked()));
 //    connect(ui->btnDeleteSheet,  SIGNAL(clicked()), this, SLOT(onBtnDeleteSheetClicked()));
 //    connect(ui->btnAddCell,      SIGNAL(clicked()), this, SLOT(onBtnAddCell()));
+
+    ui->labelFormat->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    ui->labelFormat->setWordWrap(true);
+
+    ui->lineEditExcelFile->setEnabled(false);
+    ui->lineEditTsFile->setEnabled(false);
 }
 
 Widget::~Widget()
@@ -27,9 +36,46 @@ Widget::~Widget()
     delete ui;
 }
 
-void Widget::onBtnOpenClicked()
+void Widget::onBtnSelectExcelClicked()
 {
-    m_excelHandler->setFilePath("D:\\Greman_Revised.xlsx");
+    QString excelFilePath = QFileDialog::getOpenFileName(this, "选择Excel文件", "C:\\", "Excel (*.xlsx *xls)");
+    m_tsFixUp->setExcelFile(excelFilePath);
+
+    ui->lineEditExcelFile->setText(excelFilePath);
+}
+
+void Widget::onBtnSelectTsFileClicked()
+{
+    m_tsFilePath = QFileDialog::getOpenFileName(this, "选择Ts文件", "C:\\", "Ts (*.ts *.xml)");
+    QFileInfo fileInfo(m_tsFilePath);
+
+    m_outputPath = fileInfo.absoluteDir().path();
+#ifdef WIN32
+    m_outputPath.replace("/", "\\");
+#else
+
+#endif
+    QString fileBaseName = fileInfo.baseName();
+    QString curDateTime  = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm_ss");
+    m_tsFixUp->setOutputTsFile(m_outputPath + fileBaseName + "_" + curDateTime + ".ts");
+    m_tsFixUp->setTsFile(m_tsFilePath);
+
+    ui->lineEditTsFile->setText(m_tsFilePath);
+}
+
+void Widget::onBtnStartConvertClicked()
+{
+    if (!m_tsFixUp->fixUpTsFile())
+        QMessageBox::critical(this, "错误", "Ts文件完善失败!");
+}
+
+void Widget::onBtnOpenOutputClicked()
+{
+    if (m_tsFilePath.isEmpty())
+        QMessageBox::critical(this, "错误", "未选择Ts文件!");
+    else {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(m_outputPath));
+    }
 }
 
 void Widget::onExcelHandlerError(ExcelHandler::HANDLE_ERROR errorNum)

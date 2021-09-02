@@ -1,6 +1,6 @@
-﻿#include "TsParser.h"
+﻿#include "TsFixUp.h"
 
-TsParser::TsParser(QObject *parent)
+TsFixUp::TsFixUp(QObject *parent)
     : QObject(parent),
       m_fileName(),
       m_outputFile(),
@@ -13,14 +13,14 @@ TsParser::TsParser(QObject *parent)
 //        m_translationList = m_excelHandler->classTranslationList();
 }
 
-ExcelHandler::HANDLE_ERROR TsParser::setExcelFile(const QString filePath)
+ExcelHandler::HANDLE_ERROR TsFixUp::setExcelFile(const QString filePath)
 {
     m_excelHandler->setFilePath(filePath);
 
     return m_excelHandler->handleFile();
 }
 
-bool TsParser::setTsFile(const QString filePath)
+bool TsFixUp::setTsFile(const QString filePath)
 {
     m_fileName = filePath;
     m_tsFile->setFileName(filePath);
@@ -28,13 +28,14 @@ bool TsParser::setTsFile(const QString filePath)
     return m_tsFile->open(QIODevice::ReadWrite);
 }
 
-void TsParser::setOutputTsFile(const QString outputFile)
+void TsFixUp::setOutputTsFile(const QString outputFile)
 {
     m_outputFile = outputFile;
+    qDebug() << __FUNCTION__ << __LINE__ << m_outputFile;
     this->createNewTsFile(m_outputFile);
 }
 
-bool TsParser::fixUpTsFile()
+bool TsFixUp::fixUpTsFile()
 {
     QDomDocument tsDoc;
     if (!tsDoc.setContent(m_tsFile)) {
@@ -75,15 +76,16 @@ bool TsParser::fixUpTsFile()
 
                     if (element.nodeName() == "source") {
                         source = element.text();
-                        translation = m_excelHandler->getTranslation(className, source);
+                        translation = m_excelHandler->getTranslation(source);
                         qDebug() << className << "--" << source << "--" << translation;
                     }
                     else if (element.nodeName() == "translation") {
-                        if (!translation.isEmpty()) {
-                            textTranslation = tsDoc.createTextNode(translation);
-                            element.appendChild(textTranslation);
-                            source.clear();
-                        }
+                        if (translation.isEmpty())
+                            translation = " ";
+
+                        textTranslation = tsDoc.createTextNode(translation);
+                        element.appendChild(textTranslation);
+                        source.clear();
                     }
                     else
                         continue;
@@ -111,9 +113,11 @@ bool TsParser::fixUpTsFile()
     m_outputTsFile->close();
 
     m_tsFile->close();
+
+    return true;
 }
 
-void TsParser::createNewTsFile(QString filePath)
+void TsFixUp::createNewTsFile(QString filePath)
 {
     m_outputTsFile = new QFile(this);
     m_outputTsFile->setFileName(filePath);
