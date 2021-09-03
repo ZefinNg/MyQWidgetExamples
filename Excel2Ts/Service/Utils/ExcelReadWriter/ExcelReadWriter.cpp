@@ -1,7 +1,18 @@
 ﻿#include "ExcelReadWriter.h"
 #include <QDebug>
 
-ExcelReadWrite::ExcelReadWrite(QObject *parent) : QObject(parent)
+ExcelReadWrite::ExcelReadWrite(QObject *parent)
+    : QObject(parent),
+      m_isOpen(false),
+      m_filePath(),
+      m_excelApp(NULL),
+      m_workbooks(NULL),
+      m_fileWorkbook(NULL),
+      m_worksheets(NULL),
+      m_currentWorksheet(NULL),
+      m_usedRange(NULL),
+      m_rows(NULL),
+      m_columns(NULL)
 {
     /* ？存疑：
      * 因为QAxObject默认是在单线程下使用的，
@@ -9,15 +20,6 @@ ExcelReadWrite::ExcelReadWrite(QObject *parent) : QObject(parent)
      * 会导致获取的excel的QAxObject都是NULL
      */
     CoInitializeEx(NULL, COINIT_MULTITHREADED);
-
-    m_isOpen           = false;
-    m_filePath         = "";
-    m_excelApp         = NULL;
-    m_workbooks        = NULL;
-    m_fileWorkbook     = NULL;
-    m_worksheets       = NULL;
-    m_currentWorksheet = NULL;
-    m_usedRange        = NULL;
 
     //设置m_excelApp为Excel文件的操作对象
     m_excelApp = new QAxObject("Excel.Application");

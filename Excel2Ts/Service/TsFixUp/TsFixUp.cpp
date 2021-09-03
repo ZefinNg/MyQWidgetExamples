@@ -20,6 +20,11 @@ ExcelHandler::HANDLE_ERROR TsFixUp::setExcelFile(const QString filePath)
     return m_excelHandler->handleFile();
 }
 
+void TsFixUp::closeExcelFile()
+{
+    m_excelHandler->closeFile();
+}
+
 bool TsFixUp::setTsFile(const QString filePath)
 {
     m_fileName = filePath;

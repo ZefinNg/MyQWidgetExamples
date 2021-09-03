@@ -25,6 +25,7 @@ public:
     explicit ExcelHandler(QObject *parent = nullptr);
 
     void setFilePath(QString filePath);
+    void closeFile();
 
     ExcelHandler::HANDLE_ERROR handleFile();
 

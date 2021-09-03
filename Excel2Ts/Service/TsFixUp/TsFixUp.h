@@ -17,6 +17,7 @@ public:
     explicit TsFixUp(QObject *parent = 0);
 
     ExcelHandler::HANDLE_ERROR setExcelFile(const QString filePath);
+    void closeExcelFile();
 
     bool setTsFile(const QString filePath);
     void setOutputTsFile(const QString outputFile);

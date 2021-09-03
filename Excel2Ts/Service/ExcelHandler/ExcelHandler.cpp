@@ -17,6 +17,12 @@ void ExcelHandler::setFilePath(QString filePath)
     m_excelRW->openFile(m_filePath);
 }
 
+void ExcelHandler::closeFile()
+{
+    m_filePath = "";
+    m_excelRW->closeFile();
+}
+
 ExcelHandler::HANDLE_ERROR ExcelHandler::handleFile()
 {
     int rowCount         = m_excelRW->getRows();
@@ -129,10 +135,7 @@ formatError:
     handleResult = FORMAT_ERROR;
 
 errorFinished:
-    if (m_excelRW != NULL) {
-        delete m_excelRW;
-        m_excelRW = NULL;
-    }
+    m_excelRW->closeFile();
 
     return handleResult;
 }

@@ -6,12 +6,10 @@
 Widget::Widget(QWidget *parent)
     : QWidget(parent),
       ui(new Ui::Widget),
-      m_tsFixUp(),
+      m_tsFixUp(new TsFixUp(this)),
       m_tsFilePath()
 {
     ui->setupUi(this);
-
-    m_tsFixUp = new TsFixUp(this);
 
     connect(ui->btnSelectExcel,    SIGNAL(clicked()), this, SLOT(onBtnSelectExcelClicked()));
     connect(ui->btnSelectTs,       SIGNAL(clicked()), this, SLOT(onBtnSelectTsFileClicked()));
@@ -39,14 +37,43 @@ Widget::~Widget()
 void Widget::onBtnSelectExcelClicked()
 {
     QString excelFilePath = QFileDialog::getOpenFileName(this, "选择Excel文件", "C:\\", "Excel (*.xlsx *xls)");
-    m_tsFixUp->setExcelFile(excelFilePath);
 
-    ui->lineEditExcelFile->setText(excelFilePath);
+    if (excelFilePath.isEmpty())
+        return;
+
+    ExcelHandler::HANDLE_ERROR result = m_tsFixUp->setExcelFile(excelFilePath);
+
+    QString tips = "";
+
+    switch (result) {
+    case ExcelHandler::NORMAL:
+        ui->lineEditExcelFile->setText(excelFilePath);
+        return;
+    case ExcelHandler::OPEN_FILE_FAILED:
+        tips = "文件打开失败。";
+        break;
+    case ExcelHandler::FORMAT_ERROR:
+        tips = "文件格式错误。";
+        break;
+    case ExcelHandler::REPEAT_KEY:
+        tips = "文件存在重复的源文。";
+        break;
+    default:
+        break;
+    }
+
+    //TODO：此处调用会导致段错误，待查
+//    m_tsFixUp->closeExcelFile();
+    QMessageBox::critical(this, "错误", tips);
 }
 
 void Widget::onBtnSelectTsFileClicked()
 {
     m_tsFilePath = QFileDialog::getOpenFileName(this, "选择Ts文件", "C:\\", "Ts (*.ts *.xml)");
+
+    if (m_tsFilePath.isEmpty())
+        return;
+
     QFileInfo fileInfo(m_tsFilePath);
 
     m_outputPath = fileInfo.absoluteDir().path();
