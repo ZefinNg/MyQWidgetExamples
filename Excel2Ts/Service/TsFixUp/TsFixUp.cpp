@@ -31,7 +31,6 @@ bool TsFixUp::setTsFile(const QString filePath)
 void TsFixUp::setOutputTsFile(const QString outputFile)
 {
     m_outputFile = outputFile;
-    qDebug() << __FUNCTION__ << __LINE__ << m_outputFile;
     this->createNewTsFile(m_outputFile);
 }
 
@@ -70,7 +69,6 @@ bool TsFixUp::fixUpTsFile()
             sourceList = nameMessageList.at(j).childNodes();
 
             for (int m = 0; m < sourceList.count(); m++) {
-#if 1
                 if (sourceList.at(m).isElement()) {
                     element = sourceList.at(m).toElement();
 
@@ -82,6 +80,8 @@ bool TsFixUp::fixUpTsFile()
                     else if (element.nodeName() == "translation") {
                         if (translation.isEmpty())
                             translation = " ";
+                        else
+                            element.removeAttribute("type");//找到翻译则删除type属性
 
                         textTranslation = tsDoc.createTextNode(translation);
                         element.appendChild(textTranslation);
@@ -90,20 +90,6 @@ bool TsFixUp::fixUpTsFile()
                     else
                         continue;
                 }
-#else
-                if (sourceList.at(m).nodeName() == "source") {
-                    element = sourceList.at(m).toElement();
-                    source = element.text();
-                    translation = m_csv2Ts->findTranslation(className, source);
-                }
-                else if (sourceList.at(m).nodeName() == "translation") {
-                    element = sourceList.at(m).toElement();
-                    qDebug() << element.attribute("type");
-                    source.clear();
-                }
-                else
-                    continue;
-#endif
             }
         }
     }

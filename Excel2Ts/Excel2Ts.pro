@@ -20,7 +20,7 @@ INCLUDEPATH += Service/
 SOURCES += \
     Service/ExcelHandler/ExcelHandler.cpp \
     Service/ExcelHandler/TranslationBlock.cpp \
-    Service/TsParser/TsFixUp.cpp \
+    Service/TsFixUp/TsFixUp.cpp \
     Service/Utils/ExcelReadWriter/ExcelReadWriter.cpp \
     main.cpp \
     Views/widget.cpp
@@ -28,7 +28,7 @@ SOURCES += \
 HEADERS += \
     Service/ExcelHandler/ExcelHandler.h \
     Service/ExcelHandler/TranslationBlock.h \
-    Service/TsParser/TsFixUp.h \
+    Service/TsFixUp/TsFixUp.h \
     Service/Utils/ExcelReadWriter/ExcelReadWriter.h \
     Views/widget.h
 

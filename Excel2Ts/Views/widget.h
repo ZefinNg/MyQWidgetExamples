@@ -5,7 +5,7 @@
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QDateTime>
-#include "../Service/TsParser/TsFixUp.h"
+#include "../Service/TsFixUp/TsFixUp.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }

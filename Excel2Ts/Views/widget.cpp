@@ -67,6 +67,8 @@ void Widget::onBtnStartConvertClicked()
 {
     if (!m_tsFixUp->fixUpTsFile())
         QMessageBox::critical(this, "错误", "Ts文件完善失败!");
+    else
+        QMessageBox::information(this, "提示", "转换完成");
 }
 
 void Widget::onBtnOpenOutputClicked()
