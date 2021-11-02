@@ -18,16 +18,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 INCLUDEPATH += Service/
 
 SOURCES += \
-    Service/ExcelHandler/ExcelHandler.cpp \
+    Service/ErrorTxtFixUp/ErrorTxtFixUp.cpp \
     Service/ExcelHandler/TranslationBlock.cpp \
+    Service/ExcelHandler/TsExcelTHandler.cpp \
     Service/TsFixUp/TsFixUp.cpp \
     Service/Utils/ExcelReadWriter/ExcelReadWriter.cpp \
     main.cpp \
     Views/widget.cpp
 
 HEADERS += \
-    Service/ExcelHandler/ExcelHandler.h \
+    Service/ErrorTxtFixUp/ErrorTxtFixUp.h \
     Service/ExcelHandler/TranslationBlock.h \
+    Service/ExcelHandler/TsExcelTHandler.h \
     Service/TsFixUp/TsFixUp.h \
     Service/Utils/ExcelReadWriter/ExcelReadWriter.h \
     Views/widget.h
@@ -39,3 +41,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    Views/Images.qrc

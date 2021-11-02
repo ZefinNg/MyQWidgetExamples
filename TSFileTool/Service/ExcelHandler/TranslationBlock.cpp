@@ -1,20 +1,20 @@
 ﻿#include "TranslationBlock.h"
 
 TranslationBlock::TranslationBlock()
-    : m_className(),
+    : m_field(),
       m_translationMap()
 {
 
 }
 
-QString TranslationBlock::className() const
+QString TranslationBlock::field() const
 {
-    return m_className;
+    return m_field;
 }
 
-void TranslationBlock::setClassName(const QString &className)
+void TranslationBlock::setField(const QString &field)
 {
-    m_className = className;
+    m_field = field;
 }
 
 QMap<QString, QString> TranslationBlock::translationMap() const
@@ -38,6 +38,6 @@ bool TranslationBlock::addMap(QString source, QString translation)
 
 void TranslationBlock::clear()
 {
-    m_className = "";
+    m_field = "";
     m_translationMap.clear();
 }

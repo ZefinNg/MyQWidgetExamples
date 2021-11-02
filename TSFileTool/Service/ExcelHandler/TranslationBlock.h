@@ -10,8 +10,8 @@ class TranslationBlock
 public:
     TranslationBlock();
 
-    QString className() const;
-    void setClassName(const QString &className);
+    QString field() const;
+    void setField(const QString &field);
 
     QMap<QString, QString> translationMap() const;
     void setTranslationMap(const QMap<QString, QString> &translationMap);
@@ -20,7 +20,7 @@ public:
     void clear();
 
 private:
-    QString m_className;
+    QString m_field;
     QMap<QString, QString> m_translationMap;
 };
 

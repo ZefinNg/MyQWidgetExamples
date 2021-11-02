@@ -190,7 +190,7 @@
     <string>Excel文件格式选择：</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btnStartConvert">
+  <widget class="QPushButton" name="btnExcel2Ts">
    <property name="geometry">
     <rect>
      <x>490</x>
@@ -200,7 +200,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>开始转换</string>
+    <string>Excel-&gt;Ts</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btnOpenOutputDir">
@@ -214,6 +214,35 @@
    </property>
    <property name="text">
     <string>输出目录</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnTs2Excel">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>80</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Ts-&gt;Excel</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnExcelStatus">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>11</y>
+     <width>21</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
    </property>
   </widget>
  </widget>

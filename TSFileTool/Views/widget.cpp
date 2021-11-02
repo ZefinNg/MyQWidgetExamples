@@ -13,7 +13,7 @@ Widget::Widget(QWidget *parent)
 
     connect(ui->btnSelectExcel,    SIGNAL(clicked()), this, SLOT(onBtnSelectExcelClicked()));
     connect(ui->btnSelectTs,       SIGNAL(clicked()), this, SLOT(onBtnSelectTsFileClicked()));
-    connect(ui->btnStartConvert,   SIGNAL(clicked()), this, SLOT(onBtnStartConvertClicked()));
+    connect(ui->btnExcel2Ts,       SIGNAL(clicked()), this, SLOT(onBtnExcel2TsClicked()));
     connect(ui->btnOpenOutputDir,  SIGNAL(clicked()), this, SLOT(onBtnOpenOutputClicked()));
 //    connect(ui->btnClose,        SIGNAL(clicked()), this, SLOT(onBtnCloseClicked()));
 //    connect(ui->btnSetTitle,     SIGNAL(clicked()), this, SLOT(onBtnSetTitleClicked()));
@@ -27,6 +27,8 @@ Widget::Widget(QWidget *parent)
 
     ui->lineEditExcelFile->setEnabled(false);
     ui->lineEditTsFile->setEnabled(false);
+
+    ui->btnExcelStatus->setStyleSheet("border-image: url(:/Resources/correct.png);");
 }
 
 Widget::~Widget()
@@ -41,21 +43,21 @@ void Widget::onBtnSelectExcelClicked()
     if (excelFilePath.isEmpty())
         return;
 
-    ExcelHandler::HANDLE_ERROR result = m_tsFixUp->setExcelFile(excelFilePath);
+    TsExcelHandler::HANDLE_ERROR result = m_tsFixUp->setTranstlationFile(excelFilePath);
 
     QString tips = "";
 
     switch (result) {
-    case ExcelHandler::NORMAL:
+    case TsExcelHandler::NORMAL:
         ui->lineEditExcelFile->setText(excelFilePath);
         return;
-    case ExcelHandler::OPEN_FILE_FAILED:
+    case TsExcelHandler::OPEN_FILE_FAILED:
         tips = "文件打开失败。";
         break;
-    case ExcelHandler::FORMAT_ERROR:
+    case TsExcelHandler::FORMAT_ERROR:
         tips = "文件格式错误。";
         break;
-    case ExcelHandler::REPEAT_KEY:
+    case TsExcelHandler::REPEAT_KEY:
         tips = "文件存在重复的源文。";
         break;
     default:
@@ -90,12 +92,17 @@ void Widget::onBtnSelectTsFileClicked()
     ui->lineEditTsFile->setText(m_tsFilePath);
 }
 
-void Widget::onBtnStartConvertClicked()
+void Widget::onBtnExcel2TsClicked()
 {
-    if (!m_tsFixUp->fixUpTsFile())
+    if (!m_tsFixUp->excel2Ts())
         QMessageBox::critical(this, "错误", "Ts文件完善失败!");
     else
         QMessageBox::information(this, "提示", "转换完成");
+}
+
+void Widget::onBtnTs2ExcelClicked()
+{
+
 }
 
 void Widget::onBtnOpenOutputClicked()
@@ -107,16 +114,21 @@ void Widget::onBtnOpenOutputClicked()
     }
 }
 
-void Widget::onExcelHandlerError(ExcelHandler::HANDLE_ERROR errorNum)
+void Widget::onBtnExcelStatusClicked()
+{
+
+}
+
+void Widget::onExcelHandlerError(TsExcelHandler::HANDLE_ERROR errorNum)
 {
     switch (errorNum) {
-    case ExcelHandler::OPEN_FILE_FAILED:
+    case TsExcelHandler::OPEN_FILE_FAILED:
         QMessageBox::critical(this, "Error", "Open file failed.");
         break;
-    case ExcelHandler::FORMAT_ERROR:
+    case TsExcelHandler::FORMAT_ERROR:
         QMessageBox::critical(this, "Error", "Excel file's text format is error.");
         break;
-    case ExcelHandler::REPEAT_KEY:
+    case TsExcelHandler::REPEAT_KEY:
         QMessageBox::critical(this, "Error", "There are duplicate key values.");
         break;
     default:

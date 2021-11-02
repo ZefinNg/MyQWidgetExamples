@@ -5,19 +5,28 @@ TsFixUp::TsFixUp(QObject *parent)
       m_fileName(),
       m_outputFile(),
       m_tsFile(new QFile(this)),
-      m_excelHandler(new ExcelHandler(this))
+      m_domDoc(new QDomDocument()),
+      m_excelHandler(new TsExcelHandler(this))
 {
 //    if (!m_excelHandler->readFile("/home/feng/Desktop/french.csv"))
 //        qDebug() << "The csv file read failed.";
 //    else
-//        m_translationList = m_excelHandler->classTranslationList();
+    //        m_translationList = m_excelHandler->classTranslationList();
 }
 
-ExcelHandler::HANDLE_ERROR TsFixUp::setExcelFile(const QString filePath)
+TsFixUp::~TsFixUp()
 {
-    m_excelHandler->setFilePath(filePath);
+    if (m_domDoc != NULL) {
+        delete m_domDoc;
+        m_domDoc = NULL;
+    }
+}
 
-    return m_excelHandler->handleFile();
+TsExcelHandler::HANDLE_ERROR TsFixUp::setTranstlationFile(const QString xlsxPath)
+{
+    m_excelHandler->setFilePath(xlsxPath);
+
+    return m_excelHandler->handleTranslation();
 }
 
 void TsFixUp::closeExcelFile()
@@ -39,16 +48,15 @@ void TsFixUp::setOutputTsFile(const QString outputFile)
     this->createNewTsFile(m_outputFile);
 }
 
-bool TsFixUp::fixUpTsFile()
+bool TsFixUp::excel2Ts()
 {
-    QDomDocument tsDoc;
-    if (!tsDoc.setContent(m_tsFile)) {
+    if (!m_domDoc->setContent(m_tsFile)) {
         qDebug() << "Document set file failed.";
         m_tsFile->close();
         return false;
     }
 
-    QDomElement root = tsDoc.documentElement();
+    QDomElement root = m_domDoc->documentElement();
     qDebug() << "root tag name:" << root.tagName();
     qDebug() << "root node name:" << root.nodeName();
 
@@ -88,7 +96,7 @@ bool TsFixUp::fixUpTsFile()
                         else
                             element.removeAttribute("type");//找到翻译则删除type属性
 
-                        textTranslation = tsDoc.createTextNode(translation);
+                        textTranslation = m_domDoc->createTextNode(translation);
                         element.appendChild(textTranslation);
                         source.clear();
                     }
@@ -100,7 +108,7 @@ bool TsFixUp::fixUpTsFile()
     }
 
     QTextStream outSteam(m_outputTsFile);
-    tsDoc.save(outSteam, 4);
+    m_domDoc->save(outSteam, 4);
     m_outputTsFile->close();
 
     m_tsFile->close();

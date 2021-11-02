@@ -1,6 +1,6 @@
-﻿#include "ExcelHandler.h"
+﻿#include "TsExcelTHandler.h"
 
-ExcelHandler::ExcelHandler(QObject *parent)
+TsExcelHandler::TsExcelHandler(QObject *parent)
     : QObject(parent),
       m_filePath(),
       m_excelRW(new ExcelReadWrite(this)),
@@ -8,29 +8,29 @@ ExcelHandler::ExcelHandler(QObject *parent)
       m_translationBlockList(),
       m_translationBlock()
 {
-    qRegisterMetaType<ExcelHandler::HANDLE_ERROR>("ExcelHandler::HANDLE_ERROR");
+    qRegisterMetaType<TsExcelHandler::HANDLE_ERROR>("ExcelHandler::HANDLE_ERROR");
 }
 
-void ExcelHandler::setFilePath(QString filePath)
+void TsExcelHandler::setFilePath(QString filePath)
 {
     m_filePath = filePath;
     m_excelRW->openFile(m_filePath);
 }
 
-void ExcelHandler::closeFile()
+void TsExcelHandler::closeFile()
 {
     m_filePath = "";
     m_excelRW->closeFile();
 }
 
-ExcelHandler::HANDLE_ERROR ExcelHandler::handleFile()
+TsExcelHandler::HANDLE_ERROR TsExcelHandler::handleTranslation()
 {
     int rowCount         = m_excelRW->getRows();
     int columnCount      = m_excelRW->getColumns();
     int rowStartIndex    = m_excelRW->getStartRows();
     int columnStartIndex = m_excelRW->getStartColumns();
 
-    ExcelHandler::HANDLE_ERROR handleResult = NORMAL;
+    TsExcelHandler::HANDLE_ERROR handleResult = NORMAL;
 
     QString className   = "";
     QString srcText     = "";
@@ -42,7 +42,7 @@ ExcelHandler::HANDLE_ERROR ExcelHandler::handleFile()
 
     if (!m_excelRW->openFile(m_filePath)) {
         handleResult = OPEN_FILE_FAILED;
-        goto errorFinished;
+        goto normalFinished;
     }
 
     m_excelRW->setCurrentWorkSheet(1);
@@ -54,13 +54,13 @@ ExcelHandler::HANDLE_ERROR ExcelHandler::handleFile()
      * src | translation
      *
      * 3列的格式如下：
-     * 类名 | 源文 | 译文
+     * 字段名 | 源文 | 译文
      * xxx | src | translation
      *     | src | translation
      */
     if (rowStartIndex > 1 || columnStartIndex > 1) {
         handleResult = FORMAT_ERROR;
-        goto errorFinished;
+        goto normalFinished;
     }
 
     if (m_fileFormat == TWO_COLUMNS) {
@@ -80,20 +80,16 @@ ExcelHandler::HANDLE_ERROR ExcelHandler::handleFile()
             translation = m_excelRW->getCellText(i, 3);
 
             if (className.isEmpty()) {
-                if (!m_translationBlock.addMap(srcText, translation)) {
-                    handleResult = REPEAT_KEY;
-                    goto errorFinished;
-                }
+                if (!m_translationBlock.addMap(srcText, translation))
+                    goto repeatKey;
             }
             else {
-                if (m_translationBlock.className().isEmpty()) {
-                    if (m_translationBlock.addMap(srcText, translation)) {
-                        handleResult = REPEAT_KEY;
-                        goto errorFinished;
-                    }
+                if (m_translationBlock.field().isEmpty()) {
+                    if (m_translationBlock.addMap(srcText, translation))
+                        goto repeatKey;
                 }
                 else {
-                    //查找是否已经存在这个类的记录
+                    //查找是否已经存在这个字段的记录
                     int index = this->blockListIndexOf(className);
                     if (index != -1) {
                         //存在则直接拿出这个记录，进行追加记录
@@ -101,29 +97,25 @@ ExcelHandler::HANDLE_ERROR ExcelHandler::handleFile()
                         m_translationBlockList.removeAt(index);
                     }
                     else {
-                        //不存在则先把原来的添加到list中，然后清空中间变量，准备记录新的类
+                        //不存在则先把原来的添加到list中，然后清空中间变量，准备记录新的字段
                         m_translationBlockList.append(m_translationBlock);
                         m_translationBlock.clear();
-                        m_translationBlock.setClassName(className);
+                        m_translationBlock.setField(className);
                     }
 
-                    if (!m_translationBlock.addMap(srcText, translation)) {
-                        handleResult = REPEAT_KEY;
-                        goto errorFinished;
-                    }
+                    if (!m_translationBlock.addMap(srcText, translation))
+                        goto repeatKey;
                 }
             }
-
             break;
 
         case TWO_COLUMNS:
         default:
             srcText     = m_excelRW->getCellText(i, 1);
             translation = m_excelRW->getCellText(i, 2);
-            if (!m_translationBlock.addMap(srcText, translation)) {
-                handleResult = REPEAT_KEY;
-                goto errorFinished;
-            }
+            if (!m_translationBlock.addMap(srcText, translation))
+//                goto repeatKey;
+
             break;
         }
     }
@@ -131,43 +123,86 @@ ExcelHandler::HANDLE_ERROR ExcelHandler::handleFile()
     if (m_fileFormat == TWO_COLUMNS)
         m_translationBlockList.append(m_translationBlock);
 
+    goto normalFinished;
+
 formatError:
     handleResult = FORMAT_ERROR;
+    goto normalFinished;
 
-errorFinished:
+repeatKey:
+    handleResult = REPEAT_KEY;
+
+normalFinished:
     m_excelRW->closeFile();
 
     return handleResult;
 }
 
-QString ExcelHandler::getTranslation(const QString className, const QString srcText)
+bool TsExcelHandler::setOutputExcelFile(const QString filePath)
 {
-    foreach (TranslationBlock each, m_translationBlockList) {
-        if (className == each.className())
-            return m_translationBlock.translationMap().value(srcText);
+    QFile file(filePath);
+    bool result = false;
+
+    if (!file.exists()) {
+        result = file.open(QIODevice::WriteOnly);
+        file.close();
     }
+
+    if (result)
+        return m_excelRW->openFile(filePath);
+
+    return false;
 }
 
-QString ExcelHandler::getTranslation(const QString srcText)
+bool TsExcelHandler::writeCell(const QString text, const int row, const int column)
+{
+    return m_excelRW->setCellText(text, row, column);
+}
+
+QString TsExcelHandler::getTranslation(const QString field, const QString srcText)
+{
+    foreach (TranslationBlock each, m_translationBlockList) {
+        if (field == each.field())
+            return m_translationBlock.translationMap().value(srcText);
+    }
+
+    return "";
+}
+
+QString TsExcelHandler::getTranslation(const QString srcText)
 {
     QMap<QString, QString> mapper = m_translationBlock.translationMap();
     return m_translationBlock.translationMap().value(srcText);
 }
 
-ExcelHandler::FILE_FORMAT ExcelHandler::getFileFormat() const
+QStringList TsExcelHandler::getTipsAndInfo(const QString num)
+{
+    QStringList result;
+
+    foreach (TranslationBlock each, m_translationBlockList) {
+        if (each.field() == num) {
+            result.append(each.translationMap().first());
+            result.append(each.translationMap().value(result.first()));
+        }
+    }
+
+    return result;
+}
+
+TsExcelHandler::FILE_FORMAT TsExcelHandler::getFileFormat() const
 {
     return m_fileFormat;
 }
 
-void ExcelHandler::setFileFormat(const FILE_FORMAT &fileFormat)
+void TsExcelHandler::setFileFormat(const FILE_FORMAT &fileFormat)
 {
     m_fileFormat = fileFormat;
 }
 
-int ExcelHandler::blockListIndexOf(const QString className)
+int TsExcelHandler::blockListIndexOf(const QString className)
 {
     for (int i = 0; i < m_translationBlockList.count(); i++) {
-        if (m_translationBlock.className() == className)
+        if (m_translationBlock.field() == className)
             return i;
     }
 

@@ -6,7 +6,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QtXml>
-#include "../ExcelHandler/ExcelHandler.h"
+#include "../ExcelHandler/TsExcelTHandler.h"
 
 #include <QDebug>
 
@@ -15,14 +15,15 @@ class TsFixUp : public QObject
     Q_OBJECT
 public:
     explicit TsFixUp(QObject *parent = 0);
+    ~TsFixUp();
 
-    ExcelHandler::HANDLE_ERROR setExcelFile(const QString filePath);
+    TsExcelHandler::HANDLE_ERROR setTranstlationFile(const QString xlsxPath);
     void closeExcelFile();
 
     bool setTsFile(const QString filePath);
     void setOutputTsFile(const QString outputFile);
 
-    bool fixUpTsFile();
+    bool excel2Ts();
 
 signals:
 
@@ -38,7 +39,9 @@ private:
     QFile *m_tsFile;
     QFile *m_outputTsFile;
 
-    ExcelHandler *m_excelHandler;
+    QDomDocument *m_domDoc;
+
+    TsExcelHandler *m_excelHandler;
 };
 
 #endif // TSFIXUP_H

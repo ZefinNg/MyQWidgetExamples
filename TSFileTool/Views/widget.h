@@ -23,10 +23,12 @@ private slots:
     void onBtnSelectExcelClicked();
     void onBtnSelectTsFileClicked();
 
-    void onBtnStartConvertClicked();
+    void onBtnExcel2TsClicked();
+    void onBtnTs2ExcelClicked();
     void onBtnOpenOutputClicked();
+    void onBtnExcelStatusClicked();
 
-    void onExcelHandlerError(ExcelHandler::HANDLE_ERROR errorNum);
+    void onExcelHandlerError(TsExcelHandler::HANDLE_ERROR errorNum);
 #if 0
     void onBtnCloseClicked();
     void onBtnSetTitleClicked();
