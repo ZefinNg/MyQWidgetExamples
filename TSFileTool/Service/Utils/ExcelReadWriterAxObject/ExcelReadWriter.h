@@ -6,6 +6,8 @@
 #include <QFile>
 #include <ole2.h>
 
+namespace AXOBJECT {
+
 class ExcelReadWrite : public QObject
 {
     Q_OBJECT
@@ -72,5 +74,7 @@ private:
     QAxObject *m_rows;
     QAxObject *m_columns;
 };
+
+}
 
 #endif // EXCELREADWRITE_H

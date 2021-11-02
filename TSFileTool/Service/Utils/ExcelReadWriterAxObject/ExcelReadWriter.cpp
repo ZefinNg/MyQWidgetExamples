@@ -1,6 +1,8 @@
 ﻿#include "ExcelReadWriter.h"
 #include <QDebug>
 
+using namespace AXOBJECT;
+
 ExcelReadWrite::ExcelReadWrite(QObject *parent)
     : QObject(parent),
       m_isOpen(false),

@@ -3,7 +3,8 @@
 TsExcelHandler::TsExcelHandler(QObject *parent)
     : QObject(parent),
       m_filePath(),
-      m_excelRW(new ExcelReadWrite(this)),
+//      m_excelRW(new AXOBJECT::ExcelReadWrite(this)),
+      m_excelRW(new XLSX::ExcelReadWriter(this)),
       m_fileFormat(TWO_COLUMNS),
       m_translationBlockList(),
       m_translationBlock()
@@ -20,15 +21,15 @@ void TsExcelHandler::setFilePath(QString filePath)
 void TsExcelHandler::closeFile()
 {
     m_filePath = "";
-    m_excelRW->closeFile();
+    m_excelRW->save();
 }
 
 TsExcelHandler::HANDLE_ERROR TsExcelHandler::handleTranslation()
 {
-    int rowCount         = m_excelRW->getRows();
-    int columnCount      = m_excelRW->getColumns();
-    int rowStartIndex    = m_excelRW->getStartRows();
-    int columnStartIndex = m_excelRW->getStartColumns();
+    int rowCount         = m_excelRW->getRowCount();
+    int columnCount      = m_excelRW->getColumnCount();
+    int rowStartIndex    = m_excelRW->getFirstRow();
+    int columnStartIndex = m_excelRW->getFirstColumn();
 
     TsExcelHandler::HANDLE_ERROR handleResult = NORMAL;
 
@@ -37,15 +38,17 @@ TsExcelHandler::HANDLE_ERROR TsExcelHandler::handleTranslation()
     QString translation = "";
     TranslationBlock translationBlock;
 
-    if (m_excelRW == NULL)
-        m_excelRW = new ExcelReadWrite();
+    if (m_excelRW == NULL) {
+//        m_excelRW = new AXOBJECT::ExcelReadWrite();
+        m_excelRW = new XLSX::ExcelReadWriter(this);
+    }
 
     if (!m_excelRW->openFile(m_filePath)) {
         handleResult = OPEN_FILE_FAILED;
         goto normalFinished;
     }
 
-    m_excelRW->setCurrentWorkSheet(1);
+//    m_excelRW->setCurrentWorkSheet(1);
 
     /*
      * 格式分为2种：2列与3列；
@@ -75,9 +78,9 @@ TsExcelHandler::HANDLE_ERROR TsExcelHandler::handleTranslation()
     for (int i = rowStartIndex; i <= rowCount; i++) {
         switch (m_fileFormat) {
         case THREE_COLUMNS:
-            className   = m_excelRW->getCellText(i, 1);
-            srcText     = m_excelRW->getCellText(i, 2);
-            translation = m_excelRW->getCellText(i, 3);
+            className   = m_excelRW->getCellText(i, 1).toString();
+            srcText     = m_excelRW->getCellText(i, 2).toString();
+            translation = m_excelRW->getCellText(i, 3).toString();
 
             if (className.isEmpty()) {
                 if (!m_translationBlock.addMap(srcText, translation))
@@ -111,8 +114,8 @@ TsExcelHandler::HANDLE_ERROR TsExcelHandler::handleTranslation()
 
         case TWO_COLUMNS:
         default:
-            srcText     = m_excelRW->getCellText(i, 1);
-            translation = m_excelRW->getCellText(i, 2);
+            srcText     = m_excelRW->getCellText(i, 1).toString();
+            translation = m_excelRW->getCellText(i, 2).toString();
             if (!m_translationBlock.addMap(srcText, translation))
 //                goto repeatKey;
 
@@ -133,7 +136,6 @@ repeatKey:
     handleResult = REPEAT_KEY;
 
 normalFinished:
-    m_excelRW->closeFile();
 
     return handleResult;
 }
@@ -156,7 +158,7 @@ bool TsExcelHandler::setOutputExcelFile(const QString filePath)
 
 bool TsExcelHandler::writeCell(const QString text, const int row, const int column)
 {
-    return m_excelRW->setCellText(text, row, column);
+    return m_excelRW->setCellText(row, column, text, QXlsx::Format());
 }
 
 QString TsExcelHandler::getTranslation(const QString field, const QString srcText)

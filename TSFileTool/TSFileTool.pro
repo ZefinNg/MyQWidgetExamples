@@ -1,4 +1,7 @@
-QT       += core gui axcontainer xml
+QT       += core gui xml
+
+#For QtXlsx
+QT       += xlsx
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,6 +18,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+contains(QT, xlsx) {
+    HEADERS += \
+        Service/Utils/ExcelReadWriterQtXlsx/ExcelReadWriter.h
+
+    SOURCES += \
+        Service/Utils/ExcelReadWriterQtXlsx/ExcelReadWriter.cpp
+}
+#else {
+#    #For AxObjcect
+#    QT       += axcontainer
+
+#    HEADERS += \
+#        Service/Utils/ExcelReadWriterAxObject/ExcelReadWriter.h
+
+#    SOURCES += \
+#        Service/Utils/ExcelReadWriterAxObject/ExcelReadWriter.cpp
+#}
+
+
 INCLUDEPATH += Service/
 
 SOURCES += \
@@ -22,7 +44,6 @@ SOURCES += \
     Service/ExcelHandler/TranslationBlock.cpp \
     Service/ExcelHandler/TsExcelTHandler.cpp \
     Service/TsFixUp/TsFixUp.cpp \
-    Service/Utils/ExcelReadWriter/ExcelReadWriter.cpp \
     main.cpp \
     Views/widget.cpp
 
@@ -31,7 +52,6 @@ HEADERS += \
     Service/ExcelHandler/TranslationBlock.h \
     Service/ExcelHandler/TsExcelTHandler.h \
     Service/TsFixUp/TsFixUp.h \
-    Service/Utils/ExcelReadWriter/ExcelReadWriter.h \
     Views/widget.h
 
 FORMS += \
