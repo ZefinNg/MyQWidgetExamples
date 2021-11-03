@@ -33,7 +33,8 @@ public:
     TsExcelHandler::HANDLE_ERROR handleTranslation();
 
     bool setOutputExcelFile(const QString filePath);
-    bool writeCell(const QString text, const int row, const int column);
+    bool writeCell(const QString text, const int row, const int column,
+                   QXlsx::Format format = QXlsx::Format());
 
     QString getTranslation(const QString field, const QString srcText);
     QString getTranslation(const QString srcText);

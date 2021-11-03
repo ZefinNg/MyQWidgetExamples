@@ -14,6 +14,7 @@ Widget::Widget(QWidget *parent)
     connect(ui->btnSelectExcel,    SIGNAL(clicked()), this, SLOT(onBtnSelectExcelClicked()));
     connect(ui->btnSelectTs,       SIGNAL(clicked()), this, SLOT(onBtnSelectTsFileClicked()));
     connect(ui->btnExcel2Ts,       SIGNAL(clicked()), this, SLOT(onBtnExcel2TsClicked()));
+    connect(ui->btnTs2Excel,       SIGNAL(clicked()), this, SLOT(onBtnTs2ExcelClicked()));
     connect(ui->btnOpenOutputDir,  SIGNAL(clicked()), this, SLOT(onBtnOpenOutputClicked()));
 //    connect(ui->btnClose,        SIGNAL(clicked()), this, SLOT(onBtnCloseClicked()));
 //    connect(ui->btnSetTitle,     SIGNAL(clicked()), this, SLOT(onBtnSetTitleClicked()));
@@ -73,6 +74,11 @@ void Widget::onBtnSelectTsFileClicked()
 {
     m_tsFilePath = QFileDialog::getOpenFileName(this, "选择Ts文件", "C:\\", "Ts (*.ts *.xml)");
 
+    ui->lineEditTsFile->setText(m_tsFilePath);
+}
+
+void Widget::onBtnExcel2TsClicked()
+{
     if (m_tsFilePath.isEmpty())
         return;
 
@@ -86,14 +92,9 @@ void Widget::onBtnSelectTsFileClicked()
 #endif
     QString fileBaseName = fileInfo.baseName();
     QString curDateTime  = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm_ss");
-    m_tsFixUp->setOutputTsFile(m_outputPath + fileBaseName + "_" + curDateTime + ".ts");
+    m_tsFixUp->setOutputTsFilePath(m_outputPath + fileBaseName + "_" + curDateTime + ".ts");
     m_tsFixUp->setTsFile(m_tsFilePath);
 
-    ui->lineEditTsFile->setText(m_tsFilePath);
-}
-
-void Widget::onBtnExcel2TsClicked()
-{
     if (!m_tsFixUp->excel2Ts())
         QMessageBox::critical(this, "错误", "Ts文件完善失败!");
     else
@@ -102,7 +103,26 @@ void Widget::onBtnExcel2TsClicked()
 
 void Widget::onBtnTs2ExcelClicked()
 {
+    if (m_tsFilePath.isEmpty())
+        return;
 
+    QFileInfo fileInfo(m_tsFilePath);
+
+    m_outputPath = fileInfo.absoluteDir().path();
+#ifdef WIN32
+    m_outputPath.replace("/", "\\");
+#else
+
+#endif
+    QString fileBaseName = fileInfo.baseName();
+    QString curDateTime  = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm_ss");
+    m_tsFixUp->setOutputXlsxFilePath(m_outputPath + fileBaseName + "_" + curDateTime + ".xlsx");
+    m_tsFixUp->setTsFile(m_tsFilePath);
+
+    if (!m_tsFixUp->ts2Excel())
+        QMessageBox::critical(this, "错误", "Ts文件转换失败!");
+    else
+        QMessageBox::information(this, "提示", "转换完成");
 }
 
 void Widget::onBtnOpenOutputClicked()

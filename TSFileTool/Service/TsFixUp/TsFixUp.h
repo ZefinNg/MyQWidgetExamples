@@ -20,23 +20,28 @@ public:
     TsExcelHandler::HANDLE_ERROR setTranstlationFile(const QString xlsxPath);
     void closeExcelFile();
 
-    bool setTsFile(const QString filePath);
-    void setOutputTsFile(const QString outputFile);
+    bool setTsFile(const QString& filePath);
+    void setOutputTsFilePath(const QString& outputFile);
+
+    void setOutputXlsxFilePath(const QString& outputFile);
 
     bool excel2Ts();
+    bool ts2Excel();
 
 signals:
 
 public slots:
 
 private:
-    void createNewTsFile(QString filePath);
+    void createNewTsFile(const QString& filePath);
 
 private:
-    QString m_fileName;
-    QString m_outputFile;
+    QString m_tsSourceFilePath;
+    QString m_tsOutputFilePath;
 
-    QFile *m_tsFile;
+    QString m_xlsxOutputFilePath;
+
+    QFile *m_tsSourceFile;
     QFile *m_outputTsFile;
 
     QDomDocument *m_domDoc;

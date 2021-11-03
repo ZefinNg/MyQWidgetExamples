@@ -39,6 +39,8 @@ public:
     bool save();
     bool saveAs(const QString& filePath);
 
+    QString getFilePath() const;
+
 signals:
 
 private:

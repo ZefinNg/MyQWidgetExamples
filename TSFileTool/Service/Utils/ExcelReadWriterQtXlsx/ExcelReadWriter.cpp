@@ -161,3 +161,8 @@ bool ExcelReadWriter::saveAs(const QString &filePath)
 
     return m_xlsx->saveAs(filePath);
 }
+
+QString ExcelReadWriter::getFilePath() const
+{
+    return m_filePath;
+}

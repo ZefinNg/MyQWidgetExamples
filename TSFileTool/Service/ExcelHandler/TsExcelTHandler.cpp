@@ -15,7 +15,6 @@ TsExcelHandler::TsExcelHandler(QObject *parent)
 void TsExcelHandler::setFilePath(QString filePath)
 {
     m_filePath = filePath;
-    m_excelRW->openFile(m_filePath);
 }
 
 void TsExcelHandler::closeFile()
@@ -136,7 +135,6 @@ repeatKey:
     handleResult = REPEAT_KEY;
 
 normalFinished:
-
     return handleResult;
 }
 
@@ -156,9 +154,12 @@ bool TsExcelHandler::setOutputExcelFile(const QString filePath)
     return false;
 }
 
-bool TsExcelHandler::writeCell(const QString text, const int row, const int column)
+bool TsExcelHandler::writeCell(const QString text, const int row, const int column, QXlsx::Format format)
 {
-    return m_excelRW->setCellText(row, column, text, QXlsx::Format());
+    if (m_excelRW->getFilePath().isEmpty())
+        m_excelRW->openFile(m_filePath);
+
+    return m_excelRW->setCellText(row, column, text, format);
 }
 
 QString TsExcelHandler::getTranslation(const QString field, const QString srcText)
