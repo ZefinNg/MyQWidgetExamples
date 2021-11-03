@@ -36,6 +36,9 @@ public:
     QVariant getCellText(const int row, const int col) const;
     bool setCellText(const int row, const int col, const QString text, const QXlsx::Format format);
 
+    bool mergerCells(const int firstRow, const int firstColumn,
+                     const int lastRow,  const int lastColumn);
+
     bool save();
     bool saveAs(const QString& filePath);
 

@@ -2,5 +2,8 @@
     <qresource prefix="/">
         <file>Resources/correct.png</file>
         <file>Resources/warning.png</file>
+        <file>Resources/button_pressed.png</file>
+        <file>Resources/button_released.png</file>
+        <file>Resources/background.png</file>
     </qresource>
 </RCC>

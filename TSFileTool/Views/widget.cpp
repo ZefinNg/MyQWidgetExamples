@@ -7,12 +7,15 @@ Widget::Widget(QWidget *parent)
     : QWidget(parent),
       ui(new Ui::Widget),
       m_tsFixUp(new TsFixUp(this)),
-      m_tsFilePath()
+      m_tsFilePath(),
+      m_outputPath(),
+      m_fileTips()
 {
     ui->setupUi(this);
 
     connect(ui->btnSelectExcel,    SIGNAL(clicked()), this, SLOT(onBtnSelectExcelClicked()));
     connect(ui->btnSelectTs,       SIGNAL(clicked()), this, SLOT(onBtnSelectTsFileClicked()));
+
     connect(ui->btnExcel2Ts,       SIGNAL(clicked()), this, SLOT(onBtnExcel2TsClicked()));
     connect(ui->btnTs2Excel,       SIGNAL(clicked()), this, SLOT(onBtnTs2ExcelClicked()));
     connect(ui->btnOpenOutputDir,  SIGNAL(clicked()), this, SLOT(onBtnOpenOutputClicked()));
@@ -23,13 +26,21 @@ Widget::Widget(QWidget *parent)
 //    connect(ui->btnDeleteSheet,  SIGNAL(clicked()), this, SLOT(onBtnDeleteSheetClicked()));
 //    connect(ui->btnAddCell,      SIGNAL(clicked()), this, SLOT(onBtnAddCell()));
 
+    this->setStyleSheet("#widget{border-image: url(:/Resources/background.png);}");
+
     ui->labelFormat->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     ui->labelFormat->setWordWrap(true);
 
     ui->lineEditExcelFile->setEnabled(false);
     ui->lineEditTsFile->setEnabled(false);
 
-    ui->btnExcelStatus->setStyleSheet("border-image: url(:/Resources/correct.png);");
+    ui->btnExcelStatus->setVisible(false);
+    ui->btnSelectExcel->setStyleSheet("QPushButton{border-image: url(:/Resources/button_released.png);}"
+                                      "QPushButton:Pressed{border-image: url(:/Resources/button_pressed.png);}");
+    ui->btnSelectTs->setStyleSheet(ui->btnSelectExcel->styleSheet());
+    ui->btnExcel2Ts->setStyleSheet(ui->btnSelectExcel->styleSheet());
+    ui->btnTs2Excel->setStyleSheet(ui->btnSelectExcel->styleSheet());
+    ui->btnOpenOutputDir->setStyleSheet(ui->btnSelectExcel->styleSheet());
 }
 
 Widget::~Widget()
@@ -46,20 +57,19 @@ void Widget::onBtnSelectExcelClicked()
 
     TsExcelHandler::HANDLE_ERROR result = m_tsFixUp->setTranstlationFile(excelFilePath);
 
-    QString tips = "";
-
     switch (result) {
     case TsExcelHandler::NORMAL:
         ui->lineEditExcelFile->setText(excelFilePath);
+        this->setExcelNormalStatus(true);
         return;
     case TsExcelHandler::OPEN_FILE_FAILED:
-        tips = "文件打开失败。";
+        m_fileTips = "文件打开失败。";
         break;
     case TsExcelHandler::FORMAT_ERROR:
-        tips = "文件格式错误。";
+        m_fileTips = "文件格式错误。";
         break;
     case TsExcelHandler::REPEAT_KEY:
-        tips = "文件存在重复的源文。";
+        m_fileTips = "文件存在重复的源文。";
         break;
     default:
         break;
@@ -67,7 +77,7 @@ void Widget::onBtnSelectExcelClicked()
 
     //TODO：此处调用会导致段错误，待查
 //    m_tsFixUp->closeExcelFile();
-    QMessageBox::critical(this, "错误", tips);
+    this->setExcelNormalStatus(false);
 }
 
 void Widget::onBtnSelectTsFileClicked()
@@ -79,21 +89,7 @@ void Widget::onBtnSelectTsFileClicked()
 
 void Widget::onBtnExcel2TsClicked()
 {
-    if (m_tsFilePath.isEmpty())
-        return;
-
-    QFileInfo fileInfo(m_tsFilePath);
-
-    m_outputPath = fileInfo.absoluteDir().path();
-#ifdef WIN32
-    m_outputPath.replace("/", "\\");
-#else
-
-#endif
-    QString fileBaseName = fileInfo.baseName();
-    QString curDateTime  = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm_ss");
-    m_tsFixUp->setOutputTsFilePath(m_outputPath + fileBaseName + "_" + curDateTime + ".ts");
-    m_tsFixUp->setTsFile(m_tsFilePath);
+    this->createFile(".ts");
 
     if (!m_tsFixUp->excel2Ts())
         QMessageBox::critical(this, "错误", "Ts文件完善失败!");
@@ -103,21 +99,7 @@ void Widget::onBtnExcel2TsClicked()
 
 void Widget::onBtnTs2ExcelClicked()
 {
-    if (m_tsFilePath.isEmpty())
-        return;
-
-    QFileInfo fileInfo(m_tsFilePath);
-
-    m_outputPath = fileInfo.absoluteDir().path();
-#ifdef WIN32
-    m_outputPath.replace("/", "\\");
-#else
-
-#endif
-    QString fileBaseName = fileInfo.baseName();
-    QString curDateTime  = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm_ss");
-    m_tsFixUp->setOutputXlsxFilePath(m_outputPath + fileBaseName + "_" + curDateTime + ".xlsx");
-    m_tsFixUp->setTsFile(m_tsFilePath);
+    this->createFile(".xlsx");
 
     if (!m_tsFixUp->ts2Excel())
         QMessageBox::critical(this, "错误", "Ts文件转换失败!");
@@ -154,6 +136,42 @@ void Widget::onExcelHandlerError(TsExcelHandler::HANDLE_ERROR errorNum)
     default:
         break;
     }
+}
+
+bool Widget::createFile(const QString &suffix)
+{
+    if (m_tsFilePath.isEmpty())
+        return false;
+
+    QFileInfo fileInfo(m_tsFilePath);
+
+    m_outputPath = fileInfo.absoluteDir().path();
+#ifdef WIN32
+    m_outputPath.replace("/", "\\");
+#else
+
+#endif
+    QString fileBaseName = fileInfo.baseName();
+    QString curDateTime  = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm_ss");
+
+    if (suffix == ".xlsx")
+        m_tsFixUp->setOutputTsFilePath(m_outputPath + fileBaseName + "_" + curDateTime + ".xlsx");
+    else if (suffix == ".ts")
+        m_tsFixUp->setOutputTsFilePath(m_outputPath + fileBaseName + "_" + curDateTime + ".ts");
+    else
+        return false;
+
+    m_tsFixUp->setTsFile(m_tsFilePath);
+    return true;
+}
+
+void Widget::setExcelNormalStatus(bool isNormal)
+{
+    ui->btnExcelStatus->setVisible(true);
+    if (isNormal)
+        ui->btnExcelStatus->setStyleSheet("border-image: url(:/Resources/correct.png);");
+    else
+        ui->btnExcelStatus->setStyleSheet("border-image: url(:/Resources/warning.png);");
 }
 #if 0
 void Widget::onBtnCloseClicked()

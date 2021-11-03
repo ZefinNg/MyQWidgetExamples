@@ -42,11 +42,15 @@ private:
 #if 0
     void getExcelFileInfo();
 #endif
+    bool createFile(const QString &suffix);
+    void setExcelNormalStatus(bool isNormal);
 
 private:
     Ui::Widget *ui;
     TsFixUp *m_tsFixUp;
     QString m_tsFilePath;
     QString m_outputPath;
+
+    QString m_fileTips;
 };
 #endif // WIDGET_H
