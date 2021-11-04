@@ -202,6 +202,11 @@ void TsExcelHandler::setFileFormat(const FILE_FORMAT &fileFormat)
     m_fileFormat = fileFormat;
 }
 
+bool TsExcelHandler::mergeCells(const int firstRow, const int firstColumn, const int lastRow, const int lastColumn)
+{
+    return m_excelRW->mergeCells(firstRow, firstColumn, lastRow, lastColumn);
+}
+
 int TsExcelHandler::blockListIndexOf(const QString className)
 {
     for (int i = 0; i < m_translationBlockList.count(); i++) {

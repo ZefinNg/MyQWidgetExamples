@@ -43,6 +43,9 @@ public:
     TsExcelHandler::FILE_FORMAT getFileFormat() const;
     void setFileFormat(const TsExcelHandler::FILE_FORMAT &fileFormat);
 
+    bool mergeCells(const int firstRow, const int firstColumn,
+                    const int lastRow, const int lastColumn);
+
 private:
     int blockListIndexOf(const QString className);
 

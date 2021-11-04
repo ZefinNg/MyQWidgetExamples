@@ -5,5 +5,7 @@
         <file>Resources/button_pressed.png</file>
         <file>Resources/button_released.png</file>
         <file>Resources/background.png</file>
+        <file>Resources/comboBox_dropDown.png</file>
+        <file>Resources/comboBox.png</file>
     </qresource>
 </RCC>

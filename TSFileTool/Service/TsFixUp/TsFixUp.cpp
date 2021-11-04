@@ -121,7 +121,7 @@ bool TsFixUp::excel2Ts()
     return true;
 }
 
-bool TsFixUp::ts2Excel()
+bool TsFixUp::ts2Excel(const int columnCounts)
 {
     if (!m_domDoc->setContent(m_tsSourceFile)) {
         qDebug() << "Document set file failed.";
@@ -132,6 +132,7 @@ bool TsFixUp::ts2Excel()
     TsExcelHandler xlsxFile;
     xlsxFile.setFilePath(m_xlsxOutputFilePath);
     int row = 1, col = 1;
+    int classRow = row;
 
     QDomElement root = m_domDoc->documentElement();
     QDomNodeList contextList = root.childNodes();
@@ -150,7 +151,15 @@ bool TsFixUp::ts2Excel()
             if (nameMessageList.at(j).nodeName() == "name") {
                 element = nameMessageList.at(j).toElement();
                 className = element.text();
-//                qDebug() << "name:" << className;
+
+                xlsxFile.writeCell(className, row, col);
+
+                if (columnCounts == 3) {
+                    if (classRow < row) {
+                        xlsxFile.mergeCells(classRow, col, row-1, col);
+                        classRow = row;
+                    }
+                }
             }
 
             sourceList = nameMessageList.at(j).childNodes();
@@ -161,7 +170,12 @@ bool TsFixUp::ts2Excel()
 
                     if (element.nodeName() == "source") {
                         source = element.text();
-                        xlsxFile.writeCell(source, row, col);
+
+                        if (columnCounts == 3)
+                            xlsxFile.writeCell(source, row, col+1);
+                        else
+                            xlsxFile.writeCell(source, row, col);
+
                         row++;
                     }
                     else

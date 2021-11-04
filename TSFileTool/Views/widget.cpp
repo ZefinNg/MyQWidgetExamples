@@ -2,6 +2,7 @@
 #include "ui_widget.h"
 #include <QDebug>
 #include <QMessageBox>
+#include <QListView>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent),
@@ -35,12 +36,33 @@ Widget::Widget(QWidget *parent)
     ui->lineEditTsFile->setEnabled(false);
 
     ui->btnExcelStatus->setVisible(false);
-    ui->btnSelectExcel->setStyleSheet("QPushButton{border-image: url(:/Resources/button_released.png);}"
+    ui->btnSelectExcel->setStyleSheet("QPushButton{color: rgb(255, 255, 255);}"
+                                      "QPushButton{border-image: url(:/Resources/button_released.png);}"
                                       "QPushButton:Pressed{border-image: url(:/Resources/button_pressed.png);}");
     ui->btnSelectTs->setStyleSheet(ui->btnSelectExcel->styleSheet());
     ui->btnExcel2Ts->setStyleSheet(ui->btnSelectExcel->styleSheet());
     ui->btnTs2Excel->setStyleSheet(ui->btnSelectExcel->styleSheet());
     ui->btnOpenOutputDir->setStyleSheet(ui->btnSelectExcel->styleSheet());
+
+    ui->comboBoxFormat->setStyleSheet("QComboBox::drop-down {"
+                                      "    image: url(:/Resources/comboBox_dropDown.png);"
+                                      "    width: 24px;"
+                                      "    padding-right: 12px;"
+                                      "}"
+                                      "QComboBox {"
+                                      "    border-image: url(:/Resources/comboBox.png);"
+                                      "    padding-left: 10px;"
+                                      "    padding-right: 0px;"
+                                      "    color: rgb(255, 255, 255);"
+                                      "    font-size: 10pt;"
+                                      "}"
+                                      "QComboBox QAbstractItemView::item {"
+                                      "    height: 40px;"
+                                      "    border-image: url(:/Resources/comboBox.png);"
+                                      "}");
+    ui->comboBoxFormat->setView(new QListView());
+
+    ui->labelFormat->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
 }
 
 Widget::~Widget()
@@ -129,7 +151,9 @@ void Widget::onBtnTs2ExcelClicked()
     m_tsFixUp->setOutputXlsxFilePath(m_outputPath + fileBaseName + "_" + curDateTime + ".xlsx");
     m_tsFixUp->setTsFile(m_tsFilePath);
 
-    if (!m_tsFixUp->ts2Excel())
+    int columnCount = ui->comboBoxFormat->currentIndex()+2;
+
+    if (!m_tsFixUp->ts2Excel(columnCount))
         QMessageBox::critical(this, "错误", "Ts文件转换失败!");
     else
         QMessageBox::information(this, "提示", "转换完成");

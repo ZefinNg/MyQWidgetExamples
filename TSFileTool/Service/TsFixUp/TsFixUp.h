@@ -26,7 +26,7 @@ public:
     void setOutputXlsxFilePath(const QString& outputFile);
 
     bool excel2Ts();
-    bool ts2Excel();
+    bool ts2Excel(const int columnCounts = 2);
 
 signals:
 

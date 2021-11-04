@@ -146,7 +146,7 @@ bool ExcelReadWriter::setCellText(const int row, const int col, const QString te
     return m_xlsx->write(row, col, QVariant(text), format);
 }
 
-bool ExcelReadWriter::mergerCells(const int firstRow, const int firstColumn, const int lastRow, const int lastColumn)
+bool ExcelReadWriter::mergeCells(const int firstRow, const int firstColumn, const int lastRow, const int lastColumn)
 {
     if (m_xlsx == NULL)
         return false;
