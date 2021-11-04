@@ -1,4 +1,4 @@
-﻿#include "TsExcelTHandler.h"
+﻿#include "TsExcelHandler.h"
 
 TsExcelHandler::TsExcelHandler(QObject *parent)
     : QObject(parent),
