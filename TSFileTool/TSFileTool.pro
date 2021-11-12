@@ -57,6 +57,7 @@ HEADERS += \
 FORMS += \
     Views/widget.ui
 
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
@@ -64,3 +65,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Views/Images.qrc
+
+RC_ICONS += ./Views/Resources/icon.ico

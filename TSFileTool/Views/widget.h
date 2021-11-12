@@ -48,8 +48,10 @@ private:
 private:
     Ui::Widget *ui;
     TsFixUp *m_tsFixUp;
+
     QString m_tsFilePath;
-    QString m_outputPath;
+    QString m_xlsxFilePath;
+    QString m_outputFilePath; //outputFile includes .ts and .xlsx
 
     QString m_fileTips;
 };

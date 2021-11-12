@@ -9,7 +9,8 @@ Widget::Widget(QWidget *parent)
       ui(new Ui::Widget),
       m_tsFixUp(new TsFixUp(this)),
       m_tsFilePath(),
-      m_outputPath(),
+      m_xlsxFilePath(),
+      m_outputFilePath(),
       m_fileTips()
 {
     ui->setupUi(this);
@@ -27,22 +28,34 @@ Widget::Widget(QWidget *parent)
 //    connect(ui->btnDeleteSheet,  SIGNAL(clicked()), this, SLOT(onBtnDeleteSheetClicked()));
 //    connect(ui->btnAddCell,      SIGNAL(clicked()), this, SLOT(onBtnAddCell()));
 
+    this->setWindowTitle("TSFileTool");
+    //与.pro中的RC_ICONS效果一样
+//    this->setWindowIcon(QIcon(":/Resources/icon.ico"));
     this->setStyleSheet("#widget{border-image: url(:/Resources/background.png);}");
 
     ui->labelFormat->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     ui->labelFormat->setWordWrap(true);
 
-    ui->lineEditExcelFile->setEnabled(false);
-    ui->lineEditTsFile->setEnabled(false);
+    ui->labelXlsxFilePath->clear();
+    ui->labelTsFilePath->clear();
 
     ui->btnExcelStatus->setVisible(false);
-    ui->btnSelectExcel->setStyleSheet("QPushButton{color: rgb(255, 255, 255);}"
-                                      "QPushButton{border-image: url(:/Resources/button_released.png);}"
+    ui->btnSelectExcel->setStyleSheet("QPushButton{"
+                                      "    color: rgb(255, 255, 255);"
+                                      "    font-size: 64pt;"
+                                      "    font-weight: bold;"
+                                      "    border-image: url(:/Resources/button_released.png);"
+                                      "}"
                                       "QPushButton:Pressed{border-image: url(:/Resources/button_pressed.png);}");
     ui->btnSelectTs->setStyleSheet(ui->btnSelectExcel->styleSheet());
-    ui->btnExcel2Ts->setStyleSheet(ui->btnSelectExcel->styleSheet());
-    ui->btnTs2Excel->setStyleSheet(ui->btnSelectExcel->styleSheet());
-    ui->btnOpenOutputDir->setStyleSheet(ui->btnSelectExcel->styleSheet());
+
+    ui->btnExcel2Ts->setStyleSheet("QPushButton{"
+                                   "    color: rgb(255, 255, 255);"
+                                   "    border-image: url(:/Resources/button_released.png);"
+                                   "}"
+                                   "QPushButton:Pressed{border-image: url(:/Resources/button_pressed.png);}");
+    ui->btnTs2Excel->setStyleSheet(ui->btnExcel2Ts->styleSheet());
+    ui->btnOpenOutputDir->setStyleSheet(ui->btnExcel2Ts->styleSheet());
 
     ui->comboBoxFormat->setStyleSheet("QComboBox::drop-down {"
                                       "    image: url(:/Resources/comboBox_dropDown.png);"
@@ -63,6 +76,19 @@ Widget::Widget(QWidget *parent)
     ui->comboBoxFormat->setView(new QListView());
 
     ui->labelFormat->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
+
+    ui->labelXlsxFilePath->setStyleSheet("QLabel {"
+                                         "    color: rgb(255, 255, 255);"
+                                         "    font-size: 16pt;"
+                                         "}");
+    ui->labelTsFilePath->setStyleSheet(ui->labelXlsxFilePath->styleSheet());
+
+    ui->labelXlsxFilePath->setAlignment(Qt::AlignCenter);
+    ui->labelXlsxFilePath->setWordWrap(true);
+
+    ui->labelTsFilePath->setAlignment(Qt::AlignCenter);
+    ui->labelTsFilePath->setWordWrap(true);
+
 }
 
 Widget::~Widget()
@@ -72,16 +98,17 @@ Widget::~Widget()
 
 void Widget::onBtnSelectExcelClicked()
 {
-    QString excelFilePath = QFileDialog::getOpenFileName(this, "选择Excel文件", "C:\\", "Excel (*.xlsx *xls)");
+    m_xlsxFilePath = QFileDialog::getOpenFileName(this, "选择Excel文件", "C:\\", "Excel (*.xlsx *xls)");
 
-    if (excelFilePath.isEmpty())
+    if (m_xlsxFilePath.isEmpty())
         return;
 
-    TsExcelHandler::HANDLE_ERROR result = m_tsFixUp->setTranstlationFile(excelFilePath);
+    TsExcelHandler::HANDLE_ERROR result = m_tsFixUp->setTranstlationFile(m_xlsxFilePath);
+
+    ui->labelXlsxFilePath->setText(m_xlsxFilePath);
 
     switch (result) {
     case TsExcelHandler::NORMAL:
-        ui->lineEditExcelFile->setText(excelFilePath);
         this->setExcelNormalStatus(true);
         return;
     case TsExcelHandler::OPEN_FILE_FAILED:
@@ -100,31 +127,35 @@ void Widget::onBtnSelectExcelClicked()
     //TODO：此处调用会导致段错误，待查
 //    m_tsFixUp->closeExcelFile();
     this->setExcelNormalStatus(false);
+
+    QMessageBox::information(this, "提示", m_fileTips);
 }
 
 void Widget::onBtnSelectTsFileClicked()
 {
     m_tsFilePath = QFileDialog::getOpenFileName(this, "选择Ts文件", "C:\\", "Ts (*.ts *.xml)");
 
-    ui->lineEditTsFile->setText(m_tsFilePath);
+    ui->labelTsFilePath->setText(m_tsFilePath);
 }
 
 void Widget::onBtnExcel2TsClicked()
 {
-    if (m_tsFilePath.isEmpty())
+    if (m_tsFilePath.isEmpty() || m_xlsxFilePath.isEmpty()) {
+        QMessageBox::critical(this, "错误", "未选择对应的文件!");
         return;
+    }
 
     QFileInfo fileInfo(m_tsFilePath);
 
-    m_outputPath = fileInfo.absoluteDir().path();
+    m_outputFilePath = fileInfo.absoluteDir().path();
 #ifdef WIN32
-    m_outputPath.replace("/", "\\");
+    m_outputFilePath.replace("/", "\\");
 #else
 
 #endif
     QString fileBaseName = fileInfo.baseName();
     QString curDateTime  = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm_ss");
-    m_tsFixUp->setOutputTsFilePath(m_outputPath + fileBaseName + "_" + curDateTime + ".ts");
+    m_tsFixUp->setOutputTsFilePath(m_outputFilePath + fileBaseName + "_" + curDateTime + ".ts");
     m_tsFixUp->setTsFile(m_tsFilePath);
 
     if (!m_tsFixUp->excel2Ts())
@@ -135,20 +166,22 @@ void Widget::onBtnExcel2TsClicked()
 
 void Widget::onBtnTs2ExcelClicked()
 {
-    if (m_tsFilePath.isEmpty())
+    if (m_tsFilePath.isEmpty()) {
+        QMessageBox::critical(this, "错误", "未选择Ts文件!");
         return;
+    }
 
     QFileInfo fileInfo(m_tsFilePath);
 
-    m_outputPath = fileInfo.absoluteDir().path();
+    m_outputFilePath = fileInfo.absoluteDir().path();
 #ifdef WIN32
-    m_outputPath.replace("/", "\\");
+    m_outputFilePath.replace("/", "\\");
 #else
 
 #endif
     QString fileBaseName = fileInfo.baseName();
     QString curDateTime  = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm_ss");
-    m_tsFixUp->setOutputXlsxFilePath(m_outputPath + fileBaseName + "_" + curDateTime + ".xlsx");
+    m_tsFixUp->setOutputXlsxFilePath(m_outputFilePath + fileBaseName + "_" + curDateTime + ".xlsx");
     m_tsFixUp->setTsFile(m_tsFilePath);
 
     int columnCount = ui->comboBoxFormat->currentIndex()+2;
@@ -164,7 +197,7 @@ void Widget::onBtnOpenOutputClicked()
     if (m_tsFilePath.isEmpty())
         QMessageBox::critical(this, "错误", "未选择Ts文件!");
     else {
-        QDesktopServices::openUrl(QUrl::fromLocalFile(m_outputPath));
+        QDesktopServices::openUrl(QUrl::fromLocalFile(m_outputFilePath));
     }
 }
 
@@ -197,9 +230,9 @@ bool Widget::createFile(const QString &suffix)
 
     QFileInfo fileInfo(m_tsFilePath);
 
-    m_outputPath = fileInfo.absoluteDir().path();
+    m_outputFilePath = fileInfo.absoluteDir().path();
 #ifdef WIN32
-    m_outputPath.replace("/", "\\");
+    m_outputFilePath.replace("/", "\\");
 #else
 
 #endif
@@ -207,9 +240,9 @@ bool Widget::createFile(const QString &suffix)
     QString curDateTime  = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm_ss");
 
     if (suffix == ".xlsx")
-        m_tsFixUp->setOutputTsFilePath(m_outputPath + fileBaseName + "_" + curDateTime + ".xlsx");
+        m_tsFixUp->setOutputTsFilePath(m_outputFilePath + fileBaseName + "_" + curDateTime + ".xlsx");
     else if (suffix == ".ts")
-        m_tsFixUp->setOutputTsFilePath(m_outputPath + fileBaseName + "_" + curDateTime + ".ts");
+        m_tsFixUp->setOutputTsFilePath(m_outputFilePath + fileBaseName + "_" + curDateTime + ".ts");
     else
         return false;
 

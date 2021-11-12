@@ -7,5 +7,6 @@
         <file>Resources/background.png</file>
         <file>Resources/comboBox_dropDown.png</file>
         <file>Resources/comboBox.png</file>
+        <file>Resources/icon.ico</file>
     </qresource>
 </RCC>

@@ -34,7 +34,7 @@
      <widget class="QComboBox" name="comboBoxFormat">
       <property name="geometry">
        <rect>
-        <x>140</x>
+        <x>180</x>
         <y>106</y>
         <width>75</width>
         <height>32</height>
@@ -50,16 +50,6 @@
         <string>三列</string>
        </property>
       </item>
-     </widget>
-     <widget class="QLineEdit" name="lineEditExcelFile">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>20</y>
-        <width>541</width>
-        <height>20</height>
-       </rect>
-      </property>
      </widget>
      <widget class="QPushButton" name="btnOpenOutputDir">
       <property name="geometry">
@@ -77,8 +67,8 @@
      <widget class="QPushButton" name="btnExcelStatus">
       <property name="geometry">
        <rect>
-        <x>678</x>
-        <y>17</y>
+        <x>350</x>
+        <y>330</y>
         <width>21</width>
         <height>21</height>
        </rect>
@@ -93,7 +83,7 @@
      <widget class="QLabel" name="labelFormat">
       <property name="geometry">
        <rect>
-        <x>40</x>
+        <x>80</x>
         <y>100</y>
         <width>81</width>
         <height>41</height>
@@ -119,24 +109,14 @@
      <widget class="QPushButton" name="btnSelectTs">
       <property name="geometry">
        <rect>
-        <x>590</x>
-        <y>59</y>
-        <width>75</width>
-        <height>32</height>
+        <x>510</x>
+        <y>190</y>
+        <width>128</width>
+        <height>128</height>
        </rect>
       </property>
       <property name="text">
-       <string>选择Ts</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEditTsFile">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>65</y>
-        <width>541</width>
-        <height>20</height>
-       </rect>
+       <string>T</string>
       </property>
      </widget>
      <widget class="QPushButton" name="btnExcel2Ts">
@@ -155,14 +135,40 @@
      <widget class="QPushButton" name="btnSelectExcel">
       <property name="geometry">
        <rect>
-        <x>590</x>
-        <y>12</y>
-        <width>75</width>
-        <height>32</height>
+        <x>160</x>
+        <y>190</y>
+        <width>128</width>
+        <height>128</height>
        </rect>
       </property>
       <property name="text">
-       <string>选择xlsx</string>
+       <string>E</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelXlsxFilePath">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>330</y>
+        <width>250</width>
+        <height>50</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="labelTsFilePath">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>330</y>
+        <width>250</width>
+        <height>50</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
       </property>
      </widget>
     </widget>
