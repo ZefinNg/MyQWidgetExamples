@@ -1,5 +1,6 @@
 #include "widget.h"
 #include "ui_widget.h"
+#include <QDebug>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent),
@@ -126,12 +127,6 @@ Widget::Widget(QWidget *parent)
 
     connect(m_alphaBtn, SIGNAL(clicked()), alphaAnimation, SLOT(start()));
 
-    //悬浮窗口
-    m_floatingWidget = new FloatinWidget();
-    m_floatingWidget->setText("我是一个悬浮窗口.");
-    m_floatingWidget->setGeometry(this->x() + this->width()/2 - 200, this->height() - 100,
-                                  160, 80);
-
     m_floatBtn = new QPushButton("Floating", this);
     m_floatBtn->setGeometry(this->width() - 200, this->y() + 300, 100, 40);
     m_floatBtn->setStyleSheet("QPushButton {"
@@ -139,7 +134,7 @@ Widget::Widget(QWidget *parent)
                               "    border-radius: 10px;"
                               "}");
 
-    connect(m_floatBtn, SIGNAL(clicked()), m_floatingWidget, SLOT(start()));
+    connect(m_floatBtn, SIGNAL(clicked()), this, SLOT(onFloatingBtnClicked()));
 }
 
 Widget::~Widget()
@@ -147,9 +142,21 @@ Widget::~Widget()
     delete ui;
 }
 
-void Widget::onBtnClicked()
+void Widget::onFloatingBtnClicked()
 {
-    m_moveLabel->move(450, 450);
+    //悬浮窗口
+    FloatinWidget *m_floatingWidget = new FloatinWidget(this);
+    m_floatingWidget->setText("我是一个悬浮窗口.");
+
+    m_floatingWidget->setGeometry(this->x() + this->width()/2 - 200, this->height() - 100,
+                                  160, 80);
+
+    connect(m_floatingWidget, &FloatinWidget::finished, this, [=] {
+        delete m_floatingWidget;
+    });
+//    qDebug() << "widget geometry:" << this->geometry();
+//    qDebug() << "m_floatingWidget geometry:" << m_floatingWidget->geometry();
+    m_floatingWidget->start();
 }
 
 int Widget::labelAlpha() const

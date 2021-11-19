@@ -21,9 +21,8 @@ public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
 
-
 private slots:
-    void onBtnClicked();
+    void onFloatingBtnClicked();
 
 private:
     int labelAlpha() const;
@@ -47,7 +46,7 @@ private:
     QLabel *m_tipsLabel;
     QPushButton *m_alphaBtn;
 
-    FloatinWidget *m_floatingWidget;
+//    FloatinWidget *m_floatingWidget;
     QPushButton *m_floatBtn;
 };
 #endif // WIDGET_H

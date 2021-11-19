@@ -1,8 +1,9 @@
 #include "FloatingWidget.h"
 #include <QGridLayout>
+#include <QDebug>
 
 FloatinWidget::FloatinWidget(QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     m_x(0),
     m_y(0),
     m_width(100),
@@ -11,6 +12,8 @@ FloatinWidget::FloatinWidget(QWidget *parent) :
     m_text("")
 {
     this->setWindowFlag(Qt::FramelessWindowHint);
+    this->setAttribute(Qt::WA_TranslucentBackground);
+
     m_label = new QLabel(m_text, this);
     m_label->setStyleSheet("QLabel {"
                            "    color: white;"
@@ -25,10 +28,15 @@ FloatinWidget::FloatinWidget(QWidget *parent) :
 
     m_animationGroup = new QSequentialAnimationGroup(this);
 
-    m_moveAnimation = new QPropertyAnimation(this, "geometry");
-    m_moveAnimation->setDuration(1000);
-    m_moveAnimation->setStartValue(QRect(this->x(), this->y() + 20, this->width(), this->height()));
-    m_moveAnimation->setEndValue(QRect(this->x(), this->y() - 20, this->width(), this->height()));
+    m_moveShowAnimation = new QPropertyAnimation(this, "windowOpacity");
+    m_moveShowAnimation->setDuration(10);
+    m_moveShowAnimation->setStartValue(1);
+    m_moveShowAnimation->setEndValue(1);
+
+    m_moveUpAnimation = new QPropertyAnimation(this, "geometry");
+    m_moveUpAnimation->setDuration(500);
+    m_moveUpAnimation->setStartValue(QRect(m_x, m_y+20, m_width, m_height));
+    m_moveUpAnimation->setEndValue(QRect(m_x, m_y, m_width, m_height));
 
     m_opacityAnimation = new QPropertyAnimation(this, "windowOpacity");
     m_opacityAnimation->setDuration(1000);
@@ -39,9 +47,11 @@ FloatinWidget::FloatinWidget(QWidget *parent) :
     m_opacityAnimation->setKeyValueAt(0.8, 0.2);
     m_opacityAnimation->setKeyValueAt(1, 0);
 
-    m_animationGroup->addAnimation(m_moveAnimation);
+//    m_animationGroup->addAnimation(m_moveShowAnimation);
+    m_animationGroup->addAnimation(m_moveUpAnimation);
     m_animationGroup->addAnimation(m_opacityAnimation);
 
+    connect(m_animationGroup, SIGNAL(finished()), this, SLOT(onAnimationFinished()));
 //    this->hide();
 }
 
@@ -52,8 +62,8 @@ void FloatinWidget::setGeometry(int x, int y, int w, int h)
     m_width  = w;
     m_height = h;
 
-    m_moveAnimation->setStartValue(QRect(m_x, m_y + 20, m_width, m_height));
-    m_moveAnimation->setEndValue(QRect(m_x, m_y, m_width, m_height));
+    m_moveUpAnimation->setStartValue(QRect(m_x, m_y+20, m_width, m_height));
+    m_moveUpAnimation->setEndValue(QRect(m_x, m_y, m_width, m_height));
 
     return QWidget::setGeometry(x, y, w, h);
 }
@@ -72,5 +82,13 @@ void FloatinWidget::setText(const QString &text)
 void FloatinWidget::start()
 {
     this->show();
+    qDebug() << this->geometry();
     m_animationGroup->start();
+}
+
+void FloatinWidget::onAnimationFinished()
+{
+    this->setGeometry(m_x, (m_y+20), m_width, m_height);
+    qDebug() << this->geometry();
+    emit finished();
 }

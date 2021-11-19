@@ -2,12 +2,12 @@
 #define FLOATINGWIDGET_H
 
 #include <QObject>
-#include <QWidget>
+#include <QDialog>
 #include <QLabel>
 #include <QPropertyAnimation>
 #include <QSequentialAnimationGroup>
 
-class FloatinWidget : public QWidget
+class FloatinWidget : public QDialog
 {
     Q_OBJECT
 
@@ -19,8 +19,13 @@ public:
     QString text() const;
     void setText(const QString &text);
 
-public slots:
     void start();
+
+signals:
+    void finished();
+
+private slots:
+    void onAnimationFinished();
 
 private:
     int m_x;
@@ -32,8 +37,10 @@ private:
 
     QString m_text;
 
-    QPropertyAnimation *m_moveAnimation;
+    QPropertyAnimation *m_moveShowAnimation;
+    QPropertyAnimation *m_moveUpAnimation;
     QPropertyAnimation *m_opacityAnimation;
+    QPropertyAnimation *m_moveDownAnimation;
     QSequentialAnimationGroup *m_animationGroup;
 };
 
