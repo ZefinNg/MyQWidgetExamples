@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QPushButton>
+#include <QTimer>
 #include <QPropertyAnimation>
 #include "FloatingWidget.h"
 
@@ -23,6 +24,15 @@ public:
 
 private slots:
     void onFloatingBtnClicked();
+    void onRotationTimer();
+
+private:
+    void initMovableLable();
+    void initScaleLable();
+    void initMovableScaleLable();
+    void initFloatWin();
+    void initFloatLabel();
+    void initRotationAnimation();
 
 private:
     int labelAlpha() const;
@@ -48,5 +58,11 @@ private:
 
 //    FloatinWidget *m_floatingWidget;
     QPushButton *m_floatBtn;
+
+    int m_rotationValue;
+    QLabel *m_rotationLabel;
+    QPixmap m_rotationPixmap;
+    QPushButton *m_rotationBtn;
+    QTimer m_rotationTimer;
 };
 #endif // WIDGET_H

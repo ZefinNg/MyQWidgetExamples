@@ -4,10 +4,58 @@
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent),
-      ui(new Ui::Widget),
-      m_moveLabel(NULL)
+      ui(new Ui::Widget)
 {
     ui->setupUi(this);
+
+    this->initMovableLable();
+    this->initScaleLable();
+    this->initMovableScaleLable();
+    this->initFloatWin();
+    this->initFloatLabel();
+    this->initRotationAnimation();
+}
+
+Widget::~Widget()
+{
+    delete ui;
+}
+
+void Widget::onFloatingBtnClicked()
+{
+    //悬浮窗口
+    FloatinWidget *m_floatingWidget = new FloatinWidget(this);
+    m_floatingWidget->setText("我是一个悬浮窗口.");
+
+    m_floatingWidget->setGeometry(this->x() + this->width()/2 - 200, this->height() - 100,
+                                  160, 80);
+
+    connect(m_floatingWidget, &FloatinWidget::finished, this, [=] {
+        delete m_floatingWidget;
+    });
+//    qDebug() << "widget geometry:" << this->geometry();
+//    qDebug() << "m_floatingWidget geometry:" << m_floatingWidget->geometry();
+    m_floatingWidget->start();
+}
+
+void Widget::onRotationTimer()
+{
+    QMatrix matrix;
+    matrix.translate(m_rotationLabel->width()/2, m_rotationLabel->height()/2);
+    matrix.rotate(m_rotationValue);
+
+    QSize size = QSize(m_rotationLabel->size().width()-40, m_rotationLabel->size().height()-40);
+
+    m_rotationLabel->setPixmap(m_rotationPixmap.scaled(size, Qt::KeepAspectRatio).transformed(matrix, Qt::SmoothTransformation));
+
+    m_rotationValue++;
+
+    if (m_rotationValue > 360)
+        m_rotationValue = 0;
+}
+
+void Widget::initMovableLable()
+{
     //移动动画
     m_moveLabel = new QLabel("我是移动标签", this);
     m_moveLabel->setGeometry(50, 50, 100, 40);
@@ -33,7 +81,10 @@ Widget::Widget(QWidget *parent)
                          "}");
 
     connect(m_moveBtn, SIGNAL(clicked()), moveAnimation, SLOT(start()));
+}
 
+void Widget::initScaleLable()
+{
     //缩放动画
     m_scaleLabel = new QLabel("我是缩放标签", this);
     m_scaleLabel->setGeometry(50, 100, 100, 40);
@@ -58,7 +109,10 @@ Widget::Widget(QWidget *parent)
                               "}");
 
     connect(m_scaleBtn, SIGNAL(clicked()), scaleAnimation, SLOT(start()));
+}
 
+void Widget::initMovableScaleLable()
+{
     //移动+缩放动画
     m_moveScaleLabel = new QLabel("我是移动缩放标签", this);
     m_moveScaleLabel->setGeometry(50, 150, 100, 40);
@@ -85,7 +139,10 @@ Widget::Widget(QWidget *parent)
                                   "}");
 
     connect(m_moveScaleBtn, SIGNAL(clicked()), moveScaleAnimation, SLOT(start()));
+}
 
+void Widget::initFloatWin()
+{
     //悬浮窗口
     QPropertyAnimation *transparentAnimation = new QPropertyAnimation(this, "windowOpacity");
     transparentAnimation->setDuration(2000);
@@ -101,7 +158,10 @@ Widget::Widget(QWidget *parent)
                              "}");
 
     connect(m_tipsBtn, SIGNAL(clicked()), transparentAnimation, SLOT(start()));
+}
 
+void Widget::initFloatLabel()
+{
     //悬浮Label
     m_tipsLabel = new QLabel("我是一个悬浮标签！", this);
     m_tipsLabel->setGeometry((this->width()-m_tipsLabel->width())/2, this->height() - 300,
@@ -137,26 +197,25 @@ Widget::Widget(QWidget *parent)
     connect(m_floatBtn, SIGNAL(clicked()), this, SLOT(onFloatingBtnClicked()));
 }
 
-Widget::~Widget()
+void Widget::initRotationAnimation()
 {
-    delete ui;
-}
+    m_rotationValue = 0;
+    m_rotationLabel = new QLabel(this);
+    m_rotationLabel->setGeometry(80, 160, 100, 100);
 
-void Widget::onFloatingBtnClicked()
-{
-    //悬浮窗口
-    FloatinWidget *m_floatingWidget = new FloatinWidget(this);
-    m_floatingWidget->setText("我是一个悬浮窗口.");
+    m_rotationPixmap = QPixmap(":/zolo.jpg");
 
-    m_floatingWidget->setGeometry(this->x() + this->width()/2 - 200, this->height() - 100,
-                                  160, 80);
+    m_rotationTimer.setInterval(5);
+    connect(&m_rotationTimer, SIGNAL(timeout()), this, SLOT(onRotationTimer()));
 
-    connect(m_floatingWidget, &FloatinWidget::finished, this, [=] {
-        delete m_floatingWidget;
-    });
-//    qDebug() << "widget geometry:" << this->geometry();
-//    qDebug() << "m_floatingWidget geometry:" << m_floatingWidget->geometry();
-    m_floatingWidget->start();
+    m_rotationBtn = new QPushButton("Rotation", this);
+    m_rotationBtn->setGeometry(this->width() - 200, this->y() + 350, 100, 40);
+    m_rotationBtn->setStyleSheet("QPushButton {"
+                                 "    border: 2px solid;"
+                                 "    border-radius: 10px;"
+                                 "}");
+
+    connect(m_rotationBtn, SIGNAL(clicked()), &m_rotationTimer, SLOT(start()));
 }
 
 int Widget::labelAlpha() const
