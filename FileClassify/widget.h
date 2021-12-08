@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QHBoxLayout>
 #include <QFileDialog>
+#include <QDir>
 
 class Widget : public QWidget
 {
@@ -22,11 +23,15 @@ private slots:
 private:
     void initView();
 
+    void copyFile(const QString &source, const QString &destination);
+
 private:
     QLineEdit   *m_fileFilterLineEdit;
     QPushButton *m_openDirBtn;
     QPushButton *m_dealFileBtn;
     QHBoxLayout *m_gridLayout;
+
+    QString m_dirPath;
 };
 
 #endif // WIDGET_H

@@ -1,11 +1,14 @@
 ﻿#include "widget.h"
 
+#include <QDebug>
+
 Widget::Widget(QWidget *parent)
     : QWidget(parent),
       m_fileFilterLineEdit(nullptr),
       m_openDirBtn(nullptr),
       m_dealFileBtn(nullptr),
-      m_gridLayout(nullptr)
+      m_gridLayout(nullptr),
+      m_dirPath("")
 {
     this->initView();
 
@@ -20,10 +23,20 @@ Widget::~Widget()
 
 void Widget::onOpenDirBtnClicked()
 {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), "C:",
+    m_dirPath = QFileDialog::getExistingDirectory(this, tr("Select Directory"), "C:",
                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
-    m_fileFilterLineEdit->setText(dir);
+    m_fileFilterLineEdit->setText(m_dirPath);
+
+    QDir openDir(m_dirPath);
+    QFileInfoList fileInfoList = openDir.entryInfoList();
+
+    foreach (QFileInfo each, fileInfoList) {
+        qDebug() << each.fileName();
+        qDebug() << each.absoluteFilePath();
+        qDebug() << each.absolutePath();
+        qDebug() << each.baseName();
+    }
 }
 
 void Widget::onDealFileBtnClicked()
@@ -46,4 +59,9 @@ void Widget::initView()
     m_gridLayout->addWidget(m_fileFilterLineEdit);
     m_gridLayout->addWidget(m_openDirBtn);
     m_gridLayout->addWidget(m_dealFileBtn);
+}
+
+void Widget::copyFile(const QString &source, const QString &destination)
+{
+
 }
