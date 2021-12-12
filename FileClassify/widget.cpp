@@ -15,7 +15,8 @@ Widget::Widget(QWidget *parent)
       m_dirPath(""),
       m_fileFilterRule(""),
       m_targetDirPath(""),
-      m_allFilesList("")
+      m_allFilesList(""),
+      m_copyFilesCount(0)
 {
     this->initView();
 
@@ -52,7 +53,7 @@ void Widget::onDealFileBtnClicked()
         return;
     }
 
-    m_targetDirPath = m_dirPath + "/" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm_ss");
+    m_targetDirPath = m_dirPath + "/" + m_fileFilterRule;
 
     QDir targetDir;
     if(!targetDir.exists(m_targetDirPath)) {
@@ -119,11 +120,13 @@ void Widget::dealFiles(const QFileInfoList &fileInfoList)
 {
     foreach (QFileInfo each, fileInfoList) {
         if (each.fileName().contains(m_fileFilterRule)) {
-            qDebug() << each.absoluteFilePath();
             QFile::copy(each.absoluteFilePath(),
                         m_targetDirPath + "/" + each.fileName());
+            m_copyFilesCount++;
         }
     }
+    QMessageBox::information(this, tr("INFO"), tr("Copy %1 files.").arg(m_copyFilesCount));
+    m_copyFilesCount = 0;
 }
 
 void Widget::copyFile(const QString &source, const QString &destination)

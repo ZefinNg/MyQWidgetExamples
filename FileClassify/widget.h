@@ -44,6 +44,7 @@ private:
     QString m_targetDirPath;
 
     QStringList m_allFilesList;
+    int m_copyFilesCount;
 };
 
 #endif // WIDGET_H
