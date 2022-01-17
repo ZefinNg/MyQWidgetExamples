@@ -178,7 +178,7 @@
     </font>
    </property>
    <property name="text">
-    <string>打印数据1</string>
+    <string>守夜人誓言</string>
    </property>
   </widget>
   <widget class="QRadioButton" name="antiWhiteRadioButton">
@@ -309,7 +309,7 @@
     </font>
    </property>
    <property name="text">
-    <string>打印数据2</string>
+    <string>登鹳雀楼</string>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget_3">
@@ -445,7 +445,57 @@
     </font>
    </property>
    <property name="text">
-    <string>打印数据3</string>
+    <string>唯美文案</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="printGermanButton">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>190</y>
+     <width>140</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>140</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>微软雅黑</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>德语特殊字符</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="printPic1Button">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>250</y>
+     <width>140</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>140</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>微软雅黑</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>打印图片1</string>
    </property>
   </widget>
  </widget>

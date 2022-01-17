@@ -15,10 +15,10 @@ MainWidget::MainWidget(QWidget *parent) :
     m_printTimer.setInterval(800);
 
     //设置背景图
-    QPalette mainWidgetPalette;
-    QPixmap backgroundPixmap(":/images/background.png");
-    mainWidgetPalette.setBrush(QPalette::Window, QBrush(backgroundPixmap));
-    this->setPalette(mainWidgetPalette);
+//    QPalette mainWidgetPalette;
+//    QPixmap backgroundPixmap(":/images/background.png");
+//    mainWidgetPalette.setBrush(QPalette::Window, QBrush(backgroundPixmap));
+//    this->setPalette(mainWidgetPalette);
 
     //设置QTextBrowser为半透明
     ui->textBrowser->setStyleSheet("QTextBrowser{background-color:rgb(240, 240, 240, 125)};");
@@ -41,8 +41,6 @@ MainWidget::MainWidget(QWidget *parent) :
     //设置开关按钮贴图
     ui->switchButton->setStyleSheet("QPushButton{border-image: url(:/images/switch_off.png);}");
 
-//    qDebug() << this->styleSheet();
-
     //设置下拉框的选项高度
     ui->horizontalMagnificationComboBox->setView(new QListView());
     ui->verticalMagnificationComboBox->setView(new QListView());
@@ -55,6 +53,7 @@ MainWidget::MainWidget(QWidget *parent) :
     connect(ui->printOathButton,        SIGNAL(clicked()),     this, SLOT(onPrintOathButtonClicked()));
     connect(ui->printData2Button,       SIGNAL(clicked()),     this, SLOT(onPrintData2ButtonClicked()));
     connect(ui->printCopywritingButton, SIGNAL(clicked()),     this, SLOT(onPrintCopyWritingButtonClicked()));
+    connect(ui->printGermanButton,      SIGNAL(clicked()),     this, SLOT(onPrintGermanButtonClicked()));
 
     connect(&m_printTimer, SIGNAL(timeout()), this, SLOT(onPrintTimerTimeout()));
 }
@@ -95,9 +94,10 @@ void MainWidget::onPrintOathButtonClicked()
 
     this->fillOathData();
     this->checkPrintCondition();
-//    m_mainWidgetController->writeData2SerialPort("HelloWorld");
     ui->textBrowser->append("守夜人誓言打印中……");
-    m_printTimer.start();
+//    m_printTimer.start();
+    foreach (QString each, m_readyPrintDataList)
+        m_mainWidgetController->printData(each);
 }
 
 void MainWidget::onPrintData2ButtonClicked()
@@ -107,6 +107,7 @@ void MainWidget::onPrintData2ButtonClicked()
     m_mainWidgetController->printData("[作者] 王之涣", MainWidgetModel::ALIGN_CENTER);
     m_mainWidgetController->printData("白日依山尽，黄河入海流。", MainWidgetModel::ALIGN_LEFT);
     m_mainWidgetController->printData("欲穷千里目，更上一层楼。", MainWidgetModel::ALIGN_RIGHT);
+    m_mainWidgetController->printBlankLine(1);
 }
 
 void MainWidget::onPrintCopyWritingButtonClicked()
@@ -116,37 +117,50 @@ void MainWidget::onPrintCopyWritingButtonClicked()
     m_printTimer.start();
 }
 
+void MainWidget::onPrintGermanButtonClicked()
+{
+    m_mainWidgetController->printData("Γειά σου Κόσμε");
+    m_mainWidgetController->printBlankLine(1);
+    m_mainWidgetController->printBlankLine(1);
+}
+
+void MainWidget::onPirntPic1ButtonClicked()
+{
+
+}
+
 void MainWidget::onPrintTimerTimeout()
 {
     if (!m_readyPrintDataList.isEmpty()) {
         QString readyPrintData = m_readyPrintDataList.takeFirst();
-        ui->textBrowser->append(readyPrintData);
-//        qDebug() << __FUNCTION__ << __LINE__ << readyPrintData;
         m_mainWidgetController->printData(readyPrintData);
         m_mainWidgetController->printBlankLine(1);
+
+        ui->textBrowser->append(readyPrintData);
     }
     else {
-        ui->textBrowser->append("----------------------------");
-        m_mainWidgetController->printBlankLine(1);
         m_printTimer.stop();
+        m_mainWidgetController->printBlankLine(1);
+
+        ui->textBrowser->append("----------------------------");
     }
 }
 
 void MainWidget::fillOathData()
 {
     m_readyPrintDataList.clear();
-    m_readyPrintDataList.append(QString::fromUtf8("长夜将至，我从今开始守望，至死方休。"));
-    m_readyPrintDataList.append(QString::fromUtf8("我将不娶妻，不封地，不生子。"));
-    m_readyPrintDataList.append(QString::fromUtf8("我将不戴王冠，不争荣宠。"));
-    m_readyPrintDataList.append(QString::fromUtf8("我将尽忠职守，生死于斯。"));
-    m_readyPrintDataList.append(QString::fromUtf8("我是黑暗中的利剑，"));
-    m_readyPrintDataList.append(QString::fromUtf8("长城上的守卫，"));
-    m_readyPrintDataList.append(QString::fromUtf8("抵御寒冷的烈焰，"));
-    m_readyPrintDataList.append(QString::fromUtf8("破晓时分的光线，"));
-    m_readyPrintDataList.append(QString::fromUtf8("唤醒眠者的号角，"));
-    m_readyPrintDataList.append(QString::fromUtf8("守护王国的坚盾。"));
-    m_readyPrintDataList.append(QString::fromUtf8("我将生命与荣耀献给守夜人，"));
-    m_readyPrintDataList.append(QString::fromUtf8("今夜如此，夜夜皆然。"));
+    m_readyPrintDataList.append("长夜将至，我从今开始守望，至死方休。");
+    m_readyPrintDataList.append("我将不娶妻，不封地，不生子。");
+    m_readyPrintDataList.append("我将不戴王冠，不争荣宠。");
+    m_readyPrintDataList.append("我将尽忠职守，生死于斯。");
+    m_readyPrintDataList.append("我是黑暗中的利剑，");
+    m_readyPrintDataList.append("长城上的守卫，");
+    m_readyPrintDataList.append("抵御寒冷的烈焰，");
+    m_readyPrintDataList.append("破晓时分的光线，");
+    m_readyPrintDataList.append("唤醒眠者的号角，");
+    m_readyPrintDataList.append("守护王国的坚盾。");
+    m_readyPrintDataList.append("我将生命与荣耀献给守夜人，");
+    m_readyPrintDataList.append("今夜如此，夜夜皆然。");
 }
 
 void MainWidget::filleCopywritingData()

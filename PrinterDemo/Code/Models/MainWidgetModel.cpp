@@ -112,7 +112,6 @@ void MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
 #else
     this->queryPrinterStatus();
 
-//    qDebug() << "lineData:" << lineData;
     TransUnit transUnit;
     transUnit.setUnitType(TransUnit::SNED_DATA);
     transUnit.setByteArray(lineData.toLocal8Bit());
@@ -126,14 +125,14 @@ void MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
     transUnit.setByteArray(CMD_WRAP);
     m_printerCommunicaiton->appendTransUnit(transUnit);
 
-//    printf("%s %d Thread is running:%d\n", __FUNCTION__, __LINE__, m_printThread->isRunning());
+    qDebug() << __FUNCTION__ << __LINE__ << QThread::currentThreadId();
 
-//    if (!m_printThread->isRunning() || m_printThread->isFinished()) {
-//        printf("Thread ready to start.\n");
-//        m_printThread->start();
-//    }
-//    printf("%s %d Thread is running:%d\n", __FUNCTION__, __LINE__, m_printThread->isRunning());
-
+    if (!m_printThread->isRunning()) {
+        qDebug() << __FUNCTION__ << __LINE__;
+        m_printThread->start();
+    }
+    else
+        qDebug() << __FUNCTION__ << __LINE__;
 #endif
 }
 

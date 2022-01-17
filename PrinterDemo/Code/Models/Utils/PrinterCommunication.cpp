@@ -3,13 +3,18 @@
 #include <QApplication>
 #include <QDebug>
 
+#define RW_TIMEOUT_MS (2000)
+#define SOFT_FLOW_CONTROL_XOFF (0x13)
+#define SOFT_FLOW_CONTROL_XON  (0x11)
+#define NORMAL_STATUS          (0x12)
+
 PrinterCommunication::PrinterCommunication(QObject *parent) : QObject(parent)
 {
-    m_devicePath = "/dev/ttymxc3";
-    m_serialPort = new QextSerialPort(m_devicePath);
-    m_gb2312     = QTextCodec::codecForName("GB2312");
-    m_isRunning  = false;
-    m_canSend    = true;
+    m_devicePath       = "/dev/ttymxc3";
+    m_serialPort       = new QextSerialPort(m_devicePath);
+    m_gb2312           = QTextCodec::codecForName("GB2312");
+    m_isRunning        = false;
+    m_isWaitingReply   = false;
 
     m_dataList.clear();
     m_receivedData.clear();
@@ -21,7 +26,7 @@ PrinterCommunication::PrinterCommunication(QObject *parent) : QObject(parent)
     m_serialPort->setFlowControl(FLOW_OFF); //设置流量控制
     m_serialPort->setTimeout(200);
 
-    connect(m_serialPort, SIGNAL(readyRead()), this, SLOT(dataReceived()), Qt::QueuedConnection);
+//    connect(m_serialPort, SIGNAL(readyRead()), this, SLOT(dataReceived()), Qt::QueuedConnection);
 }
 
 PrinterCommunication::~PrinterCommunication()
@@ -73,71 +78,82 @@ qint64 PrinterCommunication::write(const char *data, qint64 len)
 
 void PrinterCommunication::doWork()
 {
-    m_isRunning = true;
-    int writeResult = -1;
-    int dataLength  = 0;
-    QByteArray encodeData = "";
+    QEventLoop readLoop;
+    QTimer readTimer;
+    readTimer.setSingleShot(true);
 
-//    qDebug() << "[Info]Printer communication thread starts.";
+    connect(&readTimer, SIGNAL(timeout()), &readLoop, SLOT(quit()));
+    connect(m_serialPort, SIGNAL(readyRead()), &readLoop, SLOT(quit()));
+//    connect(m_serialPort, SIGNAL(readyRead()), this, SLOT(dataReceived()));
+
+    m_isRunning = true;
+
     printf("[Info]Printer communication thread starts.\n");
     while (m_isRunning) {
-        qDebug() << __FUNCTION__ << __LINE__;
-        if (!m_dataList.isEmpty()) {
-            if (m_canSend) {
-                qDebug() << __FUNCTION__ << __LINE__;
-                m_mutex.lock();
-                m_currentTransUnit = m_dataList.takeFirst();
-                m_mutex.unlock();
-                qDebug() << __FUNCTION__ << __LINE__;
-            }
-            else {
-                qDebug() << __FUNCTION__ << __LINE__;
-                this->prependTransUnit(m_currentTransUnit);
-                m_canSend = true;
-                continue;
-            }
+        TransUnit tempTranUnit;
 
-            if (m_currentTransUnit.isQueryCmd()) {
-                qDebug() << __FUNCTION__ << __LINE__;
-                m_canSend = false;
-            }
-
+        //判断当前是否需要读取数据，不用则进入发送状态
+        if (!m_isWaitingReply) {
+            if (!m_dataList.isEmpty()) {
 #if 1
-            if (m_currentTransUnit.unitType() == TransUnit::SNED_DATA) {
-                qDebug() << "[Info]Send data:" << QString::fromLocal8Bit(m_currentTransUnit.byteArray());
-                encodeData = m_gb2312->fromUnicode(QString(m_currentTransUnit.byteArray()));
-                dataLength = encodeData.count();
-                writeResult = m_serialPort->write(encodeData.data());
+                m_mutex.lock();
+                tempTranUnit = m_dataList.takeFirst();
+                m_mutex.unlock();
+
+                if (tempTranUnit.resendTimes() > 0) {
+                    if (!this->sendTransUnit(tempTranUnit)) {
+                        if (tempTranUnit.resendTimes() > 0) {
+                            this->prependTransUnit(tempTranUnit);
+                            continue;
+                        }
+                    }
+                }
+                else
+                    continue;
+
+                if (tempTranUnit.isQueryCmd()) {
+                    m_isWaitingReply = true;
+                    continue;
+                }
+#endif
             }
             else {
-                qDebug() << "[Info]Send data type:" << m_currentTransUnit.unitType();
-                dataLength = m_currentTransUnit.byteArray().size();
-                writeResult = m_serialPort->write(m_currentTransUnit.byteArray().data(), m_currentTransUnit.byteArray().size());
+//                m_isRunning = false;
+//                emit finishWork();
+//                break;
+                m_isWaitingReply = true;
             }
+        }
+        else {//读取串口
+//            this->readPrinter();
+            qDebug() << __FUNCTION__ << __LINE__;
+            readTimer.start(RW_TIMEOUT_MS);
+            readLoop.exec();
 
-            if (writeResult != dataLength) {
-                qDebug() << "WriteResult:" << writeResult << "dataLength:" << dataLength;
-                this->prependTransUnit(m_currentTransUnit);
-                m_canSend = true;
-                qDebug() << "[Trace]Write error, prepend transUnit to resend.";
+            //等待打印机回复，判断状态
+            if (m_serialPort->isReadable() && m_serialPort->bytesAvailable() > 0) {
+                m_receivedData = m_serialPort->readAll();
+                m_serialPort->flush();
+
+                if (m_receivedData.size() > 0) {
+                    m_isWaitingReply = !this->handleReceivedData(m_receivedData, tempTranUnit.unitType());
+                    m_receivedData.clear();
+                }
             }
-#endif
+            else {
+                //若重发次数不为0，则准备重发
+                if (tempTranUnit.resendTimes() > 0
+                        && tempTranUnit.unitType() != TransUnit::NONE_TYPE) {
+                    qDebug() << "[Info]Received data timeout. Ready to resend.";
+                    this->prependTransUnit(tempTranUnit);
+                    m_isWaitingReply = false;
+                }
+            }
         }
-        else {
-            m_isRunning = false;
-            emit finishWork();
-            break;
-        }
-
-        usleep(10 * 1000);
-
-        //能够正常获取到串口的数据
-        QApplication::processEvents();
     }
 
-//    qDebug() << "[Info]Printer communication thread quit.";
+    qDebug() << __FUNCTION__ << __LINE__ << QThread::currentThreadId();
     printf("[Info]Printer communication thread quit.\n");
-    return;
 }
 
 void PrinterCommunication::quitWork()
@@ -148,14 +164,46 @@ void PrinterCommunication::quitWork()
 
 void PrinterCommunication::dataReceived()
 {
-//    if (m_serialPort->isReadable() && m_serialPort->bytesAvailable() > 0) {
+    if (m_serialPort->isReadable() && m_serialPort->bytesAvailable() > 0) {
         m_receivedData = m_serialPort->readAll().toHex();
 
         qDebug() << "[Info]Received data:" << m_receivedData;
-        this->handleReceivedData(m_receivedData);
-//    }
+//        this->handleReceivedData(m_receivedData);
 
-    m_canSend = true;
+        if (!m_isWaitingReply)
+            m_isWaitingReply = false;
+    }
+}
+
+bool PrinterCommunication::sendTransUnit(TransUnit& transUnit)
+{
+    QByteArray encodeData = "";
+    int writeResult = -1;
+    int dataLength  = 0;
+
+    //重发次数-1
+    transUnit.setResendTimes(transUnit.resendTimes()-1);
+
+    if (transUnit.unitType() == TransUnit::SNED_DATA) {
+        qDebug() << "[Info]Send data:" << QString::fromLocal8Bit(transUnit.byteArray());
+        encodeData = m_gb2312->fromUnicode(QString(transUnit.byteArray()));
+        qDebug() << "Tx:" << encodeData;
+        dataLength = encodeData.count();
+        writeResult = m_serialPort->write(encodeData.data());
+    }
+    else {
+        qDebug() << "[Info]Send data type:" << transUnit.unitType();
+        dataLength = transUnit.byteArray().size();
+        writeResult = m_serialPort->write(transUnit.byteArray().data(), transUnit.byteArray().size());
+    }
+
+    if (writeResult != dataLength) {
+        qDebug() << "WriteResult:" << writeResult << "dataLength:" << dataLength;
+        qDebug() << "[Trace]Write error, prepend transUnit to resend.";
+        return false;
+    }
+
+    return true;
 }
 
 void PrinterCommunication::prependTransUnit(TransUnit transUnit)
@@ -165,7 +213,43 @@ void PrinterCommunication::prependTransUnit(TransUnit transUnit)
     m_mutex.unlock();
 }
 
-void PrinterCommunication::handleReceivedData(QByteArray receivedData)
+bool PrinterCommunication::handleReceivedData(QByteArray receivedData, TransUnit::UNIT_QUERY_TYPE type)
 {
+    qDebug() << "[Info]Rx:" << receivedData.toHex();
+    qDebug() << "Rx size:"  << receivedData.size();
 
+    int eachReply = 0;
+    bool result = false;
+
+    for (int i = 0; i < receivedData.size(); i++) {
+        eachReply = receivedData[i];
+
+        if (eachReply == SOFT_FLOW_CONTROL_XOFF)
+            result = false;
+        else if (eachReply == SOFT_FLOW_CONTROL_XON)
+            result = true;
+        else if (eachReply == NORMAL_STATUS)
+            result = true;
+        else {
+            switch (type) {
+            case TransUnit::NONE_TYPE:
+                break;
+            case TransUnit::QUERY_STATUS:
+                break;
+            case TransUnit::QUERY_OFFLINE:
+                break;
+            case TransUnit::QUERY_ERROR:
+                break;
+            case TransUnit::QUERY_PAPER:
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    return result;
+
+    //判断收到的是否为XOFF、XON信号
+//    qDebug() << "recvData:" << *recvData;
 }

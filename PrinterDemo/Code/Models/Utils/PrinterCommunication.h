@@ -42,8 +42,9 @@ private slots:
     void dataReceived();
 
 private:
+    bool sendTransUnit(TransUnit &transUnit);
     void prependTransUnit(TransUnit transUnit);
-    void handleReceivedData(QByteArray receivedData);
+    bool handleReceivedData(QByteArray receivedData, TransUnit::UNIT_QUERY_TYPE type);
 
 private:
     QString         m_devicePath;
@@ -52,11 +53,10 @@ private:
     QMutex          m_mutex;
 
     bool m_isRunning;
-    bool m_canSend;
+    bool m_isWaitingReply;
 
     QList<TransUnit>  m_dataList;
     QByteArray        m_receivedData;
-    TransUnit         m_currentTransUnit;
 
     QTimer m_readTimer;
 };

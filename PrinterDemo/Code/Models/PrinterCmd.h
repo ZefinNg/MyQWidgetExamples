@@ -31,6 +31,8 @@
 #define SCALE_MIN_TIMES (1)
 #define SCALE_MAX_TIMES (8)
 
+#define CMD_SELECT_CODE_PAGE             "\x1B\x74\x11"
+
 #define STRLEN(S)                   sizeof(S)-1
 
 #endif // PRINTERCMD_H

@@ -28,9 +28,13 @@ public:
 
     bool isQueryCmd();
 
+    int resendTimes() const;
+    void setResendTimes(int resendTimes);
+
 private:
     UNIT_QUERY_TYPE m_unitType;
     QByteArray m_byteArray;
+    int m_resendTimes;
 };
 
 #endif // TRANSUNIT_H

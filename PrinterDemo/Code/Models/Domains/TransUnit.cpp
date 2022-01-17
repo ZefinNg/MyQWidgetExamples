@@ -1,9 +1,12 @@
 #include "TransUnit.h"
 
+#define MAX_RESEND_TIMES (3)
+
 TransUnit::TransUnit()
 {
     m_unitType = NONE_TYPE;
     m_byteArray.clear();
+    m_resendTimes = MAX_RESEND_TIMES;
 }
 
 TransUnit::~TransUnit()
@@ -39,3 +42,13 @@ bool TransUnit::isQueryCmd()
 
     return false;
 }
+int TransUnit::resendTimes() const
+{
+    return m_resendTimes;
+}
+
+void TransUnit::setResendTimes(int resendTimes)
+{
+    m_resendTimes = resendTimes;
+}
+

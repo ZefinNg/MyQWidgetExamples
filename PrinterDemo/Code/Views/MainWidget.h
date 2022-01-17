@@ -24,6 +24,8 @@ private slots:
     void onPrintOathButtonClicked();
     void onPrintData2ButtonClicked();
     void onPrintCopyWritingButtonClicked();
+    void onPrintGermanButtonClicked();
+    void onPirntPic1ButtonClicked();
 
     void onPrintTimerTimeout();
 
