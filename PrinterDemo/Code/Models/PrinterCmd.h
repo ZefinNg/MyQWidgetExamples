@@ -33,6 +33,8 @@
 
 #define CMD_SELECT_CODE_PAGE             "\x1B\x74\x11"
 
-#define STRLEN(S)                   sizeof(S)-1
+#define STRLEN(S)                        sizeof(S)-1
+
+#define PIC_MAX_WIDTH                    384
 
 #endif // PRINTERCMD_H

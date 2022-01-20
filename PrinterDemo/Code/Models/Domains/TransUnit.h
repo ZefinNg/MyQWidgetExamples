@@ -14,7 +14,8 @@ public:
         QUERY_PAPER,
         CONFIG_FORMAT,
         PAPER_FEED,
-        SNED_DATA
+        PRINT_TEXT,
+        PRINT_PIC
     };
 
     TransUnit();

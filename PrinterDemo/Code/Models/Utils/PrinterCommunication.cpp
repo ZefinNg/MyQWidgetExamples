@@ -126,7 +126,6 @@ void PrinterCommunication::doWork()
         }
         else {//读取串口
 //            this->readPrinter();
-            qDebug() << __FUNCTION__ << __LINE__;
             readTimer.start(RW_TIMEOUT_MS);
             readLoop.exec();
 
@@ -152,7 +151,6 @@ void PrinterCommunication::doWork()
         }
     }
 
-    qDebug() << __FUNCTION__ << __LINE__ << QThread::currentThreadId();
     printf("[Info]Printer communication thread quit.\n");
 }
 
@@ -184,7 +182,7 @@ bool PrinterCommunication::sendTransUnit(TransUnit& transUnit)
     //重发次数-1
     transUnit.setResendTimes(transUnit.resendTimes()-1);
 
-    if (transUnit.unitType() == TransUnit::SNED_DATA) {
+    if (transUnit.unitType() == TransUnit::PRINT_TEXT) {
         qDebug() << "[Info]Send data:" << QString::fromLocal8Bit(transUnit.byteArray());
         encodeData = m_gb2312->fromUnicode(QString(transUnit.byteArray()));
         qDebug() << "Tx:" << encodeData;

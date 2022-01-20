@@ -27,6 +27,12 @@ public:
     void setAntiWhite(bool onOff);
 
     void printData(QString lineData, MainWidgetModel::ALIGN_MODE alignMode = MainWidgetModel::ALIGN_CENTER);
+    void printPicture(const QString filePath);
+
+    void setLineSpacing(const int lineSpacing);
+
+    //For debug
+    void printData(QByteArray message);
 
     void printBlankLine(int lines);
 

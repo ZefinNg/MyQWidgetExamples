@@ -54,6 +54,7 @@ MainWidget::MainWidget(QWidget *parent) :
     connect(ui->printData2Button,       SIGNAL(clicked()),     this, SLOT(onPrintData2ButtonClicked()));
     connect(ui->printCopywritingButton, SIGNAL(clicked()),     this, SLOT(onPrintCopyWritingButtonClicked()));
     connect(ui->printGermanButton,      SIGNAL(clicked()),     this, SLOT(onPrintGermanButtonClicked()));
+    connect(ui->printPic1Button,        SIGNAL(clicked()),     this, SLOT(onPirntPic1ButtonClicked()));
 
     connect(&m_printTimer, SIGNAL(timeout()), this, SLOT(onPrintTimerTimeout()));
 }
@@ -119,14 +120,32 @@ void MainWidget::onPrintCopyWritingButtonClicked()
 
 void MainWidget::onPrintGermanButtonClicked()
 {
-    m_mainWidgetController->printData("Γειά σου Κόσμε");
+    m_mainWidgetController->printData("Γειά σου Κόσμε", MainWidgetModel::ALIGN_LEFT);
     m_mainWidgetController->printBlankLine(1);
     m_mainWidgetController->printBlankLine(1);
 }
 
 void MainWidget::onPirntPic1ButtonClicked()
 {
+#if 0
+//    QByteArray message = "1B4B0F007C4444FF44447C00416254C8546241";
+    m_mainWidgetController->setLineSpacing(0);
+    QByteArray message = "1B4B4F01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+    m_mainWidgetController->printData(QByteArray::fromHex(message));
+    m_mainWidgetController->printData(QByteArray::fromHex(message));
+    m_mainWidgetController->printData(QByteArray::fromHex(message));
+    m_mainWidgetController->printData(QByteArray::fromHex(message));
+#else
+    QString filePath = QFileDialog::getOpenFileName(this, "选择一张图片", "/", "Pic (*.png *.jpg *jpeg)");
 
+    QImage image(filePath);
+    if (image.isNull())
+        ui->textBrowser->append("图片内容有误，请检查该图片是否存在");
+    else if (image.width() > PIC_MAX_WIDTH)
+        ui->textBrowser->append("图片宽度超出限制，请重新选择");
+    else
+        m_mainWidgetController->printPicture(filePath);
+#endif
 }
 
 void MainWidget::onPrintTimerTimeout()

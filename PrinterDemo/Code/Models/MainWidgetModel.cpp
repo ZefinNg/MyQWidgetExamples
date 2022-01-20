@@ -1,6 +1,13 @@
 #include "MainWidgetModel.h"
 #include <QDebug>
 
+#define ROW_COUNT_OF_GROUP      (8)
+#define GRAY_SPLIT_VALUE        (190)
+#define PIC_PRINT_DEFAULT_VALUE (256)
+
+#define CLEAR_BIT(value, i)  (value &= ~(0x01 << (i)))
+#define   SET_BIT(value, i)  (value |= (0x01 << (i)))
+
 MainWidgetModel::MainWidgetModel(QObject *parent) :
     QObject(parent)
 {
@@ -113,7 +120,7 @@ void MainWidgetModel::printData(QString lineData, ALIGN_MODE alignMode)
     this->queryPrinterStatus();
 
     TransUnit transUnit;
-    transUnit.setUnitType(TransUnit::SNED_DATA);
+    transUnit.setUnitType(TransUnit::PRINT_TEXT);
     transUnit.setByteArray(lineData.toLocal8Bit());
     m_printerCommunicaiton->appendTransUnit(transUnit);
 
@@ -357,6 +364,73 @@ void MainWidgetModel::printBlankLine(int lines)
         m_printThread->start();
 }
 
+void MainWidgetModel::printPicture(const QString filePath)
+{
+    QImage srcImage(filePath);
+    int width  = srcImage.width();
+    int heigth = srcImage.height();
+
+    //图像以8行为单位可以分为的组数
+    int groupRowCount = 0;
+
+    //1列8行的像素转换为灰度的值
+    int dot = 0x00;
+
+    QList<int> dotList;
+
+    //打印机以8行像素为一次处理
+    if (heigth % ROW_COUNT_OF_GROUP == 0)
+        groupRowCount = heigth / ROW_COUNT_OF_GROUP;
+    else
+        groupRowCount = (heigth / ROW_COUNT_OF_GROUP) + 1;
+
+    this->setRotationAngle(MainWidgetModel::ANGLE_180);
+
+    for (int i = 0; i < groupRowCount; i++) {
+        for (int j = 0; j < width; j++) {
+            int k0 = i * ROW_COUNT_OF_GROUP + 7;
+            dot = 0x00;
+
+            for (int k = i * ROW_COUNT_OF_GROUP; k < (i + 1) * ROW_COUNT_OF_GROUP; k++) {
+                if (k >= heigth)
+                    break;
+
+                QRgb pixel = srcImage.pixel(j, k);
+                int grayValue = (qRed(pixel) + qGreen(pixel) + qBlue(pixel)) / 3;
+//                int bitIndex = k % ROW_COUNT_OF_GROUP;
+                int bitIndex = k0 - k;
+
+                if (grayValue > GRAY_SPLIT_VALUE)
+                    CLEAR_BIT(dot, bitIndex);
+                else
+                    SET_BIT(dot, bitIndex);
+            }
+
+            dotList.append(dot);
+        }
+        this->printPicData(dotList);
+        dotList.clear();
+    }
+
+    this->printBlankLine(2);
+}
+
+void MainWidgetModel::printData(QByteArray message)
+{
+    TransUnit transUnit;
+    transUnit.setUnitType(TransUnit::PRINT_PIC);
+    transUnit.setByteArray(message);
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+
+    transUnit.setUnitType(TransUnit::PAPER_FEED);
+    transUnit.setByteArray(CMD_ENTER);
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+
+    transUnit.setUnitType(TransUnit::PAPER_FEED);
+    transUnit.setByteArray(CMD_WRAP);
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+}
+
 int MainWidgetModel::calculateStringLength(QString text)
 {
     int length = 0;
@@ -378,4 +452,93 @@ bool MainWidgetModel::isChineseChar(QChar character)
         return true;
 
     return false;
+}
+
+QByteArray MainWidgetModel::makePrintPicPackage(const QList<int> dotList)
+{
+    int size = dotList.length();
+
+    qDebug() << "----size:" << size << "----";
+
+    //n1、n2参考打印机协议文档命名
+    uint n1 = (size & 0x00FF);
+    uint n2 = (size & 0xFF00) >> 8;
+
+    QString message = "1B4B";
+
+    //不够2位数的要补前置0，否则转成十六进制报文会出错
+    message += QString("%1").arg(n1, 2, 16, QLatin1Char('0'));
+    message += QString("%1").arg(n2, 2, 16, QLatin1Char('0'));
+
+    foreach (int each, dotList)
+        message += QString("%1").arg(each, 2, 16, QLatin1Char('0'));
+
+    qDebug() << "message:" << message;
+
+    return QByteArray::fromHex(message.toLatin1());
+}
+
+void MainWidgetModel::printPicData(const QList<int> dotList)
+{
+    this->setLineSpace(0);
+    QByteArray message = this->makePrintPicPackage(dotList);
+
+    this->queryPrinterStatus();
+
+    TransUnit transUnit;
+    transUnit.setUnitType(TransUnit::PRINT_PIC);
+    transUnit.setByteArray(message);
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+
+    transUnit.setUnitType(TransUnit::PAPER_FEED);
+    transUnit.setByteArray(CMD_WRAP);
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+}
+
+void MainWidgetModel::setLineSpace(const int lineSpacing)
+{
+    QString message = "1B31";
+    message += QString("%1").arg(lineSpacing, 2, 16, QLatin1Char('0'));
+
+    TransUnit transUnit;
+    transUnit.setUnitType(TransUnit::CONFIG_FORMAT);
+    transUnit.setByteArray(QByteArray::fromHex(message.toLatin1()));
+    m_printerCommunicaiton->appendTransUnit(transUnit);
+}
+
+QImage MainWidgetModel::toGrayImage(QImage srcImage)
+{
+    int height = srcImage.height();
+    int width  = srcImage.width();
+
+    QImage ret(width, height, QImage::Format_Indexed8);
+    ret.setColorCount(256);
+
+    for(int i = 0; i < 256; i++)
+        ret.setColor(i, qRgb(i, i, i));
+
+    switch(srcImage.format()) {
+    case QImage::Format_Indexed8:
+        for(int i = 0; i < height; i ++) {
+            const uchar *pSrc = (uchar *)srcImage.constScanLine(i);
+            uchar *pDest = (uchar *)ret.scanLine(i);
+            memcpy(pDest, pSrc, width);
+        }
+        break;
+    case QImage::Format_RGB32:
+    case QImage::Format_ARGB32:
+    case QImage::Format_ARGB32_Premultiplied:
+        for(int i = 0; i < height; i ++) {
+            const QRgb *pSrc = (QRgb *)srcImage.constScanLine(i);
+            uchar *pDest = (uchar *)ret.scanLine(i);
+
+            for( int j = 0; j < width; j ++)
+                pDest[j] = qGray(pSrc[j]);
+        }
+        break;
+    default:
+        break;
+    }
+
+    return ret;
 }

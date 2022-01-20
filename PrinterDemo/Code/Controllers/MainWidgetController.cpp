@@ -63,6 +63,21 @@ void MainWidgetController::printData(QString lineData, MainWidgetModel::ALIGN_MO
     m_mainWidgetModel->printData(lineData, alignMode);
 }
 
+void MainWidgetController::printPicture(const QString filePath)
+{
+    m_mainWidgetModel->printPicture(filePath);
+}
+
+void MainWidgetController::setLineSpacing(const int lineSpacing)
+{
+    m_mainWidgetModel->setLineSpace(lineSpacing);
+}
+
+void MainWidgetController::printData(QByteArray message)
+{
+    m_mainWidgetModel->printData(message);
+}
+
 void MainWidgetController::printBlankLine(int lines)
 {
     m_mainWidgetModel->printBlankLine(lines);

@@ -5,6 +5,8 @@
 #include <QTimer>
 #include <QPalette>
 #include <QBrush>
+#include <QFile>
+#include <QFileDialog>
 #include "Controllers/MainWidgetController.h"
 
 namespace Ui {
