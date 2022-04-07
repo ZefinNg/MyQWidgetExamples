@@ -7,6 +7,9 @@
 #include <QDateTime>
 #include "../Service/TsFixUp/TsFixUp.h"
 
+#define WIDGET_WIDTH  (460)
+#define WIDGET_HEIGHT (300)
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
@@ -42,6 +45,7 @@ private:
 #if 0
     void getExcelFileInfo();
 #endif
+    void initView();
     bool createFile(const QString &suffix);
     void setExcelNormalStatus(bool isNormal);
 

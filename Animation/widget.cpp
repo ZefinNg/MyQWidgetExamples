@@ -14,6 +14,7 @@ Widget::Widget(QWidget *parent)
     this->initFloatWin();
     this->initFloatLabel();
     this->initRotationAnimation();
+    this->initRotationWidget();
 }
 
 Widget::~Widget()
@@ -201,7 +202,7 @@ void Widget::initRotationAnimation()
 {
     m_rotationValue = 0;
     m_rotationLabel = new QLabel(this);
-    m_rotationLabel->setGeometry(80, 160, 100, 100);
+    m_rotationLabel->setGeometry(60, 200, 100, 100);
 
     m_rotationPixmap = QPixmap(":/zolo.jpg");
 
@@ -216,6 +217,13 @@ void Widget::initRotationAnimation()
                                  "}");
 
     connect(m_rotationBtn, SIGNAL(clicked()), &m_rotationTimer, SLOT(start()));
+}
+
+void Widget::initRotationWidget()
+{
+    m_rotationWidget = new RotationWidget(this);
+    m_rotationWidget->setPixmap(QPixmap(":/zolo.jpg"));
+    m_rotationWidget->setGeometry(60, 250, 100, 100);
 }
 
 int Widget::labelAlpha() const

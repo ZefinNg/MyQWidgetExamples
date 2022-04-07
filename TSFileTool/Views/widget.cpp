@@ -15,6 +15,8 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
 
+    this->initView();
+
     connect(ui->btnSelectExcel,    SIGNAL(clicked()), this, SLOT(onBtnSelectExcelClicked()));
     connect(ui->btnSelectTs,       SIGNAL(clicked()), this, SLOT(onBtnSelectTsFileClicked()));
 
@@ -27,68 +29,6 @@ Widget::Widget(QWidget *parent)
 //    connect(ui->btnAddSheet,     SIGNAL(clicked()), this, SLOT(onBtnAddSheetClicked()));
 //    connect(ui->btnDeleteSheet,  SIGNAL(clicked()), this, SLOT(onBtnDeleteSheetClicked()));
 //    connect(ui->btnAddCell,      SIGNAL(clicked()), this, SLOT(onBtnAddCell()));
-
-    this->setWindowTitle("TSFileTool");
-    //与.pro中的RC_ICONS效果一样
-//    this->setWindowIcon(QIcon(":/Resources/icon.ico"));
-    this->setStyleSheet("#widget{border-image: url(:/Resources/background.png);}");
-
-    ui->labelFormat->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    ui->labelFormat->setWordWrap(true);
-
-    ui->labelXlsxFilePath->clear();
-    ui->labelTsFilePath->clear();
-
-    ui->btnExcelStatus->setVisible(false);
-    ui->btnSelectExcel->setStyleSheet("QPushButton{"
-                                      "    color: rgb(255, 255, 255);"
-                                      "    font-size: 64pt;"
-                                      "    font-weight: bold;"
-                                      "    border-image: url(:/Resources/button_released.png);"
-                                      "}"
-                                      "QPushButton:Pressed{border-image: url(:/Resources/button_pressed.png);}");
-    ui->btnSelectTs->setStyleSheet(ui->btnSelectExcel->styleSheet());
-
-    ui->btnExcel2Ts->setStyleSheet("QPushButton{"
-                                   "    color: rgb(255, 255, 255);"
-                                   "    border-image: url(:/Resources/button_released.png);"
-                                   "}"
-                                   "QPushButton:Pressed{border-image: url(:/Resources/button_pressed.png);}");
-    ui->btnTs2Excel->setStyleSheet(ui->btnExcel2Ts->styleSheet());
-    ui->btnOpenOutputDir->setStyleSheet(ui->btnExcel2Ts->styleSheet());
-
-    ui->comboBoxFormat->setStyleSheet("QComboBox::drop-down {"
-                                      "    image: url(:/Resources/comboBox_dropDown.png);"
-                                      "    width: 24px;"
-                                      "    padding-right: 12px;"
-                                      "}"
-                                      "QComboBox {"
-                                      "    border-image: url(:/Resources/comboBox.png);"
-                                      "    padding-left: 10px;"
-                                      "    padding-right: 0px;"
-                                      "    color: rgb(255, 255, 255);"
-                                      "    font-size: 10pt;"
-                                      "}"
-                                      "QComboBox QAbstractItemView::item {"
-                                      "    height: 40px;"
-                                      "    border-image: url(:/Resources/comboBox.png);"
-                                      "}");
-    ui->comboBoxFormat->setView(new QListView());
-
-    ui->labelFormat->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
-
-    ui->labelXlsxFilePath->setStyleSheet("QLabel {"
-                                         "    color: rgb(255, 255, 255);"
-                                         "    font-size: 16pt;"
-                                         "}");
-    ui->labelTsFilePath->setStyleSheet(ui->labelXlsxFilePath->styleSheet());
-
-    ui->labelXlsxFilePath->setAlignment(Qt::AlignCenter);
-    ui->labelXlsxFilePath->setWordWrap(true);
-
-    ui->labelTsFilePath->setAlignment(Qt::AlignCenter);
-    ui->labelTsFilePath->setWordWrap(true);
-
 }
 
 Widget::~Widget()
@@ -105,7 +45,7 @@ void Widget::onBtnSelectExcelClicked()
 
     TsExcelHandler::HANDLE_ERROR result = m_tsFixUp->setTranstlationFile(m_xlsxFilePath);
 
-    ui->labelXlsxFilePath->setText(m_xlsxFilePath);
+    ui->lineEditExcelPath->setText(m_xlsxFilePath);
 
     switch (result) {
     case TsExcelHandler::NORMAL:
@@ -135,7 +75,7 @@ void Widget::onBtnSelectTsFileClicked()
 {
     m_tsFilePath = QFileDialog::getOpenFileName(this, "选择Ts文件", "C:\\", "Ts (*.ts *.xml)");
 
-    ui->labelTsFilePath->setText(m_tsFilePath);
+    ui->lineEditTsPath->setText(m_tsFilePath);
 }
 
 void Widget::onBtnExcel2TsClicked()
@@ -221,6 +161,79 @@ void Widget::onExcelHandlerError(TsExcelHandler::HANDLE_ERROR errorNum)
     default:
         break;
     }
+}
+
+void Widget::initView()
+{
+    this->setFixedSize(WIDGET_WIDTH, WIDGET_HEIGHT);
+    this->setWindowTitle("TSFileTool");
+    //与.pro中的RC_ICONS效果一样
+//    this->setWindowIcon(QIcon(":/Resources/icon.ico"));
+    this->setStyleSheet("#widget{border-image: url(:/Resources/background.png);}");
+
+    ui->labelFormat->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    ui->labelFormat->setWordWrap(true);
+
+    ui->lineEditExcelPath->setEnabled(false);
+    ui->lineEditTsPath->setEnabled(false);
+
+    ui->lineEditExcelPath->clear();
+    ui->lineEditTsPath->clear();
+
+    ui->btnExcelStatus->setVisible(false);
+    ui->btnSelectExcel->setStyleSheet("QPushButton{"
+                                      "    color: rgb(255, 255, 255);"
+                                      "    font-size: 18pt;"
+                                      "    font-weight: bold;"
+                                      "    border-image: url(:/Resources/button_released.png);"
+                                      "}"
+                                      "QPushButton:Pressed{border-image: url(:/Resources/button_pressed.png);}");
+    ui->btnSelectTs->setStyleSheet(ui->btnSelectExcel->styleSheet());
+
+    ui->btnOpenOutputDir->setStyleSheet("QPushButton{"
+                                        "    color: rgb(255, 255, 255);"
+                                        "    border-image: url(:/Resources/button_released.png);"
+                                        "}"
+                                        "QPushButton:Pressed{border-image: url(:/Resources/button_pressed.png);}");
+
+    ui->btnExcel2Ts->setStyleSheet("QPushButton {"
+                                   "    border-image: url(:/Resources/toRight.png);"
+                                   "}"
+                                   "QPushButton:Pressed{border-image: url(:/Resources/toRight_pressed.png)}");
+    ui->btnTs2Excel->setStyleSheet("QPushButton {"
+                                   "    border-image: url(:/Resources/toLeft.png);"
+                                   "}"
+                                   "QPushButton:Pressed{border-image: url(:/Resources/toLeft_pressed.png)}");
+
+    ui->comboBoxFormat->setStyleSheet("QComboBox::drop-down {"
+                                      "    image: url(:/Resources/comboBox_dropDown.png);"
+                                      "    width: 24px;"
+                                      "    padding-right: 12px;"
+                                      "}"
+                                      "QComboBox {"
+                                      "    border-image: url(:/Resources/comboBox.png);"
+                                      "    padding-left: 10px;"
+                                      "    padding-right: 0px;"
+                                      "    color: rgb(255, 255, 255);"
+                                      "    font-size: 10pt;"
+                                      "}"
+                                      "QComboBox QAbstractItemView::item {"
+                                      "    height: 40px;"
+                                      "    border-image: url(:/Resources/comboBox.png);"
+                                      "}");
+    ui->comboBoxFormat->setView(new QListView());
+
+    ui->labelFormat->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
+
+    ui->lineEditExcelPath->setStyleSheet("QLineEdit {"
+                                         "    color: rgb(255, 255, 255);"
+                                         "    background-color: rgb(20, 138, 225);"
+                                         "    font-size: 8pt;"
+                                         "}");
+    ui->lineEditTsPath->setStyleSheet(ui->lineEditExcelPath->styleSheet());
+
+    ui->lineEditExcelPath->setAlignment(Qt::AlignCenter);
+    ui->lineEditTsPath->setAlignment(Qt::AlignCenter);
 }
 
 bool Widget::createFile(const QString &suffix)

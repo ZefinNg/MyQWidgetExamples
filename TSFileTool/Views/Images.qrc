@@ -8,5 +8,9 @@
         <file>Resources/comboBox_dropDown.png</file>
         <file>Resources/comboBox.png</file>
         <file>Resources/icon.ico</file>
+        <file>Resources/toLeft.png</file>
+        <file>Resources/toRight.png</file>
+        <file>Resources/toLeft_pressed.png</file>
+        <file>Resources/toRight_pressed.png</file>
     </qresource>
 </RCC>

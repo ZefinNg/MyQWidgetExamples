@@ -5,8 +5,10 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QTimer>
+#include <QtMath>
 #include <QPropertyAnimation>
 #include "FloatingWidget.h"
+#include "RotationWidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -33,6 +35,7 @@ private:
     void initFloatWin();
     void initFloatLabel();
     void initRotationAnimation();
+    void initRotationWidget();
 
 private:
     int labelAlpha() const;
@@ -64,5 +67,7 @@ private:
     QPixmap m_rotationPixmap;
     QPushButton *m_rotationBtn;
     QTimer m_rotationTimer;
+
+    RotationWidget *m_rotationWidget;
 };
 #endif // WIDGET_H

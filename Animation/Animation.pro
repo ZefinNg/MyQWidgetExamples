@@ -17,11 +17,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     FloatingWidget.cpp \
+    RotationWidget.cpp \
     main.cpp \
     widget.cpp
 
 HEADERS += \
     FloatingWidget.h \
+    RotationWidget.h \
     widget.h
 
 FORMS += \
