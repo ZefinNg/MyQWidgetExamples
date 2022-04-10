@@ -1,4 +1,4 @@
-#ifndef FACTORY_H
+﻿#ifndef FACTORY_H
 #define FACTORY_H
 
 #include <QObject>
@@ -13,6 +13,11 @@ public:
 
 public slots:
     void doWork();
+    void stopWork();
+    void onBtnDirectionClicked();
+
+signals:
+    void product();
 
 signals:
 

@@ -1,11 +1,11 @@
-#ifndef WIDGET_H
+﻿#ifndef WIDGET_H
 #define WIDGET_H
 
 #include <QWidget>
 #include <QPushButton>
-#include <QTextBrowser>
 #include <QThread>
 #include <QString>
+#include "Factory.h"
 
 class Widget : public QWidget
 {
@@ -16,28 +16,23 @@ public:
     ~Widget();
 
 private slots:
-    void onBtnAutoClicked();
     void onBtnDirectClicked();
     void onBtnQueuedClicked();
     void onBtnBlockClicked();
     void onBtnUniqueClicked();
 
+    void onProduct();
+
 private:
-    QPushButton *m_btnAutoConnect;
     QPushButton *m_btnDirectConnect;
     QPushButton *m_btnQueuedConnect;
     QPushButton *m_btnBlockConnect;
     QPushButton *m_btnUniqueConnect;
 
-    int m_autoSlotInvokedTimes;
-    int m_directSlotInvokedTimes;
-    int m_queuedSlotInvokedTimes;
-    int m_blockSlotInvokedTimes;
-    int m_uniqueSlotInvokedTimes;
-
-    QTextBrowser *m_debugBrowser;
-
     Qt::HANDLE m_mainThreadId;
-    Qt::HANDLE m_subThreadId;
+
+    QThread *m_factoryThread;
+    Factory *m_factory;
+    Qt::ConnectionType m_connectType;
 };
 #endif // WIDGET_H
