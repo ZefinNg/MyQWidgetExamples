@@ -1,14 +1,15 @@
-#ifndef WIDGET_H
+﻿#ifndef WIDGET_H
 #define WIDGET_H
 
 #include <QWidget>
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QDateTime>
+#include <QButtonGroup>
 #include "../Service/TsFixUp/TsFixUp.h"
 
 #define WIDGET_WIDTH  (460)
-#define WIDGET_HEIGHT (300)
+#define WIDGET_HEIGHT (400)
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -30,6 +31,7 @@ private slots:
     void onBtnTs2ExcelClicked();
     void onBtnOpenOutputClicked();
     void onBtnExcelStatusClicked();
+    void onCheckBoxClicked(int index);
 
     void onExcelHandlerError(TsExcelHandler::HANDLE_ERROR errorNum);
 #if 0
@@ -50,7 +52,16 @@ private:
     void setExcelNormalStatus(bool isNormal);
 
 private:
+    enum CheckBox_Index {
+        null_Check = -1,
+        TwoCols_Check,
+        ThreeCols_Check
+    };
+
+private:
     Ui::Widget *ui;
+    QButtonGroup *m_checkBoxGroup;
+    CheckBox_Index m_clickedIndex;
     TsFixUp *m_tsFixUp;
 
     QString m_tsFilePath;

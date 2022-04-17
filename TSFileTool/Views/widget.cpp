@@ -7,6 +7,8 @@
 Widget::Widget(QWidget *parent)
     : QWidget(parent),
       ui(new Ui::Widget),
+      m_checkBoxGroup(new QButtonGroup(this)),
+      m_clickedIndex(null_Check),
       m_tsFixUp(new TsFixUp(this)),
       m_tsFilePath(),
       m_xlsxFilePath(),
@@ -14,6 +16,11 @@ Widget::Widget(QWidget *parent)
       m_fileTips()
 {
     ui->setupUi(this);
+
+    m_checkBoxGroup->addButton(ui->checkBox2Cols, TwoCols_Check);
+    m_checkBoxGroup->addButton(ui->checkBox3Cols, ThreeCols_Check);
+
+    connect(m_checkBoxGroup, SIGNAL(buttonClicked(int)), this, SLOT(onCheckBoxClicked(int)));
 
     this->initView();
 
@@ -38,6 +45,11 @@ Widget::~Widget()
 
 void Widget::onBtnSelectExcelClicked()
 {
+    if (m_clickedIndex == null_Check) {
+        QMessageBox::critical(this, tr("Error"), tr("Please select the format of excel file."));
+        return;
+    }
+
     m_xlsxFilePath = QFileDialog::getOpenFileName(this, "选择Excel文件", "C:\\", "Excel (*.xlsx *xls)");
 
     if (m_xlsxFilePath.isEmpty())
@@ -124,12 +136,11 @@ void Widget::onBtnTs2ExcelClicked()
     m_tsFixUp->setOutputXlsxFilePath(m_outputFilePath + fileBaseName + "_" + curDateTime + ".xlsx");
     m_tsFixUp->setTsFile(m_tsFilePath);
 
-    int columnCount = ui->comboBoxFormat->currentIndex()+2;
-
-    if (!m_tsFixUp->ts2Excel(columnCount))
+    if (!m_tsFixUp->ts2Excel(m_clickedIndex))
         QMessageBox::critical(this, "错误", "Ts文件转换失败!");
     else
         QMessageBox::information(this, "提示", "转换完成");
+
 }
 
 void Widget::onBtnOpenOutputClicked()
@@ -144,6 +155,11 @@ void Widget::onBtnOpenOutputClicked()
 void Widget::onBtnExcelStatusClicked()
 {
 
+}
+
+void Widget::onCheckBoxClicked(int index)
+{
+    (CheckBox_Index)index > null_Check ? m_clickedIndex = (CheckBox_Index)index : m_clickedIndex = TwoCols_Check;
 }
 
 void Widget::onExcelHandlerError(TsExcelHandler::HANDLE_ERROR errorNum)
@@ -169,7 +185,11 @@ void Widget::initView()
     this->setWindowTitle("TSFileTool");
     //与.pro中的RC_ICONS效果一样
 //    this->setWindowIcon(QIcon(":/Resources/icon.ico"));
-    this->setStyleSheet("#widget{border-image: url(:/Resources/background.png);}");
+    this->setStyleSheet("#widget{border-image: url(:/Resources/background.png);}"
+                        "#checkBox2Cols,#checkBox3Cols{color:rgb(255, 255, 255);}");
+
+    ui->checkBox2Cols->setChecked(true);
+    m_clickedIndex = TwoCols_Check;
 
     ui->labelFormat->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     ui->labelFormat->setWordWrap(true);
@@ -204,24 +224,6 @@ void Widget::initView()
                                    "    border-image: url(:/Resources/toLeft.png);"
                                    "}"
                                    "QPushButton:Pressed{border-image: url(:/Resources/toLeft_pressed.png)}");
-
-    ui->comboBoxFormat->setStyleSheet("QComboBox::drop-down {"
-                                      "    image: url(:/Resources/comboBox_dropDown.png);"
-                                      "    width: 24px;"
-                                      "    padding-right: 12px;"
-                                      "}"
-                                      "QComboBox {"
-                                      "    border-image: url(:/Resources/comboBox.png);"
-                                      "    padding-left: 10px;"
-                                      "    padding-right: 0px;"
-                                      "    color: rgb(255, 255, 255);"
-                                      "    font-size: 10pt;"
-                                      "}"
-                                      "QComboBox QAbstractItemView::item {"
-                                      "    height: 40px;"
-                                      "    border-image: url(:/Resources/comboBox.png);"
-                                      "}");
-    ui->comboBoxFormat->setView(new QListView());
 
     ui->labelFormat->setStyleSheet("QLabel {color: rgb(255, 255, 255);}");
 
