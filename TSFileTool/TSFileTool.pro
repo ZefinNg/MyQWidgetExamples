@@ -41,20 +41,28 @@ INCLUDEPATH += Service/
 
 SOURCES += \
     Service/ErrorTxtFixUp/ErrorTxtFixUp.cpp \
-    Service/ExcelHandler/TranslationBlock.cpp \
-    Service/ExcelHandler/TsExcelHandler.cpp \
+    Service/TsExcelHandler/TranslationBlock.cpp \
+    Service/TsExcelHandler/TsExcelHandler.cpp \
     Service/TsFixUp/TsFixUp.cpp \
+    Service/TxtExcelHandler/TxtExcelHandler.cpp \
+    Views/Excel2ErrorFileWidget.cpp \
+    Views/Excel2TsWidget.cpp \
     main.cpp \
     Views/widget.cpp
 
 HEADERS += \
     Service/ErrorTxtFixUp/ErrorTxtFixUp.h \
-    Service/ExcelHandler/TranslationBlock.h \
-    Service/ExcelHandler/TsExcelHandler.h \
+    Service/TsExcelHandler/TranslationBlock.h \
+    Service/TsExcelHandler/TsExcelHandler.h \
     Service/TsFixUp/TsFixUp.h \
+    Service/TxtExcelHandler/TxtExcelHandler.h \
+    Views/Excel2ErrorFileWidget.h \
+    Views/Excel2TsWidget.h \
     Views/widget.h
 
 FORMS += \
+    Views/Excel2ErrorFileWidget.ui \
+    Views/Excel2TsWidget.ui \
     Views/widget.ui
 
 

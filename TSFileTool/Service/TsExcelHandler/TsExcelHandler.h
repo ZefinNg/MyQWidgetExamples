@@ -2,7 +2,6 @@
 #define EXCELHANDLER_H
 
 #include <QObject>
-#include <QMap>
 #include <QFileInfo>
 //#include "../Utils/ExcelReadWriterAxObject/ExcelReadWriter.h"
 #include "../Utils/ExcelReadWriterQtXlsx/ExcelReadWriter.h"
@@ -38,7 +37,6 @@ public:
 
     QString getTranslation(const QString field, const QString srcText);
     QString getTranslation(const QString srcText);
-    QStringList getTipsAndInfo(const QString num);
 
     TsExcelHandler::FILE_FORMAT getFileFormat() const;
     void setFileFormat(const TsExcelHandler::FILE_FORMAT &fileFormat);

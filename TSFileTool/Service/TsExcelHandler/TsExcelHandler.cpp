@@ -178,20 +178,6 @@ QString TsExcelHandler::getTranslation(const QString srcText)
     return m_translationBlock.translationMap().value(srcText);
 }
 
-QStringList TsExcelHandler::getTipsAndInfo(const QString num)
-{
-    QStringList result;
-
-    foreach (TranslationBlock each, m_translationBlockList) {
-        if (each.field() == num) {
-            result.append(each.translationMap().first());
-            result.append(each.translationMap().value(result.first()));
-        }
-    }
-
-    return result;
-}
-
 TsExcelHandler::FILE_FORMAT TsExcelHandler::getFileFormat() const
 {
     return m_fileFormat;

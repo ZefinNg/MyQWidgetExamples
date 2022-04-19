@@ -32,8 +32,9 @@ bool ErrorTxtFixUp::fixUpFile()
     while (!m_file->atEnd()) {
         eachString = m_file->readLine();
         number = this->getNum(eachString);
-
     }
+
+    return true;
 }
 
 void ErrorTxtFixUp::setOutputFile(const QString &newFilePath)
