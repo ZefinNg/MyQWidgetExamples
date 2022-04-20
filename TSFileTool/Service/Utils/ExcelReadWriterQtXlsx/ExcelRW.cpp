@@ -1,8 +1,8 @@
-#include "ExcelReadWriter.h"
+#include "ExcelRW.h"
 
 using namespace XLSX;
 
-ExcelReadWriter::ExcelReadWriter(QObject *parent)
+ExcelRW::ExcelRW(QObject *parent)
     : QObject(parent),
       m_filePath(""),
       m_xlsx(NULL)
@@ -10,12 +10,12 @@ ExcelReadWriter::ExcelReadWriter(QObject *parent)
 
 }
 
-ExcelReadWriter::~ExcelReadWriter()
+ExcelRW::~ExcelRW()
 {
 
 }
 
-bool ExcelReadWriter::openFile(const QString &filePath)
+bool ExcelRW::openFile(const QString &filePath)
 {
 build:
     if (m_xlsx == NULL) {
@@ -32,7 +32,7 @@ build:
     }
 }
 
-QString ExcelReadWriter::getTitle() const
+QString ExcelRW::getTitle() const
 {
     if (m_xlsx == NULL)
         return "";
@@ -40,7 +40,7 @@ QString ExcelReadWriter::getTitle() const
     return m_xlsx->documentProperty("title");
 }
 
-bool ExcelReadWriter::setTitle(const QString &title)
+bool ExcelRW::setTitle(const QString &title)
 {
     if (m_xlsx == NULL)
         return false;
@@ -49,7 +49,7 @@ bool ExcelReadWriter::setTitle(const QString &title)
     return true;
 }
 
-QStringList ExcelReadWriter::getWorksheetNames() const
+QStringList ExcelRW::getWorksheetNames() const
 {
     if (m_xlsx == NULL)
         return QStringList();
@@ -57,7 +57,7 @@ QStringList ExcelReadWriter::getWorksheetNames() const
     return m_xlsx->sheetNames();
 }
 
-bool ExcelReadWriter::selectWorksheet(const QString &name)
+bool ExcelRW::selectWorksheet(const QString &name)
 {
     if (m_xlsx == NULL)
         return false;
@@ -65,7 +65,7 @@ bool ExcelReadWriter::selectWorksheet(const QString &name)
     return m_xlsx->selectSheet(name);
 }
 
-QString ExcelReadWriter::getWorkSheetName() const
+QString ExcelRW::getWorkSheetName() const
 {
     if (m_xlsx == NULL)
         return "";
@@ -73,7 +73,7 @@ QString ExcelReadWriter::getWorkSheetName() const
     return m_xlsx->currentWorksheet()->sheetName();
 }
 
-bool ExcelReadWriter::setWorksheetName(const QString &newName)
+bool ExcelRW::setWorksheetName(const QString &newName)
 {
     if (m_xlsx == NULL)
         return false;
@@ -82,7 +82,7 @@ bool ExcelReadWriter::setWorksheetName(const QString &newName)
     return m_xlsx->renameSheet(currentSheetName, newName);
 }
 
-bool ExcelReadWriter::addWorksheet(const QString& name)
+bool ExcelRW::addWorksheet(const QString& name)
 {
     if (m_xlsx == NULL)
         return false;
@@ -90,7 +90,7 @@ bool ExcelReadWriter::addWorksheet(const QString& name)
     return m_xlsx->addSheet(name);
 }
 
-bool ExcelReadWriter::deleteWorksheet(const QString &name)
+bool ExcelRW::deleteWorksheet(const QString &name)
 {
     if (m_xlsx == NULL)
         return false;
@@ -98,7 +98,7 @@ bool ExcelReadWriter::deleteWorksheet(const QString &name)
     return m_xlsx->deleteSheet(name);
 }
 
-int ExcelReadWriter::getRowCount() const
+int ExcelRW::getRowCount() const
 {
     if (m_xlsx == NULL)
         return -1;
@@ -106,7 +106,7 @@ int ExcelReadWriter::getRowCount() const
     return m_xlsx->dimension().rowCount();
 }
 
-int ExcelReadWriter::getColumnCount() const
+int ExcelRW::getColumnCount() const
 {
     if (m_xlsx == NULL)
         return -1;
@@ -114,7 +114,7 @@ int ExcelReadWriter::getColumnCount() const
     return m_xlsx->dimension().columnCount();
 }
 
-int ExcelReadWriter::getFirstRow() const
+int ExcelRW::getFirstRow() const
 {
     if (m_xlsx == NULL)
         return -1;
@@ -122,7 +122,7 @@ int ExcelReadWriter::getFirstRow() const
     return m_xlsx->dimension().firstRow();
 }
 
-int ExcelReadWriter::getFirstColumn() const
+int ExcelRW::getFirstColumn() const
 {
     if (m_xlsx == NULL)
         return -1;
@@ -130,7 +130,7 @@ int ExcelReadWriter::getFirstColumn() const
     return m_xlsx->dimension().firstColumn();
 }
 
-QVariant ExcelReadWriter::getCellText(const int row, const int col) const
+QVariant ExcelRW::getCellText(const int row, const int col) const
 {
     if (m_xlsx == NULL)
         return QVariant();
@@ -138,7 +138,7 @@ QVariant ExcelReadWriter::getCellText(const int row, const int col) const
     return m_xlsx->cellAt(row, col)->value();
 }
 
-bool ExcelReadWriter::setCellText(const int row, const int col, const QString text, const QXlsx::Format format)
+bool ExcelRW::setCellText(const int row, const int col, const QString text, const QXlsx::Format format)
 {
     if (m_xlsx == NULL)
         return false;
@@ -146,7 +146,7 @@ bool ExcelReadWriter::setCellText(const int row, const int col, const QString te
     return m_xlsx->write(row, col, QVariant(text), format);
 }
 
-bool ExcelReadWriter::mergeCells(const int firstRow, const int firstColumn, const int lastRow, const int lastColumn)
+bool ExcelRW::mergeCells(const int firstRow, const int firstColumn, const int lastRow, const int lastColumn)
 {
     if (m_xlsx == NULL)
         return false;
@@ -154,7 +154,7 @@ bool ExcelReadWriter::mergeCells(const int firstRow, const int firstColumn, cons
     return m_xlsx->mergeCells(QXlsx::CellRange(firstRow, firstColumn, lastRow, lastColumn));
 }
 
-bool ExcelReadWriter::save()
+bool ExcelRW::save()
 {
     if (m_xlsx == NULL)
         return false;
@@ -162,7 +162,7 @@ bool ExcelReadWriter::save()
     return m_xlsx->save();
 }
 
-bool ExcelReadWriter::saveAs(const QString &filePath)
+bool ExcelRW::saveAs(const QString &filePath)
 {
     if (m_xlsx == NULL)
         return false;
@@ -170,7 +170,7 @@ bool ExcelReadWriter::saveAs(const QString &filePath)
     return m_xlsx->saveAs(filePath);
 }
 
-QString ExcelReadWriter::getFilePath() const
+QString ExcelRW::getFilePath() const
 {
     return m_filePath;
 }

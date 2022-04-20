@@ -4,7 +4,7 @@ TsExcelHandler::TsExcelHandler(QObject *parent)
     : QObject(parent),
       m_filePath(),
 //      m_excelRW(new AXOBJECT::ExcelReadWrite(this)),
-      m_excelRW(new XLSX::ExcelReadWriter(this)),
+      m_excelRW(new XLSX::ExcelRW(this)),
       m_fileFormat(TWO_COLUMNS),
       m_translationBlockList(),
       m_translationBlock()
@@ -25,10 +25,10 @@ void TsExcelHandler::closeFile()
 
 TsExcelHandler::HANDLE_ERROR TsExcelHandler::handleTranslation()
 {
-    int rowCount         = m_excelRW->getRowCount();
-    int columnCount      = m_excelRW->getColumnCount();
-    int rowStartIndex    = m_excelRW->getFirstRow();
-    int columnStartIndex = m_excelRW->getFirstColumn();
+    int rowCount;
+    int columnCount;
+    int rowStartIndex;
+    int columnStartIndex;
 
     TsExcelHandler::HANDLE_ERROR handleResult = NORMAL;
 
@@ -39,13 +39,18 @@ TsExcelHandler::HANDLE_ERROR TsExcelHandler::handleTranslation()
 
     if (m_excelRW == NULL) {
 //        m_excelRW = new AXOBJECT::ExcelReadWrite();
-        m_excelRW = new XLSX::ExcelReadWriter(this);
+        m_excelRW = new XLSX::ExcelRW(this);
     }
 
     if (!m_excelRW->openFile(m_filePath)) {
         handleResult = OPEN_FILE_FAILED;
         goto normalFinished;
     }
+
+    rowCount         = m_excelRW->getRowCount();
+    columnCount      = m_excelRW->getColumnCount();
+    rowStartIndex    = m_excelRW->getFirstRow();
+    columnStartIndex = m_excelRW->getFirstColumn();
 
 //    m_excelRW->setCurrentWorkSheet(1);
 
@@ -57,8 +62,8 @@ TsExcelHandler::HANDLE_ERROR TsExcelHandler::handleTranslation()
      *
      * 3列的格式如下：
      * 字段名 | 源文 | 译文
-     * xxx | src | translation
-     *     | src | translation
+     * xxx   | src | translation
+     *       | src | translation
      */
     if (rowStartIndex > 1 || columnStartIndex > 1) {
         handleResult = FORMAT_ERROR;

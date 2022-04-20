@@ -6,7 +6,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QtXml>
-#include "../ExcelHandler/TsExcelHandler.h"
+#include "../TsExcelHandler/TsExcelHandler.h"
 
 #include <QDebug>
 

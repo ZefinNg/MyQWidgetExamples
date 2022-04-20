@@ -5,6 +5,9 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QFileDialog>
+#include <QDateTime>
+#include <QMessageBox>
+#include "../Service/SourceFileHandler/SourceFileHandler.h"
 
 namespace Ui {
 class Excel2ErrorFileWidget;
@@ -21,6 +24,9 @@ public:
 private slots:
     void onBtnSelectExcelClicked();
     void onBtnSecectErrorFileClicked();
+
+    void onBtnExcel2ErrorFileClicked();
+    void onBtnErrorFile2ExcelClicked();
 
 private:
     void initView();
@@ -40,6 +46,10 @@ private:
 
     QString m_excelFile;
     QString m_errorFile;
+
+    QString m_outputFilePath;
+
+    SourceFileHandler *m_srcFileHandler;
 };
 
 #endif // EXCEL2ERRORFILEWIDGET_H

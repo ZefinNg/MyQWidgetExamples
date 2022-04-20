@@ -20,10 +20,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 contains(QT, xlsx) {
     HEADERS += \
-        Service/Utils/ExcelReadWriterQtXlsx/ExcelReadWriter.h
+    Service/Utils/ExcelReadWriterQtXlsx/ExcelRW.h
 
     SOURCES += \
-        Service/Utils/ExcelReadWriterQtXlsx/ExcelReadWriter.cpp
+    Service/Utils/ExcelReadWriterQtXlsx/ExcelRW.cpp
 }
 #else {
 #    #For AxObjcect
@@ -41,6 +41,7 @@ INCLUDEPATH += Service/
 
 SOURCES += \
     Service/ErrorTxtFixUp/ErrorTxtFixUp.cpp \
+    Service/SourceFileHandler/SourceFileHandler.cpp \
     Service/TsExcelHandler/TranslationBlock.cpp \
     Service/TsExcelHandler/TsExcelHandler.cpp \
     Service/TsFixUp/TsFixUp.cpp \
@@ -52,6 +53,7 @@ SOURCES += \
 
 HEADERS += \
     Service/ErrorTxtFixUp/ErrorTxtFixUp.h \
+    Service/SourceFileHandler/SourceFileHandler.h \
     Service/TsExcelHandler/TranslationBlock.h \
     Service/TsExcelHandler/TsExcelHandler.h \
     Service/TsFixUp/TsFixUp.h \

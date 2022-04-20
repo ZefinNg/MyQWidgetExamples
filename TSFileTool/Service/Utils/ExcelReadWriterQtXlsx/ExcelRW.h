@@ -1,17 +1,17 @@
-#ifndef EXCELREADWRITER_H
-#define EXCELREADWRITER_H
+#ifndef EXCELRW_H
+#define EXCELRW_H
 
 #include <QObject>
 #include "xlsxdocument.h"
 
 namespace XLSX {
 
-class ExcelReadWriter : public QObject
+class ExcelRW : public QObject
 {
     Q_OBJECT
 public:
-    explicit ExcelReadWriter(QObject *parent = nullptr);
-    ~ExcelReadWriter();
+    explicit ExcelRW(QObject *parent = nullptr);
+    ~ExcelRW();
 
     bool openFile(const QString& filePath);
 
@@ -53,4 +53,4 @@ private:
 
 }
 
-#endif // EXCELREADWRITER_H
+#endif // EXCELRW_H

@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QFileInfo>
 //#include "../Utils/ExcelReadWriterAxObject/ExcelReadWriter.h"
-#include "../Utils/ExcelReadWriterQtXlsx/ExcelReadWriter.h"
+#include "../Utils/ExcelReadWriterQtXlsx/ExcelRW.h"
 #include "TranslationBlock.h"
 
 class TsExcelHandler : public QObject
@@ -20,8 +20,7 @@ public:
 
     enum FILE_FORMAT {
         TWO_COLUMNS = 2, //src, translation
-        THREE_COLUMNS,   //class, src, translation
-        FIVE_COLUMNS     //errorNum, TipsSrc, InfoSrc, TipsTranslation, InfoTranslation
+        THREE_COLUMNS    //class, src, translation
     };
 
     explicit TsExcelHandler(QObject *parent = nullptr);
@@ -50,7 +49,7 @@ private:
 private:
     QString         m_filePath;
 //    AXOBJECT::ExcelReadWrite *m_excelRW;
-    XLSX::ExcelReadWriter *m_excelRW;
+    XLSX::ExcelRW *m_excelRW;
     FILE_FORMAT     m_fileFormat;
 
     QList<TranslationBlock> m_translationBlockList;

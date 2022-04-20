@@ -62,8 +62,6 @@ bool TsFixUp::excel2Ts()
     }
 
     QDomElement root = m_domDoc->documentElement();
-    qDebug() << "root tag name:" << root.tagName();
-    qDebug() << "root node name:" << root.nodeName();
 
     QDomNodeList contextList = root.childNodes();
     QDomNodeList nameMessageList, sourceList, translationList;
@@ -72,16 +70,13 @@ bool TsFixUp::excel2Ts()
     QDomText textTranslation;
 
     for (int i = 0; i < contextList.count(); i++) {
-//        qDebug() << i << contextList.at(i).nodeName();
         nameMessageList = contextList.at(i).childNodes();
 
         for (int j = 0; j < nameMessageList.count(); j++) {
-//            qDebug() << j << nameMessageList.at(j).nodeName();
             //找出className
             if (nameMessageList.at(j).nodeName() == "name") {
                 element = nameMessageList.at(j).toElement();
                 className = element.text();
-//                qDebug() << "name:" << className;
             }
 
             sourceList = nameMessageList.at(j).childNodes();

@@ -14,7 +14,8 @@ Excel2ErrorFileWidget::Excel2ErrorFileWidget(QWidget *parent) :
     m_btnExcel2Txt(new QPushButton(tr("E2T"), this)),
     m_btnTxt2Excel(new QPushButton(tr("T2E"), this)),
     m_excelFile(),
-    m_errorFile()
+    m_errorFile(),
+    m_srcFileHandler(new SourceFileHandler(this))
 {
     ui->setupUi(this);
 
@@ -22,6 +23,9 @@ Excel2ErrorFileWidget::Excel2ErrorFileWidget(QWidget *parent) :
 
     connect(m_btnSelectExcel, &QPushButton::clicked, this, &Excel2ErrorFileWidget::onBtnSelectExcelClicked);
     connect(m_btnSelectErrorFile, &QPushButton::clicked, this, &Excel2ErrorFileWidget::onBtnSecectErrorFileClicked);
+
+    connect(m_btnExcel2Txt, &QPushButton::clicked, this, &Excel2ErrorFileWidget::onBtnExcel2ErrorFileClicked);
+    connect(m_btnTxt2Excel, &QPushButton::clicked, this, &Excel2ErrorFileWidget::onBtnErrorFile2ExcelClicked);
 }
 
 Excel2ErrorFileWidget::~Excel2ErrorFileWidget()
@@ -37,8 +41,36 @@ void Excel2ErrorFileWidget::onBtnSelectExcelClicked()
 
 void Excel2ErrorFileWidget::onBtnSecectErrorFileClicked()
 {
-    m_errorFile = QFileDialog::getOpenFileName(this, tr("Select a ErrorNum file."), "C:\\", "txt (*.int *.txt)");
+    m_errorFile = QFileDialog::getOpenFileName(this, tr("Select a ErrorNum file."), "C:\\", "txt (*.ini *.txt)");
     m_lineEditErrorFilePath->setText(m_errorFile);
+
+    m_srcFileHandler->setSrcFilePath(m_errorFile, SourceFileHandler::TXT_FILE);
+}
+
+void Excel2ErrorFileWidget::onBtnExcel2ErrorFileClicked()
+{
+
+}
+
+void Excel2ErrorFileWidget::onBtnErrorFile2ExcelClicked()
+{
+    QFileInfo fileInfo(m_errorFile);
+
+    m_outputFilePath = fileInfo.absoluteDir().path();
+
+#ifdef WIN32
+    m_outputFilePath.replace("/", "\\");
+#else
+
+#endif
+    QString fileBaseName = fileInfo.baseName();
+    QString curDateTime  = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm_ss");
+    QString disPath = m_outputFilePath + "\\" + fileBaseName + "_" + curDateTime + ".xlsx";
+
+    if (m_srcFileHandler->conver2Excel(disPath))
+        QMessageBox::information(this, tr("Tips"), tr("Conversion is complete."));
+    else
+        QMessageBox::critical(this, tr("Error"), tr("File conversion to Excel failed."));
 }
 
 void Excel2ErrorFileWidget::initView()
