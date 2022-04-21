@@ -11,7 +11,8 @@ Excel2TsWidget::Excel2TsWidget(QWidget *parent) :
     m_tsFilePath(),
     m_xlsxFilePath(),
     m_outputFilePath(),
-    m_fileTips()
+    m_fileTips(),
+    m_srcFileHandler(new SourceFileHandler(this))
 {
     ui->setupUi(this);
 
@@ -42,7 +43,7 @@ void Excel2TsWidget::onBtnSelectExcelClicked()
         return;
     }
 
-    m_xlsxFilePath = QFileDialog::getOpenFileName(this, "选择Excel文件", "C:\\", "Excel (*.xlsx *xls)");
+    m_xlsxFilePath = QFileDialog::getOpenFileName(this, tr("Select a Excel file."), "C:\\", "Excel (*.xlsx *xls)");
 
     if (m_xlsxFilePath.isEmpty())
         return;
@@ -77,9 +78,11 @@ void Excel2TsWidget::onBtnSelectExcelClicked()
 
 void Excel2TsWidget::onBtnSelectTsFileClicked()
 {
-    m_tsFilePath = QFileDialog::getOpenFileName(this, "选择Ts文件", "C:\\", "Ts (*.ts *.xml)");
+    m_tsFilePath = QFileDialog::getOpenFileName(this, tr("Select a Ts file"), "C:\\", "Ts (*.ts *.xml)");
 
     ui->lineEditTsPath->setText(m_tsFilePath);
+
+    m_srcFileHandler->setSrcFilePath(m_tsFilePath);
 }
 
 void Excel2TsWidget::onBtnExcel2TsClicked()
@@ -125,10 +128,14 @@ void Excel2TsWidget::onBtnTs2ExcelClicked()
 #endif
     QString fileBaseName = fileInfo.baseName();
     QString curDateTime  = QDateTime::currentDateTime().toString("yyyy-MM-dd_hh_mm_ss");
+#if 0
     m_tsFixUp->setOutputXlsxFilePath(m_outputFilePath + fileBaseName + "_" + curDateTime + ".xlsx");
     m_tsFixUp->setTsFile(m_tsFilePath);
 
     if (!m_tsFixUp->ts2Excel(m_clickedIndex))
+#else
+    if (!m_srcFileHandler->conver2Excel(m_outputFilePath + fileBaseName + "_" + curDateTime + ".xlsx"))
+#endif
         QMessageBox::critical(this, "错误", "Ts文件转换失败!");
     else
         QMessageBox::information(this, "提示", "转换完成");

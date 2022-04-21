@@ -6,6 +6,7 @@
 #include <QDesktopServices>
 #include <QDateTime>
 #include <QButtonGroup>
+#include "../Service/SourceFileHandler/SourceFileHandler.h"
 #include "../Service/TsFixUp/TsFixUp.h"
 
 namespace Ui {
@@ -55,6 +56,8 @@ private:
     QString m_outputFilePath; //outputFile includes .ts and .xlsx
 
     QString m_fileTips;
+
+    SourceFileHandler *m_srcFileHandler;
 };
 
 #endif // EXCEL2TSWIDGET_H

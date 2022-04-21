@@ -13,18 +13,6 @@
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <widget class="QStackedWidget" name="stackedWidget">
-   <property name="geometry">
-    <rect>
-     <x>200</x>
-     <y>120</y>
-     <width>120</width>
-     <height>80</height>
-    </rect>
-   </property>
-   <widget class="QWidget" name="page"/>
-   <widget class="QWidget" name="page_2"/>
-  </widget>
  </widget>
  <resources/>
  <connections/>

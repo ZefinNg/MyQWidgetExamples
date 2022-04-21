@@ -5,6 +5,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QFile>
+#include <QtXml>
 #include "../Utils/ExcelReadWriterQtXlsx/ExcelRW.h"
 
 class SourceFileHandler : public QObject
@@ -28,7 +29,10 @@ public:
 signals:
 
 private:
+    bool ts2Excel(const int &columns = 2);
     bool txt2Excel();
+    bool ini2Excel();
+    bool xml2Excel();
 
 private:
     QString m_srcFilePath;

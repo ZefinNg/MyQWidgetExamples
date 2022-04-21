@@ -27,22 +27,93 @@ bool SourceFileHandler::conver2Excel(const QString outputFilePath)
 
     switch (m_srcFileType) {
     case TS_FILE:
-        break;
+        return this->ts2Excel();
     case TXT_FILE:
         return this->txt2Excel();
     case INI_FILE:
-        break;
+        return this->ini2Excel();
     case XML_FILE:
-        break;
+        return this->xml2Excel();
     default:
         return false;
     };
 }
 
-bool SourceFileHandler::txt2Excel()
+bool SourceFileHandler::ts2Excel(const int &columns)
 {
     if (!m_excelRW->openFile(m_outputFilePath))
         return false;
+
+    QFile tsFile(m_srcFilePath);
+    if (!tsFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        m_excelRW->save();
+        return false;
+    }
+
+    QDomDocument domDoc;
+    domDoc.setContent(&tsFile);
+
+    QDomElement root = domDoc.documentElement();
+    QDomNodeList contextList = root.childNodes();
+    QDomNodeList nameMessageList, sourceList, translationList;
+    QDomElement  element;
+    QDomText textTranslation;
+    QString className, source, translation;
+
+    int row = 1, col = 1;
+    int classRow = row;
+
+    for (int i = 0; i < contextList.count(); i++) {
+        nameMessageList = contextList.at(i).childNodes();
+
+        for (int j = 0; j < nameMessageList.count(); j++) {
+            if (nameMessageList.at(j).nodeName() == "name") {
+                element = nameMessageList.at(j).toElement();
+                className = element.text();
+
+                m_excelRW->setCellText(row, col, className);
+
+                if (columns == 3) {
+                    if (classRow < row) {
+                        m_excelRW->mergeCells(classRow, col, row-1, col);
+                        classRow = row;
+                    }
+                }
+            }
+
+            sourceList = nameMessageList.at(j).childNodes();
+
+            for (int m = 0; m < sourceList.count(); m++) {
+                if (sourceList.at(m).isElement()) {
+                    element = sourceList.at(m).toElement();
+
+                    if (element.nodeName() == "source") {
+                        source = element.text();
+
+                        if (columns == 3)
+                            m_excelRW->setCellText(row, col+1, source);
+                        else
+                            m_excelRW->setCellText(row, col, source);
+
+                        row++;
+                    }
+                    else
+                        continue;
+                }
+            }
+        }
+    }
+
+    tsFile.close();
+    return m_excelRW->save();
+}
+
+bool SourceFileHandler::txt2Excel()
+{
+    if (!m_excelRW->openFile(m_outputFilePath)) {
+        m_excelRW->save();
+        return false;
+    }
 
     QFile txtFile(m_srcFilePath);
     if (!txtFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -57,7 +128,7 @@ bool SourceFileHandler::txt2Excel()
         splitList = eachLine.split("|");
 
         for (int colIndex = 0; colIndex < splitList.size(); colIndex++) {
-            if (!m_excelRW->setCellText(rowIndex, colIndex+1, splitList.at(colIndex), QXlsx::Format()))
+            if (!m_excelRW->setCellText(rowIndex, colIndex+1, splitList.at(colIndex)))
                 break;
         }
 
@@ -66,4 +137,14 @@ bool SourceFileHandler::txt2Excel()
 
     txtFile.close();
     return m_excelRW->save();
+}
+
+bool SourceFileHandler::ini2Excel()
+{
+    return false;
+}
+
+bool SourceFileHandler::xml2Excel()
+{
+    return false;
 }

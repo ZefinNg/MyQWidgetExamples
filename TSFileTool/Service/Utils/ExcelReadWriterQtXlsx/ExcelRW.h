@@ -34,7 +34,7 @@ public:
     int getFirstColumn() const;
 
     QVariant getCellText(const int row, const int col) const;
-    bool setCellText(const int row, const int col, const QString text, const QXlsx::Format format);
+    bool setCellText(const int row, const int col, const QString text, const QXlsx::Format format = QXlsx::Format());
 
     bool mergeCells(const int firstRow, const int firstColumn,
                      const int lastRow,  const int lastColumn);
