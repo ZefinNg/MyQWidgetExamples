@@ -1,4 +1,5 @@
 #include "SourceFileHandler.h"
+#include <QTextCodec>
 
 SourceFileHandler::SourceFileHandler(QObject *parent)
     : QObject(parent),
@@ -141,7 +142,29 @@ bool SourceFileHandler::txt2Excel()
 
 bool SourceFileHandler::ini2Excel()
 {
-    return false;
+    if (!m_excelRW->openFile(m_outputFilePath)) {
+        m_excelRW->save();
+        return false;
+    }
+
+    int rowIndex = 1, columnIndex = 1;
+
+    QSettings iniFile(m_srcFilePath, QSettings::IniFormat);
+    iniFile.setIniCodec(QTextCodec::codecForName("utf-8"));
+    foreach (QString group, iniFile.childGroups()) {
+        iniFile.beginGroup(group);
+
+        m_excelRW->setCellText(rowIndex, columnIndex, group);
+
+        foreach (QString key, iniFile.childKeys())
+            m_excelRW->setCellText(rowIndex, ++columnIndex, iniFile.value(key).toString());
+
+        rowIndex++;
+        columnIndex = 1;
+        iniFile.endGroup();
+    }
+
+    return m_excelRW->save();
 }
 
 bool SourceFileHandler::xml2Excel()

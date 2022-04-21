@@ -9,10 +9,12 @@ Excel2ErrorFileWidget::Excel2ErrorFileWidget(QWidget *parent) :
     ui(new Ui::Excel2ErrorFileWidget),
     m_btnSelectExcel(new QPushButton(tr("Select Excel"), this)),
     m_lineEditExcelPath(new QLineEdit(this)),
-    m_btnSelectErrorFile(new QPushButton(tr("Select Txt"), this)),
-    m_lineEditErrorFilePath(new QLineEdit(this)),
-    m_btnExcel2Txt(new QPushButton(tr("E2T"), this)),
-    m_btnTxt2Excel(new QPushButton(tr("T2E"), this)),
+    m_btnSelectTxt(new QPushButton(tr("Select Txt"), this)),
+    m_lineEditTxtPath(new QLineEdit(this)),
+    m_btnSelectIni(new QPushButton(tr("Select Ini"), this)),
+    m_lineEditIniPath(new QLineEdit(this)),
+    m_btnExcel2ErrorFile(new QPushButton(tr("E2T"), this)),
+    m_btnErrorFile2Excel(new QPushButton(tr("T2E"), this)),
     m_excelFile(),
     m_errorFile(),
     m_srcFileHandler(new SourceFileHandler(this))
@@ -22,10 +24,11 @@ Excel2ErrorFileWidget::Excel2ErrorFileWidget(QWidget *parent) :
     this->initView();
 
     connect(m_btnSelectExcel, &QPushButton::clicked, this, &Excel2ErrorFileWidget::onBtnSelectExcelClicked);
-    connect(m_btnSelectErrorFile, &QPushButton::clicked, this, &Excel2ErrorFileWidget::onBtnSecectErrorFileClicked);
+    connect(m_btnSelectTxt,   &QPushButton::clicked, this, &Excel2ErrorFileWidget::onBtnSelectTxtFileClicked);
+    connect(m_btnSelectIni,   &QPushButton::clicked, this, &Excel2ErrorFileWidget::onBtnSelectIniFileClicked);
 
-    connect(m_btnExcel2Txt, &QPushButton::clicked, this, &Excel2ErrorFileWidget::onBtnExcel2ErrorFileClicked);
-    connect(m_btnTxt2Excel, &QPushButton::clicked, this, &Excel2ErrorFileWidget::onBtnErrorFile2ExcelClicked);
+    connect(m_btnExcel2ErrorFile, &QPushButton::clicked, this, &Excel2ErrorFileWidget::onBtnExcel2ErrorFileClicked);
+    connect(m_btnErrorFile2Excel, &QPushButton::clicked, this, &Excel2ErrorFileWidget::onBtnErrorFile2ExcelClicked);
 }
 
 Excel2ErrorFileWidget::~Excel2ErrorFileWidget()
@@ -39,12 +42,20 @@ void Excel2ErrorFileWidget::onBtnSelectExcelClicked()
     m_lineEditExcelPath->setText(m_excelFile);
 }
 
-void Excel2ErrorFileWidget::onBtnSecectErrorFileClicked()
+void Excel2ErrorFileWidget::onBtnSelectTxtFileClicked()
 {
     m_errorFile = QFileDialog::getOpenFileName(this, tr("Select a ErrorNum file."), "C:\\", "txt (*.ini *.txt)");
-    m_lineEditErrorFilePath->setText(m_errorFile);
+    m_lineEditTxtPath->setText(m_errorFile);
 
     m_srcFileHandler->setSrcFilePath(m_errorFile, SourceFileHandler::TXT_FILE);
+}
+
+void Excel2ErrorFileWidget::onBtnSelectIniFileClicked()
+{
+    m_errorFile = QFileDialog::getOpenFileName(this, tr("Select a ErrorNum file."), "C:\\", "ini (*.ini)");
+    m_lineEditIniPath->setText(m_errorFile);
+
+    m_srcFileHandler->setSrcFilePath(m_errorFile, SourceFileHandler::INI_FILE);
 }
 
 void Excel2ErrorFileWidget::onBtnExcel2ErrorFileClicked()
@@ -87,23 +98,29 @@ void Excel2ErrorFileWidget::layoutView()
     excelLayout->addWidget(m_btnSelectExcel);
     excelLayout->addWidget(m_lineEditExcelPath);
 
-    QHBoxLayout *errorFileLayout = new QHBoxLayout();
-    errorFileLayout->addWidget(m_btnSelectErrorFile);
-    errorFileLayout->addWidget(m_lineEditErrorFilePath);
+    QHBoxLayout *txtFileLayout = new QHBoxLayout();
+    txtFileLayout->addWidget(m_btnSelectTxt);
+    txtFileLayout->addWidget(m_lineEditTxtPath);
+
+    QHBoxLayout *iniFileLayout = new QHBoxLayout();
+    iniFileLayout->addWidget(m_btnSelectIni);
+    iniFileLayout->addWidget(m_lineEditIniPath);
 
     QHBoxLayout *btnConverLayout = new QHBoxLayout();
     btnConverLayout->addStretch();
-    btnConverLayout->addWidget(m_btnExcel2Txt);
-    btnConverLayout->addWidget(m_btnTxt2Excel);
+    btnConverLayout->addWidget(m_btnExcel2ErrorFile);
+    btnConverLayout->addWidget(m_btnErrorFile2Excel);
     btnConverLayout->addStretch();
 
     widgetLayout->addLayout(excelLayout);
-    widgetLayout->addLayout(errorFileLayout);
+    widgetLayout->addLayout(txtFileLayout);
+    widgetLayout->addLayout(iniFileLayout);
     widgetLayout->addLayout(btnConverLayout);
 }
 
 void Excel2ErrorFileWidget::drawView()
 {
     m_lineEditExcelPath->setEnabled(false);
-    m_lineEditErrorFilePath->setEnabled(false);
+    m_lineEditTxtPath->setEnabled(false);
+    m_lineEditIniPath->setEnabled(false);
 }

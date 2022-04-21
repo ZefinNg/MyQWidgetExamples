@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include <QFile>
 #include <QtXml>
+#include <QSettings>
 #include "../Utils/ExcelReadWriterQtXlsx/ExcelRW.h"
 
 class SourceFileHandler : public QObject

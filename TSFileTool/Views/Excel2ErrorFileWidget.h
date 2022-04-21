@@ -23,7 +23,8 @@ public:
 
 private slots:
     void onBtnSelectExcelClicked();
-    void onBtnSecectErrorFileClicked();
+    void onBtnSelectTxtFileClicked();
+    void onBtnSelectIniFileClicked();
 
     void onBtnExcel2ErrorFileClicked();
     void onBtnErrorFile2ExcelClicked();
@@ -38,11 +39,13 @@ private:
 
     QPushButton *m_btnSelectExcel;
     QLineEdit   *m_lineEditExcelPath;
-    QPushButton *m_btnSelectErrorFile;
-    QLineEdit   *m_lineEditErrorFilePath;
+    QPushButton *m_btnSelectTxt;
+    QLineEdit   *m_lineEditTxtPath;
+    QPushButton *m_btnSelectIni;
+    QLineEdit   *m_lineEditIniPath;
 
-    QPushButton *m_btnExcel2Txt;
-    QPushButton *m_btnTxt2Excel;
+    QPushButton *m_btnExcel2ErrorFile;
+    QPushButton *m_btnErrorFile2Excel;
 
     QString m_excelFile;
     QString m_errorFile;

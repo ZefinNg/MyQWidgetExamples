@@ -23,12 +23,12 @@ Excel2TsWidget::Excel2TsWidget(QWidget *parent) :
 
     this->initView();
 
-    connect(ui->btnSelectExcel,    SIGNAL(clicked()), this, SLOT(onBtnSelectExcelClicked()));
-    connect(ui->btnSelectTs,       SIGNAL(clicked()), this, SLOT(onBtnSelectTsFileClicked()));
+    connect(ui->btnSelectExcel,   SIGNAL(clicked()), this, SLOT(onBtnSelectExcelClicked()));
+    connect(ui->btnSelectTs,      SIGNAL(clicked()), this, SLOT(onBtnSelectTsFileClicked()));
 
-    connect(ui->btnExcel2Ts,       SIGNAL(clicked()), this, SLOT(onBtnExcel2TsClicked()));
-    connect(ui->btnTs2Excel,       SIGNAL(clicked()), this, SLOT(onBtnTs2ExcelClicked()));
-    connect(ui->btnOpenOutputDir,  SIGNAL(clicked()), this, SLOT(onBtnOpenOutputClicked()));
+    connect(ui->btnExcel2Ts,      SIGNAL(clicked()), this, SLOT(onBtnExcel2TsClicked()));
+    connect(ui->btnTs2Excel,      SIGNAL(clicked()), this, SLOT(onBtnTs2ExcelClicked()));
+    connect(ui->btnOpenOutputDir, SIGNAL(clicked()), this, SLOT(onBtnOpenOutputClicked()));
 }
 
 Excel2TsWidget::~Excel2TsWidget()
