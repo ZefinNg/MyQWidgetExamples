@@ -41,6 +41,7 @@ INCLUDEPATH += Service/
 
 SOURCES += \
     Service/ErrorTxtFixUp/ErrorTxtFixUp.cpp \
+    Service/ExcelHandler/ExcelHandler.cpp \
     Service/SourceFileHandler/SourceFileHandler.cpp \
     Service/TsExcelHandler/TranslationBlock.cpp \
     Service/TsExcelHandler/TsExcelHandler.cpp \
@@ -53,6 +54,7 @@ SOURCES += \
 
 HEADERS += \
     Service/ErrorTxtFixUp/ErrorTxtFixUp.h \
+    Service/ExcelHandler/ExcelHandler.h \
     Service/SourceFileHandler/SourceFileHandler.h \
     Service/TsExcelHandler/TranslationBlock.h \
     Service/TsExcelHandler/TsExcelHandler.h \

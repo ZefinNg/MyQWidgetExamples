@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QMessageBox>
 #include "../Service/SourceFileHandler/SourceFileHandler.h"
+#include "../Service/ExcelHandler/ExcelHandler.h"
 
 namespace Ui {
 class Excel2ErrorFileWidget;
@@ -53,6 +54,7 @@ private:
     QString m_outputFilePath;
 
     SourceFileHandler *m_srcFileHandler;
+    ExcelHandler *m_excelHandler;
 };
 
 #endif // EXCEL2ERRORFILEWIDGET_H

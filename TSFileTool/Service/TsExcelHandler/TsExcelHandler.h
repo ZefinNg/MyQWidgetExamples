@@ -1,5 +1,5 @@
-﻿#ifndef EXCELHANDLER_H
-#define EXCELHANDLER_H
+﻿#ifndef TSEXCELHANDLER_H
+#define TSEXCELHANDLER_H
 
 #include <QObject>
 #include <QFileInfo>
@@ -56,4 +56,4 @@ private:
     TranslationBlock m_translationBlock;
 };
 
-#endif // EXCELHANDLER_H
+#endif // TSEXCELHANDLER_H
