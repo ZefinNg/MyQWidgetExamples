@@ -92,7 +92,7 @@ bool TsFixUp::excel2Ts()
                     }
                     else if (element.nodeName() == "translation") {
                         if (translation.isEmpty())
-                            translation = " ";
+                            translation = "";
                         else
                             element.removeAttribute("type");//找到翻译则删除type属性
 

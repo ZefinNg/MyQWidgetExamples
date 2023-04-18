@@ -1,6 +1,11 @@
 #include "GlobalText.h"
 
-GlobalText::GlobalText(QObject *parent) : QObject(parent)
+GlobalText::GlobalText()
 {
 
+}
+
+QString GlobalText::langToken() const
+{
+    return m_langToken;
 }

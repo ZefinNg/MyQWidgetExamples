@@ -134,7 +134,7 @@ void Excel2TsWidget::onBtnTs2ExcelClicked()
 
     if (!m_tsFixUp->ts2Excel(m_clickedIndex))
 #else
-    if (!m_srcFileHandler->conver2Excel(m_outputFilePath + fileBaseName + "_" + curDateTime + ".xlsx"))
+    if (!m_srcFileHandler->conver2Excel(m_outputFilePath + "\\" + fileBaseName + "_" + curDateTime + ".xlsx"))
 #endif
         QMessageBox::critical(this, "错误", "Ts文件转换失败!");
     else

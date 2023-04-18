@@ -7,11 +7,18 @@ class GlobalText : public QObject
 {
     Q_OBJECT
 public:
-    explicit GlobalText(QObject *parent = nullptr);
+    Q_PROPERTY(QString langToken READ langToken NOTIFY langTokenChanged)
+
+    explicit GlobalText();
+
+    QString langToken() const;
 
 signals:
+    void langTokenChanged(QString langToken);
+    void changeLang(int langIndex);
 
-public slots:
+private:
+    QString m_langToken;
 };
 
 #endif // GLOBALTEXT_H

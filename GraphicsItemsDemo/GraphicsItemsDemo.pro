@@ -30,5 +30,4 @@ SOURCES += \
 HEADERS += \
         Widget.h
 
-FORMS += \
-        Widget.ui
+FORMS +=

@@ -135,6 +135,9 @@ QVariant ExcelRW::getCellText(const int row, const int col) const
     if (m_xlsx == NULL)
         return QVariant();
 
+    if (m_xlsx->cellAt(row, col) == nullptr)
+        return QVariant();
+
     return m_xlsx->cellAt(row, col)->value();
 }
 

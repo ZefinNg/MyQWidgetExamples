@@ -1,6 +1,7 @@
 #include "ExcelHandler.h"
 #include <QTextStream>
 #include <QTextCodec>
+#include <QDebug>
 
 ExcelHandler::ExcelHandler(QObject *parent)
     : QObject(parent),
@@ -41,7 +42,7 @@ bool ExcelHandler::conver2File(const FILE_TYPE &fileType, const QString& outputF
 
 bool ExcelHandler::excel2Ts()
 {
-
+    return false;
 }
 
 bool ExcelHandler::excel2Txt()
@@ -60,6 +61,11 @@ bool ExcelHandler::excel2Txt()
     int rowStartIndex = m_excelRW->getFirstRow();
     int colStartIndex = m_excelRW->getFirstColumn();
 
+    qDebug() << "rowCount:" << rowCount;
+    qDebug() << "columnCount:" << columnCount;
+    qDebug() << "rowStartIndex:" << rowStartIndex;
+    qDebug() << "colStartIndex:" << colStartIndex;
+
     QTextStream outStream(&txtFile);
     outStream.setCodec(QTextCodec::codecForName("utf-8"));
 
@@ -72,23 +78,23 @@ bool ExcelHandler::excel2Txt()
             if (j != columnCount)
                 lineText += "|";
         }
+        lineText.remove("\n");
 
-        if (i != rowCount)
-            outStream << lineText;
+        outStream << lineText << "\n";
 
         lineText.clear();
     }
 
     txtFile.close();
-    m_excelRW->save();
+    return m_excelRW->save();
 }
 
 bool ExcelHandler::excel2Ini()
 {
-
+    return false;
 }
 
 bool ExcelHandler::excel2Xml()
 {
-
+    return false;
 }

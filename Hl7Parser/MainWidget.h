@@ -2,6 +2,9 @@
 #define MAINWIDGET_H
 
 #include <QWidget>
+#include <QTextEdit>
+#include <QTableWidget>
+#include <QPushButton>
 
 class MainWidget : public QWidget
 {
@@ -10,6 +13,14 @@ class MainWidget : public QWidget
 public:
     MainWidget(QWidget *parent = 0);
     ~MainWidget();
+
+private slots:
+    void onParserBtnClicked();
+
+private:
+    QTextEdit *m_textEdit;
+    QTableWidget *m_tableWidget;
+    QPushButton *m_parserBtn;
 };
 
 #endif // MAINWIDGET_H

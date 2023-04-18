@@ -2,10 +2,9 @@
 #define WIDGET_H
 
 #include <QWidget>
-
-namespace Ui {
-class Widget;
-}
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QGraphicsSimpleTextItem>
 
 class Widget : public QWidget
 {
@@ -16,7 +15,11 @@ public:
     ~Widget();
 
 private:
-    Ui::Widget *ui;
+    QGraphicsScene *m_scene;
+    QGraphicsView  *m_view;
+    QGraphicsSimpleTextItem *m_simpleTextItem;
+    QGraphicsTextItem *m_textItem;
+
 };
 
 #endif // WIDGET_H
