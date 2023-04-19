@@ -28,8 +28,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         MainWidget.cpp \
-    QCustomPlot/qcustomplot.cpp
+    QCustomPlot/qcustomplot.cpp \
+    IdentifierInfoDialog.cpp \
+    IdentifierInfo.cpp
 
 HEADERS += \
         MainWidget.h \
-    QCustomPlot/qcustomplot.h
+    QCustomPlot/qcustomplot.h \
+    IdentifierInfoDialog.h \
+    IdentifierInfo.h

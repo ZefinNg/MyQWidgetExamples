@@ -1,23 +1,42 @@
 #include "MainWidget.h"
 #include <QGridLayout>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <cmath>
 #include <QApplication>
 #include <functional>
+
 #include <QDebug>
 
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
 {
     m_customPlot = new QCustomPlot(this);
-    m_drawBtn = new QPushButton(tr("Draw"), this);
+
+    m_drawBtn       = new QPushButton(tr("Draw"), this);
+    m_clearBtn      = new QPushButton(tr("Clear"), this);
+    m_dragCheckBox  = new QCheckBox(tr("Drag"), this);
+    m_zoomCheckBox  = new QCheckBox(tr("Zoom"), this);
+    m_addIdentifierBtn = new QPushButton(tr("AddIdentifier"), this);
+
+    QHBoxLayout *toolHLayout = new QHBoxLayout();
+    toolHLayout->addWidget(m_drawBtn);
+    toolHLayout->addWidget(m_clearBtn);
+    toolHLayout->addWidget(m_dragCheckBox);
+    toolHLayout->addWidget(m_zoomCheckBox);
+    toolHLayout->addWidget(m_addIdentifierBtn);
 
     QGridLayout *gridLayout = new QGridLayout(this);
-    gridLayout->addWidget(m_drawBtn);
+    gridLayout->addLayout(toolHLayout, 0, 0);
     gridLayout->addWidget(m_customPlot);
 
     this->resize(600, 400);
 
-    connect(m_drawBtn, SIGNAL(clicked()), this, SLOT(onDrawBtnClicked()));
+    connect(m_drawBtn,  SIGNAL(clicked()), this, SLOT(onDrawBtnClicked()));
+    connect(m_clearBtn, SIGNAL(clicked()), this, SLOT(onClearBtnClicked()));
+    connect(m_dragCheckBox, SIGNAL(clicked(bool)), this, SLOT(onDragCheckBoxClicked(bool)));
+    connect(m_zoomCheckBox, SIGNAL(clicked(bool)), this, SLOT(onZoomCheckBoxClicked(bool)));
+    connect(m_addIdentifierBtn, SIGNAL(clicked()), this, SLOT(onAddIdentifierBtnClicked()));
 }
 
 MainWidget::~MainWidget()
@@ -49,7 +68,59 @@ void MainWidget::onDrawBtnClicked()
 
     m_customPlot->addGraph();
     m_customPlot->graph(1)->addData(xValue, negateYValue);
+
     m_customPlot->replot();
+}
+
+void MainWidget::onClearBtnClicked()
+{
+    m_customPlot->clearGraphs();
+    m_customPlot->clearItems();
+    m_customPlot->replot();
+}
+
+void MainWidget::onDragCheckBoxClicked(bool isChecked)
+{
+#if 0
+    QCP::Interactions flag = m_customPlot->interactions();
+    if (isChecked)
+        m_customPlot->setInteractions(flag | QCP::iRangeDrag);
+    else
+        m_customPlot->setInteraction(QCP::iRangeDrag, false);
+#else
+    if (isChecked)
+        m_customPlot->setInteraction(QCP::iRangeDrag, true);
+    else
+        m_customPlot->setInteraction(QCP::iRangeDrag, false);
+#endif
+}
+
+void MainWidget::onZoomCheckBoxClicked(bool isChecked)
+{
+#if 0
+    QCP::Interactions flag = m_customPlot->interactions();
+    if (isChecked)
+        m_customPlot->setInteractions(flag | QCP::iRangeZoom);
+    else
+        m_customPlot->setInteraction(QCP::iRangeZoom, false);
+#else
+    if (isChecked)
+        m_customPlot->setInteraction(QCP::iRangeZoom, true);
+    else
+        m_customPlot->setInteraction(QCP::iRangeZoom, false);
+#endif
+}
+
+void MainWidget::onAddIdentifierBtnClicked()
+{
+    IdentifierInfoDialog indentifierWidget;
+    if (QDialog::Accepted == indentifierWidget.exec()) {
+        IdentifierInfo identifierInfo = indentifierWidget.getIdentifierInfo();
+        this->addIdentifierInfo(identifierInfo);
+    }
+    else {
+
+    }
 }
 
 bool MainWidget::parseCSVFile(QVector<double> &xValue, QVector<double> &yValue, const QString &filePath)
@@ -77,4 +148,21 @@ bool MainWidget::parseCSVFile(QVector<double> &xValue, QVector<double> &yValue, 
 
     csvFile.close();
     return true;
+}
+
+void MainWidget::addIdentifierInfo(IdentifierInfo info)
+{
+    QCPItemBracket *bracket = new QCPItemBracket(m_customPlot);
+    bracket->left->setCoords(info.xCoord()-5, info.yCoord());
+    bracket->right->setCoords(info.xCoord()+5, info.yCoord());
+    bracket->setLength(10);
+
+    QCPItemText *wavePacketText = new QCPItemText(m_customPlot);
+    wavePacketText->position->setParentAnchor(bracket->center);
+    wavePacketText->position->setCoords(0, -10); // move 10 pixels to the top from bracket center anchor
+    wavePacketText->setPositionAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+    wavePacketText->setText(info.text());
+    wavePacketText->setFont(QFont(font().family(), 10));
+
+    m_customPlot->replot();
 }
