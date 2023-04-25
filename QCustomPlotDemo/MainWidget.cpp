@@ -1,4 +1,4 @@
-#include "MainWidget.h"
+﻿#include "MainWidget.h"
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -153,8 +153,9 @@ bool MainWidget::parseCSVFile(QVector<double> &xValue, QVector<double> &yValue, 
 void MainWidget::addIdentifierInfo(IdentifierInfo info)
 {
     QCPItemBracket *bracket = new QCPItemBracket(m_customPlot);
-    bracket->left->setCoords(info.xCoord()-5, info.yCoord());
-    bracket->right->setCoords(info.xCoord()+5, info.yCoord());
+    bracket->setStyle((QCPItemBracket::BracketStyle)info.bracketStyle());
+    bracket->left->setCoords(info.xStartCoord(), info.yStartCoord());
+    bracket->right->setCoords(info.xEndCoord(), info.yEndCoord());
     bracket->setLength(10);
 
     QCPItemText *wavePacketText = new QCPItemText(m_customPlot);

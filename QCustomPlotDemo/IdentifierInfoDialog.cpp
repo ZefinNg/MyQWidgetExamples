@@ -1,32 +1,58 @@
-#include "IdentifierInfoDialog.h"
+﻿#include "IdentifierInfoDialog.h"
 #include <QHBoxLayout>
+#include "float.h"
 
 IdentifierInfoDialog::IdentifierInfoDialog(QWidget *parent) : QDialog(parent)
 {
+    m_styleLabel = new QLabel(tr("Style:"), this);
+    m_styleComboBox = new QComboBox(this);
+    m_styleComboBox->addItem(tr("Square"));
+    m_styleComboBox->addItem(tr("Round"));
+    m_styleComboBox->addItem(tr("Curly"));
+    m_styleComboBox->addItem(tr("Calligraphic"));
+
     m_infoLabel     = new QLabel(tr("Text:"), this);
     m_infoLineEdit  = new QLineEdit(this);
-    m_xCoordLabel   = new QLabel(tr("X:"), this);
-    m_xCoordSpinBox = new QDoubleSpinBox(this);
-    m_yCoordLabel   = new QLabel(tr("Y:"), this);
-    m_yCoordSpinBox = new QDoubleSpinBox(this);
+
+    m_startPointLabel    = new QLabel(tr("startPoint:"), this);
+    m_xStartCoordLabel   = new QLabel(tr("X:"), this);
+    m_xStartCoordSpinBox = new QDoubleSpinBox(this);
+    m_xStartCoordSpinBox->setMinimum(-DBL_MAX);
+    m_yStartCoordLabel   = new QLabel(tr("Y:"), this);
+    m_yStartCoordSpinBox = new QDoubleSpinBox(this);
+
+    m_endPoint         = new QLabel(tr("endPoint:"), this);
+    m_xEndCoordLabel   = new QLabel(tr("X:"), this);
+    m_xEndCoordSpinBox = new QDoubleSpinBox(this);
+    m_yEndCoordLabel   = new QLabel(tr("Y:"), this);
+    m_yEndCoordSpinBox = new QDoubleSpinBox(this);
+
     m_confirmBtn    = new QPushButton(tr("Confirm"), this);
     m_cancelBtn     = new QPushButton(tr("Cancel"), this);
 
-    QHBoxLayout *infoHBoxLayout = new QHBoxLayout();
-    infoHBoxLayout->addWidget(m_infoLabel);
-    infoHBoxLayout->addWidget(m_infoLineEdit);
-    infoHBoxLayout->addWidget(m_xCoordLabel);
-    infoHBoxLayout->addWidget(m_xCoordSpinBox);
-    infoHBoxLayout->addWidget(m_yCoordLabel);
-    infoHBoxLayout->addWidget(m_yCoordSpinBox);
-
-    QHBoxLayout *yesNoHBoxLayout = new QHBoxLayout();
-    yesNoHBoxLayout->addWidget(m_confirmBtn);
-    yesNoHBoxLayout->addWidget(m_cancelBtn);
-
     QGridLayout *gridLayout = new QGridLayout(this);
-    gridLayout->addLayout(infoHBoxLayout, 0, 0);
-    gridLayout->addLayout(yesNoHBoxLayout, 1, 0);
+    gridLayout->addWidget(m_styleLabel, 0, 0, 1, 2);
+    gridLayout->addWidget(m_styleComboBox, 0, 2, 1, 3);
+
+    gridLayout->addWidget(m_infoLabel, 1, 0, 1, 2);
+    gridLayout->addWidget(m_infoLineEdit, 1, 2, 1, 3);
+
+    gridLayout->addWidget(m_startPointLabel, 2, 0);
+    gridLayout->addWidget(m_xStartCoordLabel, 2, 1);
+    gridLayout->addWidget(m_xStartCoordSpinBox, 2, 2);
+    gridLayout->addWidget(m_yStartCoordLabel, 2, 3);
+    gridLayout->addWidget(m_yStartCoordSpinBox, 2, 4);
+
+    gridLayout->addWidget(m_endPoint, 3, 0);
+    gridLayout->addWidget(m_xEndCoordLabel, 3, 1);
+    gridLayout->addWidget(m_xEndCoordSpinBox, 3, 2);
+    gridLayout->addWidget(m_yEndCoordLabel, 3, 3);
+    gridLayout->addWidget(m_yEndCoordSpinBox, 3, 4);
+
+    QHBoxLayout *yesNoBtnLayout = new QHBoxLayout();
+    yesNoBtnLayout->addWidget(m_confirmBtn);
+    yesNoBtnLayout->addWidget(m_cancelBtn);
+    gridLayout->addLayout(yesNoBtnLayout, 4, 0, 1, 5);
 
     connect(m_confirmBtn, SIGNAL(clicked()), this, SLOT(onConfirmBtnClicked()));
     connect(m_cancelBtn, SIGNAL(clicked()), this, SLOT(onCancelBtnClicked()));
@@ -35,9 +61,12 @@ IdentifierInfoDialog::IdentifierInfoDialog(QWidget *parent) : QDialog(parent)
 IdentifierInfo IdentifierInfoDialog::getIdentifierInfo()
 {
     IdentifierInfo identifierInfo;
+    identifierInfo.setBracketStyle(m_styleComboBox->currentIndex());
     identifierInfo.setText(m_infoLineEdit->text());
-    identifierInfo.setXCoord(m_xCoordSpinBox->value());
-    identifierInfo.setYCoord(m_yCoordSpinBox->value());
+    identifierInfo.setXStartCoord(m_xStartCoordSpinBox->value());
+    identifierInfo.setYStartCoord(m_yStartCoordSpinBox->value());
+    identifierInfo.setXEndCoord(m_xEndCoordSpinBox->value());
+    identifierInfo.setYEndCoord(m_yEndCoordSpinBox->value());
 
     return identifierInfo;
 }

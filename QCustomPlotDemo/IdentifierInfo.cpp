@@ -1,4 +1,4 @@
-#include "IdentifierInfo.h"
+﻿#include "IdentifierInfo.h"
 
 IdentifierInfo::IdentifierInfo()
 {
@@ -15,22 +15,52 @@ void IdentifierInfo::setText(const QString &text)
     m_text = text;
 }
 
-double IdentifierInfo::xCoord() const
+double IdentifierInfo::xEndCoord() const
 {
-    return m_xCoord;
+    return m_xEndCoord;
 }
 
-void IdentifierInfo::setXCoord(double xCoord)
+void IdentifierInfo::setXEndCoord(double xEndCoord)
 {
-    m_xCoord = xCoord;
+    m_xEndCoord = xEndCoord;
 }
 
-double IdentifierInfo::yCoord() const
+double IdentifierInfo::yEndCoord() const
 {
-    return m_yCoord;
+    return m_yEndCoord;
 }
 
-void IdentifierInfo::setYCoord(double yCoord)
+void IdentifierInfo::setYEndCoord(double yEndCoord)
 {
-    m_yCoord = yCoord;
+    m_yEndCoord = yEndCoord;
+}
+
+double IdentifierInfo::xStartCoord() const
+{
+    return m_xStartCoord;
+}
+
+void IdentifierInfo::setXStartCoord(double xStartCoord)
+{
+    m_xStartCoord = xStartCoord;
+}
+
+double IdentifierInfo::yStartCoord() const
+{
+    return m_yStartCoord;
+}
+
+void IdentifierInfo::setYStartCoord(double yStartCoord)
+{
+    m_yStartCoord = yStartCoord;
+}
+
+int IdentifierInfo::bracketStyle() const
+{
+    return m_bracketStyle;
+}
+
+void IdentifierInfo::setBracketStyle(int bracketStyle)
+{
+    m_bracketStyle = bracketStyle;
 }
