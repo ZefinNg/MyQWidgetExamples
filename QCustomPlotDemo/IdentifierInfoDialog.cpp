@@ -4,6 +4,11 @@
 
 IdentifierInfoDialog::IdentifierInfoDialog(QWidget *parent) : QDialog(parent)
 {
+    m_typeLabel = new QLabel(tr("Type:"), this);
+    m_typeComboBox = new QComboBox(this);
+    m_typeComboBox->addItem(tr("Arrow"));
+    m_typeComboBox->addItem(tr("Packet"));
+
     m_styleLabel = new QLabel(tr("Style:"), this);
     m_styleComboBox = new QComboBox(this);
     m_styleComboBox->addItem(tr("Square"));
@@ -54,6 +59,7 @@ IdentifierInfoDialog::IdentifierInfoDialog(QWidget *parent) : QDialog(parent)
     yesNoBtnLayout->addWidget(m_cancelBtn);
     gridLayout->addLayout(yesNoBtnLayout, 4, 0, 1, 5);
 
+    connect(m_typeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeBoxChanged(int)));
     connect(m_confirmBtn, SIGNAL(clicked()), this, SLOT(onConfirmBtnClicked()));
     connect(m_cancelBtn, SIGNAL(clicked()), this, SLOT(onCancelBtnClicked()));
 }
@@ -69,6 +75,19 @@ IdentifierInfo IdentifierInfoDialog::getIdentifierInfo()
     identifierInfo.setYEndCoord(m_yEndCoordSpinBox->value());
 
     return identifierInfo;
+}
+
+void IdentifierInfoDialog::onTypeBoxChanged(int index)
+{
+    switch (index) {
+    case 0:
+        break;
+    case 1:
+        break;
+    default:
+        qDebug() << "Unkown index.";
+        break;
+    }
 }
 
 void IdentifierInfoDialog::onConfirmBtnClicked()

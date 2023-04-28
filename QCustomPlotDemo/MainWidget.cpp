@@ -46,6 +46,7 @@ MainWidget::~MainWidget()
 
 void MainWidget::onDrawBtnClicked()
 {
+#if 0
     QString filePath = QCoreApplication::applicationDirPath() + "\\TestFile\\202302200005.csv";
     QVector<double> xValue, yValue;
 
@@ -70,6 +71,62 @@ void MainWidget::onDrawBtnClicked()
     m_customPlot->graph(1)->addData(xValue, negateYValue);
 
     m_customPlot->replot();
+#else
+    int n = 500;
+    double phase = 0;
+    double k = 3;
+    QVector<double> x(n), y(n);
+    for (int i=0; i<n; ++i)
+    {
+      x[i] = i/(double)(n-1)*34 - 17;
+      y[i] = qExp(-x[i]*x[i]/20.0)*qSin(k*x[i]+phase);
+    }
+
+    QCPGraph *graph = m_customPlot->addGraph();
+    graph->setData(x, y);
+    graph->setPen(QPen(Qt::blue));
+    graph->rescaleKeyAxis();
+    m_customPlot->yAxis->setRange(-1.45, 1.65);
+    m_customPlot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+
+    //标注点
+    // add the phase tracer (red circle) which sticks to the graph data (and gets updated in bracketDataSlot by timer event):
+    QCPItemTracer *phaseTracer = new QCPItemTracer(m_customPlot);
+//    itemDemoPhaseTracer = phaseTracer; // so we can access it later in the bracketDataSlot for animation
+    phaseTracer->setGraph(graph);
+    phaseTracer->setGraphKey((M_PI*1.5-phase)/k);
+    phaseTracer->setInterpolating(true);
+    phaseTracer->setStyle(QCPItemTracer::tsCircle);
+    phaseTracer->setPen(QPen(Qt::red));
+    phaseTracer->setBrush(Qt::red);
+    phaseTracer->setSize(7);
+
+    //标注点的文本
+    // add label for phase tracer:
+    QCPItemText *phaseTracerText = new QCPItemText(m_customPlot);
+    phaseTracerText->position->setType(QCPItemPosition::ptAxisRectRatio);
+    phaseTracerText->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
+    phaseTracerText->position->setCoords(1.0, 0.95); // lower right corner of axis rect
+    phaseTracerText->setText("Points of fixed\nphase define\nphase velocity vp");
+    phaseTracerText->setTextAlignment(Qt::AlignLeft);
+    phaseTracerText->setFont(QFont(font().family(), 9));
+    phaseTracerText->setPadding(QMargins(8, 0, 0, 0));
+
+    //指向标注点的箭头
+    // add arrow pointing at phase tracer, coming from label:
+    QCPItemCurve *phaseTracerArrow = new QCPItemCurve(m_customPlot);
+    phaseTracerArrow->start->setParentAnchor(phaseTracerText->left);
+    phaseTracerArrow->startDir->setParentAnchor(phaseTracerArrow->start);
+    phaseTracerArrow->startDir->setCoords(-40, 0); // direction 30 pixels to the left of parent anchor (tracerArrow->start)
+    phaseTracerArrow->end->setParentAnchor(phaseTracer->position);
+    phaseTracerArrow->end->setCoords(10, 10);
+    phaseTracerArrow->endDir->setParentAnchor(phaseTracerArrow->end);
+    phaseTracerArrow->endDir->setCoords(30, 30);
+    phaseTracerArrow->setHead(QCPLineEnding::esSpikeArrow);
+    phaseTracerArrow->setTail(QCPLineEnding(QCPLineEnding::esBar, (phaseTracerText->bottom->pixelPosition().y()-phaseTracerText->top->pixelPosition().y())*0.85));
+
+    m_customPlot->replot();
+#endif
 }
 
 void MainWidget::onClearBtnClicked()

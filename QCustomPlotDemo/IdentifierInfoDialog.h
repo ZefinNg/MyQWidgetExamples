@@ -25,10 +25,14 @@ signals:
 public slots:
 
 private slots:
+    void onTypeBoxChanged(int index);
     void onConfirmBtnClicked();
     void onCancelBtnClicked();
 
 private:
+    QLabel *m_typeLabel;
+    QComboBox *m_typeComboBox;
+
     QLabel *m_styleLabel;
     QComboBox *m_styleComboBox;
 
