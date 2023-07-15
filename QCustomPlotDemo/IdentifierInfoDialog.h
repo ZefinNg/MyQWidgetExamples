@@ -24,6 +24,9 @@ signals:
 
 public slots:
 
+protected:
+    void showEvent(QShowEvent *event);
+
 private slots:
     void onTypeBoxChanged(int index);
     void onConfirmBtnClicked();

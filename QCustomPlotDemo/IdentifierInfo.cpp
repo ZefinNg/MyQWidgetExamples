@@ -64,3 +64,13 @@ void IdentifierInfo::setBracketStyle(int bracketStyle)
 {
     m_bracketStyle = bracketStyle;
 }
+
+IdentifierInfo::Identifier_Type IdentifierInfo::type() const
+{
+    return m_type;
+}
+
+void IdentifierInfo::setType(const Identifier_Type &type)
+{
+    m_type = type;
+}

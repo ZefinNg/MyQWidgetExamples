@@ -6,7 +6,15 @@
 class IdentifierInfo
 {
 public:
+    enum Identifier_Type {
+        Arrow = 0,
+        Packet
+    };
+
     IdentifierInfo();
+
+    Identifier_Type type() const;
+    void setType(const Identifier_Type &type);
 
     QString text() const;
     void setText(const QString &text);
@@ -27,6 +35,7 @@ public:
     void setBracketStyle(int bracketStyle);
 
 private:
+    Identifier_Type m_type;
     int m_bracketStyle;
     QString m_text;
     double m_xStartCoord;

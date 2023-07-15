@@ -89,41 +89,8 @@ void MainWidget::onDrawBtnClicked()
     m_customPlot->yAxis->setRange(-1.45, 1.65);
     m_customPlot->xAxis->grid()->setZeroLinePen(Qt::NoPen);
 
-    //标注点
-    // add the phase tracer (red circle) which sticks to the graph data (and gets updated in bracketDataSlot by timer event):
-    QCPItemTracer *phaseTracer = new QCPItemTracer(m_customPlot);
-//    itemDemoPhaseTracer = phaseTracer; // so we can access it later in the bracketDataSlot for animation
-    phaseTracer->setGraph(graph);
-    phaseTracer->setGraphKey((M_PI*1.5-phase)/k);
-    phaseTracer->setInterpolating(true);
-    phaseTracer->setStyle(QCPItemTracer::tsCircle);
-    phaseTracer->setPen(QPen(Qt::red));
-    phaseTracer->setBrush(Qt::red);
-    phaseTracer->setSize(7);
-
     //标注点的文本
     // add label for phase tracer:
-    QCPItemText *phaseTracerText = new QCPItemText(m_customPlot);
-    phaseTracerText->position->setType(QCPItemPosition::ptAxisRectRatio);
-    phaseTracerText->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
-    phaseTracerText->position->setCoords(1.0, 0.95); // lower right corner of axis rect
-    phaseTracerText->setText("Points of fixed\nphase define\nphase velocity vp");
-    phaseTracerText->setTextAlignment(Qt::AlignLeft);
-    phaseTracerText->setFont(QFont(font().family(), 9));
-    phaseTracerText->setPadding(QMargins(8, 0, 0, 0));
-
-    //指向标注点的箭头
-    // add arrow pointing at phase tracer, coming from label:
-    QCPItemCurve *phaseTracerArrow = new QCPItemCurve(m_customPlot);
-    phaseTracerArrow->start->setParentAnchor(phaseTracerText->left);
-    phaseTracerArrow->startDir->setParentAnchor(phaseTracerArrow->start);
-    phaseTracerArrow->startDir->setCoords(-40, 0); // direction 30 pixels to the left of parent anchor (tracerArrow->start)
-    phaseTracerArrow->end->setParentAnchor(phaseTracer->position);
-    phaseTracerArrow->end->setCoords(10, 10);
-    phaseTracerArrow->endDir->setParentAnchor(phaseTracerArrow->end);
-    phaseTracerArrow->endDir->setCoords(30, 30);
-    phaseTracerArrow->setHead(QCPLineEnding::esSpikeArrow);
-    phaseTracerArrow->setTail(QCPLineEnding(QCPLineEnding::esBar, (phaseTracerText->bottom->pixelPosition().y()-phaseTracerText->top->pixelPosition().y())*0.85));
 
     m_customPlot->replot();
 #endif
@@ -209,18 +176,57 @@ bool MainWidget::parseCSVFile(QVector<double> &xValue, QVector<double> &yValue, 
 
 void MainWidget::addIdentifierInfo(IdentifierInfo info)
 {
-    QCPItemBracket *bracket = new QCPItemBracket(m_customPlot);
-    bracket->setStyle((QCPItemBracket::BracketStyle)info.bracketStyle());
-    bracket->left->setCoords(info.xStartCoord(), info.yStartCoord());
-    bracket->right->setCoords(info.xEndCoord(), info.yEndCoord());
-    bracket->setLength(10);
+    switch (info.type()) {
+    case IdentifierInfo::Arrow: {
+        QCPItemTracer *phaseTracer = new QCPItemTracer(m_customPlot);
+        phaseTracer->setGraph(m_customPlot->graph());
+//        phaseTracer->setGraphKey((M_PI*1.5-0)/3);
+        phaseTracer->setGraphKey(0);
+        phaseTracer->setInterpolating(true);
+        phaseTracer->setStyle(QCPItemTracer::tsCircle);
+        phaseTracer->setPen(QPen(Qt::red));
+        phaseTracer->setBrush(Qt::red);
+        phaseTracer->setSize(7);
 
-    QCPItemText *wavePacketText = new QCPItemText(m_customPlot);
-    wavePacketText->position->setParentAnchor(bracket->center);
-    wavePacketText->position->setCoords(0, -10); // move 10 pixels to the top from bracket center anchor
-    wavePacketText->setPositionAlignment(Qt::AlignBottom|Qt::AlignHCenter);
-    wavePacketText->setText(info.text());
-    wavePacketText->setFont(QFont(font().family(), 10));
+        QCPItemText *phaseTracerText = new QCPItemText(m_customPlot);
+        phaseTracerText->position->setType(QCPItemPosition::ptAxisRectRatio);
+        phaseTracerText->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
+        phaseTracerText->position->setCoords(1.0, 0.95); // lower right corner of axis rect
+        phaseTracerText->setText("Points of fixed\nphase define\nphase velocity vp");
+        phaseTracerText->setTextAlignment(Qt::AlignLeft);
+        phaseTracerText->setFont(QFont(font().family(), 9));
+        phaseTracerText->setPadding(QMargins(8, 0, 0, 0));
+
+        QCPItemCurve *phaseTracerArrow = new QCPItemCurve(m_customPlot);
+        phaseTracerArrow->start->setParentAnchor(phaseTracerText->left);
+        phaseTracerArrow->startDir->setParentAnchor(phaseTracerArrow->start);
+        phaseTracerArrow->startDir->setCoords(-40, 0); // direction 30 pixels to the left of parent anchor (tracerArrow->start)
+        phaseTracerArrow->end->setParentAnchor(phaseTracer->position);
+        phaseTracerArrow->end->setCoords(10, 10);
+        phaseTracerArrow->endDir->setParentAnchor(phaseTracerArrow->end);
+        phaseTracerArrow->endDir->setCoords(30, 30);
+        phaseTracerArrow->setHead(QCPLineEnding::esSpikeArrow);
+        phaseTracerArrow->setTail(QCPLineEnding(QCPLineEnding::esBar, (phaseTracerText->bottom->pixelPosition().y()-phaseTracerText->top->pixelPosition().y())*0.85));
+    }
+        break;
+    case IdentifierInfo::Packet: {
+        QCPItemBracket *bracket = new QCPItemBracket(m_customPlot);
+        bracket->setStyle((QCPItemBracket::BracketStyle)info.bracketStyle());
+        bracket->left->setCoords(info.xStartCoord(), info.yStartCoord());
+        bracket->right->setCoords(info.xEndCoord(), info.yEndCoord());
+        bracket->setLength(10);
+
+        QCPItemText *wavePacketText = new QCPItemText(m_customPlot);
+        wavePacketText->position->setParentAnchor(bracket->center);
+        wavePacketText->position->setCoords(0, -10); // move 10 pixels to the top from bracket center anchor
+        wavePacketText->setPositionAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+        wavePacketText->setText(info.text());
+        wavePacketText->setFont(QFont(font().family(), 10));
+    }
+        break;
+    default:
+        break;
+    }
 
     m_customPlot->replot();
 }
