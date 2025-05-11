@@ -1,4 +1,4 @@
-#ifndef MAINWIDGET_H
+﻿#ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
 #include <QWidget>
@@ -7,6 +7,10 @@
 #include <QFormLayout>
 #include <QTimer>
 #include <QDateTime>
+#include <QMap>
+#include <QSystemTrayIcon>
+#include <QMenu>
+#include "DatabaseManager/DatabaseManager.h"
 
 class MainWidget : public QWidget
 {
@@ -21,13 +25,21 @@ private:
 
 private slots:
     void onSelectAppBtnClicked();
+    void onSettingBtnClicked();
     void onTrackerTimer();
 
 private:
+    void initView();
+    void initSystemTray();
+    void updateAppInfo();
+
+private:
+    // View
     QFormLayout *m_formLayout;
     QPushButton *m_selectAppBtn;
-    QLabel *m_appLabel;
-    QLabel *m_timeLabel;
+    QPushButton *m_settingBtn;
+    QMap<QString, QLabel*> m_timeLabelMap;
+
     QTimer *m_trackerTimer;
     QString m_trackerApplication;
     QDateTime m_startTime;

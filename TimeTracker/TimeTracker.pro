@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -22,10 +22,28 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+INCLUDEPATH += src/
 
 SOURCES += \
+    AppInfoJson.cpp \
+    src/Common/Helper.cpp \
+    src/DatabaseManager/DatabaseManager.cpp \
         main.cpp \
-        MainWidget.cpp
+        MainWidget.cpp \
+    ConfigManager.cpp \
+    ApplicationInfo.cpp
 
 HEADERS += \
-        MainWidget.h
+    AppInfoJson.h \
+    src/Common/Helper.h \
+    src/DatabaseManager/DatabaseManager.h \
+        MainWidget.h \
+    ConfigManager.h \
+    ApplicationInfo.h
+
+RESOURCES += \
+    res.qrc
+
+win32 {
+    RC_FILE = app.rc
+}

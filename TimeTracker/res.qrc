@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/fonts/wqydkht_11958.ttf</file>
+        <file>res/img/app.svg</file>
+        <file>app.ico</file>
+    </qresource>
+</RCC>
