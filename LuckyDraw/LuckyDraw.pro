@@ -1,14 +1,14 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2023-06-28T15:17:04
+# Project created by QtCreator 2023-04-05T09:57:36
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = TimeTracker
+TARGET = LuckyDraw
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -22,36 +22,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += src/ \
-    3rdparty/spdlog-1.15.0/include/spdlog/
 
-SOURCES += \
-    AppInfoJson.cpp \
-    Logger.cpp \
-    SettingWidget.cpp \
-    src/Common/Helper.cpp \
-    src/DatabaseManager/DatabaseManager.cpp \
-        main.cpp \
-        MainWidget.cpp \
-    ConfigManager.cpp \
-    ApplicationInfo.cpp
+SOURCES += main.cpp\
+        LuckyDrawWidget.cpp
 
-HEADERS += \
-    AppInfoJson.h \
-    Logger.h \
-    SettingWidget.h \
-    src/Common/Helper.h \
-    src/DatabaseManager/DatabaseManager.h \
-        MainWidget.h \
-    ConfigManager.h \
-    ApplicationInfo.h
+HEADERS  += LuckyDrawWidget.h
 
 RESOURCES += \
-    res.qrc
-
-win32 {
-    RC_FILE = app.rc
-}
-
-FORMS += \
-    SettingWidget.ui
+    image.qrc

@@ -11,6 +11,7 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 #include "DatabaseManager/DatabaseManager.h"
+#include "SettingWidget.h"
 
 class MainWidget : public QWidget
 {

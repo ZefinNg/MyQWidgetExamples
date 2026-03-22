@@ -12,8 +12,6 @@ int main(int argc, char *argv[])
     QFont appFont(QFontDatabase::applicationFontFamilies(fontId).at(0));
     a.setFont(appFont);
 
-    // a.setWindowIcon(QIcon("://app.ico"));
-
     MainWidget w;
     w.setWindowIcon(QIcon("://app.ico"));
     DatabaseManager::getInstance();

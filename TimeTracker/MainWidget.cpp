@@ -109,6 +109,8 @@ void MainWidget::onSelectAppBtnClicked() {
 
 void MainWidget::onSettingBtnClicked() {
     qDebug() << __FUNCTION__ << __LINE__;
+    SettingWidget::getInstance()->setModal(true);
+    SettingWidget::getInstance()->show();
 }
 
 void MainWidget::onTrackerTimer() {
